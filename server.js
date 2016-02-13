@@ -11,11 +11,14 @@ http.createServer( function( request, response ) {
 	var params = url.parse( request.url, true )
 
 	if ( debug ) {
-		console.log( request.url )
+		console.log( Date(), request.url )
 	}
 
 	tachyon( 'hmn-uploads-eu-central', params.pathname.substr(1), params.query, function( err, data, info ) {
 		if ( err ) {
+			if ( debug ) {
+				console.error( Date(), err )
+			}
 			response.writeHead( err.statusCode ? err.statusCode : 500, {} )
 			response.write( err.message )
 			return response.end()
