@@ -26,13 +26,16 @@ http.createServer( function( request, response ) {
 			if ( debug ) {
 				console.error( Date(), err )
 			}
-			response.writeHead( err.statusCode ? err.statusCode : 500, {} )
+			response.writeHead( err.statusCode ? err.statusCode : 500, {
+				'Cache-Control': 'no-cache'
+			} )
 			response.write( err.message )
 			return response.end()
 		}
 		response.writeHead( 200, {
 			'Content-Type': 'image/' + info.format,
-			'Content-Length': info.size
+			'Content-Length': info.size,
+			'Cache-Control': 'public, max-age=31557600'
 		})
 		response.write( data )
 		response.end()
