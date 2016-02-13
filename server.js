@@ -14,6 +14,13 @@ http.createServer( function( request, response ) {
 		console.log( Date(), request.url )
 	}
 
+	// healthcheck file
+	if ( params.pathname === '/healthcheck.php' ) {
+		response.writeHead( 200 )
+		response.write( 'All good.' )
+		return response.end()
+	}
+
 	tachyon( 'hmn-uploads-eu-central', params.pathname.substr(1), params.query, function( err, data, info ) {
 		if ( err ) {
 			if ( debug ) {
