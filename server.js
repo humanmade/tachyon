@@ -1,11 +1,18 @@
 var http   = require("http"),
 	url    = require("url"),
 	path   = require("path"),
-	tachyon= require( './index' )
-	port   = process.argv[2] || 8080;
+	tachyon= require( './index' ),
+	args = process.argv.slice(2),
+	port   = args[0] || 8080;
+	debug  = args.indexOf( '--debug' ) > -1;
 
+console.log( process.argv )
 http.createServer( function( request, response ) {
 	var params = url.parse( request.url, true )
+
+	if ( debug ) {
+		console.log( request.url )
+	}
 
 	tachyon( 'hmn-uploads-eu-central', params.pathname.substr(1), params.query, function( err, data, info ) {
 		if ( err ) {
