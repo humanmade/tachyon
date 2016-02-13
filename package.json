@@ -8,10 +8,8 @@
   },
   "author": "Joe Hoyle",
   "license": "ISC",
-  "dependancies": {
-    "aws-sdk": "^2.2.17"
-  },
   "dependencies": {
-    "sharp": "^0.12.2"
+    "sharp": "^0.12.2",
+    "aws-sdk": "^2.2.17"
   }
 }
