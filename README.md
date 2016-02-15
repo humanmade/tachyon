@@ -1,0 +1,24 @@
+Node Tachyon
+============
+
+A local Tachyon server to help with development of the main plugin and app:
+
+[WordPress plugin](https://github.com/humanmade/tachyon-plugin)
+
+[Tachyon app](https://github.com/humanmade/tachyon)
+
+## Installation
+
+Make sure you have libvips installed, the easiest way is to use homebrew:
+
+```
+brew install homebrew/science/vips --with-webp --with-graphicsmagick
+```
+
+Clone and initialise the repo
+
+```
+git clone git@github.com:humanmade/node-tachyon.git
+npm install
+```
+
