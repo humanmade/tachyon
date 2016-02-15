@@ -22,3 +22,20 @@ git clone git@github.com:humanmade/node-tachyon.git
 npm install
 ```
 
+## Running the server
+
+```
+node server.js
+```
+
+You should see the server running by default on http://localhost:8080
+
+## Usage
+
+With the Tachyon plugin installe and active on your local environment add this to your `wp-config-local.php` file:
+
+```php
+define( 'TACHYON_URL', 'http://localhost:8080/<bucket name>/uploads' );
+```
+
+**NOTE:** Currently the region is hardcoded so you don't need the `hmn-uploads-eu-central` part
