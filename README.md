@@ -1,15 +1,13 @@
 Node Tachyon
 ============
 
-A local Tachyon server to help with development of the main plugin and app:
+A local [Tachyon](https://github.com/humanmade/tachyon) server to help with development of the WordPress plugin:
 
 [WordPress plugin](https://github.com/humanmade/tachyon-plugin)
 
-[Tachyon app](https://github.com/humanmade/tachyon)
-
 ## Installation
 
-Make sure you have libvips installed, the easiest way is to use homebrew:
+If you're running on OSX make sure you have libvips installed, the easiest way is to use homebrew:
 
 ```
 brew install homebrew/science/vips --with-webp --with-graphicsmagick
@@ -25,10 +23,10 @@ npm install
 ## Running the server
 
 ```
-node server.js
+node server.js [port] [--debug]
 ```
 
-You should see the server running by default on http://localhost:8080
+With no options passed you should see the server running by default on http://localhost:8080
 
 ## Usage
 
