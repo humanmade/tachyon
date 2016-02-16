@@ -16,14 +16,15 @@ module.exports = function( bucket, key, args, callback ) {
 
 			if ( args.resize ) {
 				image.resize.apply( image, args.resize.split(',').map( function( v ) { return Number( v ) } ) )
-			}
-
-			if ( args.w || args.h ) {
-				image.resize( Number( args.w ), Number( args.h ) )
-			}
-
-			if ( ! args.crop ) {
+			} else if ( args.fit ) {
+				image.resize.apply( image, args.fit.split(',').map( function( v ) { return Number( v ) } ) )
 				image.max()
+			} else if ( args.w || args.h ) {
+				image.resize( Number( args.w ), Number( args.h ) )
+
+				if ( ! args.crop ) {
+					image.max()
+				}
 			}
 
 			image.toBuffer( function( err, _data, info ) {
