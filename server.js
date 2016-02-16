@@ -20,7 +20,7 @@ http.createServer( function( request, response ) {
 		return response.end()
 	}
 
-	tachyon( 'hmn-uploads-eu-central', params.pathname.substr(1), params.query, function( err, data, info ) {
+	tachyon( 'hmn-uploads-eu-central', decodeURI( params.pathname.substr(1) ), params.query, function( err, data, info ) {
 		if ( err ) {
 			if ( debug ) {
 				console.error( Date(), err )
