@@ -1,5 +1,6 @@
 var sharp = require( 'sharp' ),
-	AWS = require( 'aws-sdk' )
+	AWS = require( 'aws-sdk' ),
+	path = require( 'path' )
 
 AWS.config.region = 'eu-central-1'
 var s3 = new AWS.S3();
@@ -13,6 +14,11 @@ module.exports = function( bucket, key, args, callback ) {
 
 		try {
 			var image = sharp( data.Body ).withMetadata()
+
+			// convert gifs to pngs
+			if( path.extname( key ).toLowerCase() === '.gif' ) {
+				image.png()
+			}
 
 			if ( args.resize ) {
 				image.resize.apply( image, args.resize.split(',').map( function( v ) { return Number( v ) } ) )
