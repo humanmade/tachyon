@@ -40,10 +40,10 @@ module.exports = function( bucket, key, args, callback ) {
 
 				info.originalSize = data.ContentLength
 
-				callback( err, _data, info )
+				return callback( err, _data, info )
 			} )
 		} catch( err ) {
-			callback( err )
+			return callback( err )
 		}
 	} )
 }
