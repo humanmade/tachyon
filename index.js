@@ -2,7 +2,7 @@ var sharp = require( 'sharp' ),
 	AWS = require( 'aws-sdk' ),
 	path = require( 'path' )
 
-AWS.config.region = 'eu-central-1'
+sharp.cache( 0, 0 )
 var s3 = new AWS.S3();
 
 module.exports = function( bucket, key, args, callback ) {
