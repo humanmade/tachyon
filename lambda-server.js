@@ -35,12 +35,16 @@ http.createServer( function( request, response ) {
 		} )
 	}, function( err, data ) {
 
-		data = JSON.parse( data.Payload )
-		if ( data.errorMessage ) {
-			err = {
-				message: data.errorMessage
+		if ( data ) {
+			data = JSON.parse( data.Payload )
+
+			if ( data.errorMessage ) {
+				err = {
+					message: data.errorMessage
+				}
 			}
 		}
+
 		if ( err ) {
 			if ( debug ) {
 				console.error( Date(), err )
