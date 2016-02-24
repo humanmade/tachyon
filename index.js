@@ -2,10 +2,15 @@ var sharp = require( 'sharp' ),
 	AWS = require( 'aws-sdk' ),
 	path = require( 'path' )
 
-sharp.cache( 0, 0 )
-var s3 = new AWS.S3();
+var regions = {}
 
-module.exports = function( bucket, key, args, callback ) {
+module.exports = function( region, bucket, key, args, callback ) {
+	AWS.config.region = region
+	if ( ! regions[ region ] ) {
+		regions[ region ] = new AWS.S3({region: region})
+	}
+	var s3 = regions[ region ]
+
 	var file = s3.makeUnauthenticatedRequest( 'getObject', { Bucket: bucket, Key: key }, function( err, data ) {
 
 		if ( err ) {
