@@ -1,10 +1,13 @@
 var http   = require("http"),
 	url    = require("url"),
 	path   = require("path"),
+	fs     = require("fs"),
 	tachyon= require( './index' ),
 	args = process.argv.slice(2),
 	port   = Number( args[0] ) ? args[0] : 8080,
 	debug  = args.indexOf( '--debug' ) > -1
+
+var config = JSON.parse( fs.readFileSync( 'config.json' ) )
 
 http.createServer( function( request, response ) {
 	var params = url.parse( request.url, true )
@@ -20,7 +23,8 @@ http.createServer( function( request, response ) {
 		return response.end()
 	}
 
-	tachyon( 'hmn-uploads-eu', decodeURI( params.pathname.substr(1) ), params.query, function( err, data, info ) {
+	tachyon( config.region, config.bucket, decodeURI( params.pathname.substr(1) ), params.query, function( err, data, info ) {
+
 		if ( err ) {
 			if ( debug ) {
 				console.error( Date(), err )
@@ -41,4 +45,4 @@ http.createServer( function( request, response ) {
 	} );
 }).listen( parseInt( port, 10 ) )
 
-console.log("Server running at\n	=> http://localhost:" + port + "/\nCTRL + C to shutdown");
+console.log( "Server running at\n	=> http://localhost:" + port + "/\nCTRL + C to shutdown" )

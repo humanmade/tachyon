@@ -1,14 +1,17 @@
 var http   = require("http"),
 	url    = require("url"),
 	path   = require("path"),
+	fs     = require("fs"),
 	tachyon= require( './index' ),
 	args = process.argv.slice(2),
 	port   = Number( args[0] ) ? args[0] : 8080,
 	debug  = args.indexOf( '--debug' ) > -1,
 	aws = require('aws-sdk')
 
+var config = JSON.parse( fs.readFileSync( 'config.json' ) )
+
 var lambda = new aws.Lambda({
-	region: 'eu-west-1'
+	region: config.lambdaRegion
 });
 
 http.createServer( function( request, response ) {
@@ -29,12 +32,12 @@ http.createServer( function( request, response ) {
 	}
 
 	lambda.invoke({
-		FunctionName: 'node-tachyon',
+		FunctionName: config.lambdaFunction,
 		Payload: JSON.stringify( {
-			bucket: 'hmn-uploads-eu',
+			bucket: config.bucket,
 			key: decodeURI( params.pathname.substr(1) ),
 			args: params.query,
-			region: 'eu-west-1'
+			region: config.region
 		} )
 	}, function( err, data ) {
 
@@ -72,4 +75,4 @@ http.createServer( function( request, response ) {
 
 }).listen( parseInt( port, 10 ) )
 
-console.log("Server running at\n	=> http://localhost:" + port + "/\nCTRL + C to shutdown");
+console.log( "Server running at\n	=> http://localhost:" + port + "/\nCTRL + C to shutdown" )
