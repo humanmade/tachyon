@@ -19,6 +19,17 @@ git clone git@github.com:humanmade/node-tachyon.git
 npm install
 ```
 
+## Configuration
+
+Populate the `config.json` with the AWS region and bucket name you want to us. In the following format:
+
+```JSON
+{
+	"region": "eu-west-1",
+	"bucket": "hmn-uploads-eu"
+}
+```
+
 ## Running the server
 
 ```
@@ -40,6 +51,19 @@ define( 'TACHYON_URL', 'http://localhost:8080/<bucket name>/uploads' );
 ## Lambda
 
 Tachyon also supports using Lambda to offload the image processing task, meaning you don't need lots of hardware to handle thousands of image resize requests. Using lambda comes in two parts:
+
+### Configuration
+
+Populate the `config.json` with the AWS region and bucket name you want to us. In the following format:
+
+```JSON
+{
+	"region": "eu-west-1",
+	"bucket": "hmn-uploads-eu",
+	"lambdaRegion": "eu-west-1",
+	"lambdaFunction": "node-tachyon-test"
+}
+```
 
 ### NodeJS Lambda Proxy
 
