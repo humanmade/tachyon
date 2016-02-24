@@ -39,7 +39,7 @@ define( 'TACHYON_URL', 'http://localhost:8080/<bucket name>/uploads' );
 
 ## Lambda
 
-Tachyon also supporting using Lambda to offload the image processing task, meaning you don't need lots of hardware to handle thousands of image resize requests. Using lambda comes in two parts:
+Tachyon also supports using Lambda to offload the image processing task, meaning you don't need lots of hardware to handle thousands of image resize requests. Using lambda comes in two parts:
 
 ### NodeJS Lambda Proxy
 
@@ -55,7 +55,7 @@ Make sure you have access with credentials to call the AWS Lambda API function `
 
 ### Lambda Function
 
-The second part of using Lambda is the AWS Lambda function it's self. You can create a function in AWS Lamnda, and then upload a ZIP file for the code. To create the ZIP just create an archive of this repository (with modules installed), however we must exclude some things to make it smaller!
+The second part of using Lambda is the AWS Lambda function it's self. You can create a function in AWS Lambda, and then upload a ZIP file for the code. To create the ZIP just create an archive of this repository (with npm modules installed), however we must exclude some things to make it smaller!
 
 ```
 zip -r lambda ./ -x node_modules/aws-sdk -x .git/
