@@ -23,6 +23,9 @@ http.createServer( function( request, response ) {
 		response.writeHead( 200 )
 		response.write( 'All good.' )
 		return response.end()
+	} else if ( params.pathname === '/favicon.ico' ) {
+		response.writeHead( 404 )
+		return response.end()
 	}
 
 	lambda.invoke({
