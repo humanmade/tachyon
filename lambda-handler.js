@@ -8,12 +8,14 @@ exports.handler = function( event, context ) {
 	tachyon( region, bucket, key, args, function( err, data, info ) {
 		if ( err ) {
 			context.fail( err )
+		} else {
+			context.succeed( {
+				data: new Buffer( data ).toString( 'base64' ),
+				format: info.format,
+				size: info.size
+			} )
 		}
-		context.succeed( {
-			data: new Buffer( data ).toString( 'base64' ),
-			format: info.format,
-			size: info.size
-		} )
+
 		data = null
 		info = null
 		err = null
