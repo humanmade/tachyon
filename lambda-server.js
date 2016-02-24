@@ -12,7 +12,7 @@ var config = JSON.parse( fs.readFileSync( 'config.json' ) )
 
 var lambda = new aws.Lambda({
 	region: config.lambdaRegion
-});
+})
 
 http.createServer( function( request, response ) {
 	var params = url.parse( request.url, true )
@@ -71,7 +71,7 @@ http.createServer( function( request, response ) {
 
 		response.write( new Buffer( data.data, 'base64' ) )
 		response.end()
-	});
+	})
 
 }).listen( parseInt( port, 10 ) )
 
