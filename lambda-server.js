@@ -38,12 +38,14 @@ http.createServer( function( request, response ) {
 		} )
 	}, function( err, data ) {
 
+		// the call may have been a success, but it returned error data
 		if ( data ) {
 			data = JSON.parse( data.Payload )
 
 			if ( data.errorMessage ) {
 				err = {
-					message: data.errorMessage
+					message: data.errorMessage,
+					statusCode: data.errorType === 'NoSuchKey' ? 404 : 500
 				}
 			}
 		}
