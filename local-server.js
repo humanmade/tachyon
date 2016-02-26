@@ -16,29 +16,27 @@ http.createServer( function( request, response ) {
 		console.log( Date(), request.url )
 	}
 
-	// healthcheck file
-	if ( params.pathname === '/healthcheck.php' ) {
-		response.writeHead( 200 )
-		response.write( 'All good.' )
+	try {
+		var imageData = fs.readFileSync( decodeURI( params.pathname.substr(1) ) )
+	} catch ( err ) {
+		response.writeHead( err.statusCode ? err.statusCode : 500 )
+		response.write( err.message )
 		return response.end()
 	}
 
-	tachyon.s3( config.region, config.bucket, decodeURI( params.pathname.substr(1) ), params.query, function( err, data, info ) {
+	tachyon.resizeBuffer( imageData, params.query, function( err, data, info ) {
 
 		if ( err ) {
 			if ( debug ) {
 				console.error( Date(), err )
 			}
-			response.writeHead( err.statusCode ? err.statusCode : 500, {
-				'Cache-Control': 'no-cache'
-			} )
+			response.writeHead( err.statusCode ? err.statusCode : 500 )
 			response.write( err.message )
 			return response.end()
 		}
 		response.writeHead( 200, {
 			'Content-Type': 'image/' + info.format,
-			'Content-Length': info.size,
-			'Cache-Control': 'public, max-age=31557600'
+			'Content-Length': info.size
 		})
 		response.write( data )
 		response.end()

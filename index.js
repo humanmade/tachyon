@@ -4,7 +4,9 @@ var sharp = require( 'sharp' ),
 
 var regions = {}
 
-module.exports = function( region, bucket, key, args, callback ) {
+module.exports = {}
+
+module.exports.s3 = function( region, bucket, key, args, callback ) {
 	AWS.config.region = region
 	if ( ! regions[ region ] ) {
 		regions[ region ] = new AWS.S3({region: region})
@@ -17,11 +19,23 @@ module.exports = function( region, bucket, key, args, callback ) {
 			return callback( err )
 		}
 
-		try {
-			var image = sharp( data.Body ).withMetadata()
+		args.key = key
+
+		resizeBuffer( data.Body, args, callback )
+	} )
+}
+
+module.exports.resizeBuffer = function( buffer, args, callback ) {
+	try {
+		var image = sharp( buffer ).withMetadata()
+
+		image.metadata( function( err, metadata ) {
+			if ( err ) {
+				return callback( err )
+			}
 
 			// convert gifs to pngs
-			if( path.extname( key ).toLowerCase() === '.gif' ) {
+			if( path.extname( args.key ).toLowerCase() === '.gif' ) {
 				image.png()
 			}
 
@@ -36,6 +50,26 @@ module.exports = function( region, bucket, key, args, callback ) {
 				if ( ! args.crop ) {
 					image.max()
 				}
+			} else if ( args.crop ) {
+				var cropValues = typeof args.crop === 'string' ? args.crop.split( ',' ) : args.crop
+
+				// convert percantages to px values
+				cropValues = cropValues.map( function( value, index ) {
+					if ( value.indexOf( 'px' ) > -1 ) {
+						console.log( value )
+						return Number( value.substr( 0, value.length - 2 ) )
+					} else {
+						return Number( Number( metadata[ index % 2 ? 'height' : 'width' ] * ( value / 100 ) ).toFixed(0) )
+					}
+				})
+				console.log( cropValues );
+
+				image.extract( {
+					left: cropValues[0],
+					top: cropValues[1],
+					width: cropValues[2],
+					height: cropValues[3]
+				} )
 			}
 
 			image.toBuffer( function( err, _data, info ) {
@@ -43,12 +77,11 @@ module.exports = function( region, bucket, key, args, callback ) {
 					return callback( err )
 				}
 
-				info.originalSize = data.ContentLength
-
 				return callback( err, _data, info )
 			} )
-		} catch( err ) {
-			return callback( err )
-		}
-	} )
+		})
+
+	} catch ( err ) {
+		return callback( err )
+	}
 }
