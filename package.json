@@ -1,6 +1,10 @@
 {
   "name": "node-tachyon",
   "version": "1.0.0",
+  "repository" : { 
+    "type" : "git",
+    "url" : "https://github.com/humanmade/node-tachyon.git"
+  },
   "description": "human made tachyon in node",
   "main": "index.js",
   "scripts": {

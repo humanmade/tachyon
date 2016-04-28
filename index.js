@@ -18,33 +18,45 @@ module.exports = function( region, bucket, key, args, callback ) {
 		}
 
 		try {
-			var image = sharp( data.Body ).withMetadata()
-			var sizeModifier = 1;
+			var image = sharp( data.Body ).withMetadata(),
+			    scale = 1
 
 			// convert gifs to pngs
 			if ( path.extname( key ).toLowerCase() === '.gif' ) {
 				image.png()
 			}
 
-			// set jpg quality and sizeModifier
-			if ( path.extname( key ).toLowerCase().match(/jpe?g/) ) {
-				sizeModifier = 2
+			// shorthand for retina scale low quality jpegs
+			if ( undefined !== args.retina && path.extname( key ).toLowerCase().match(/jpe?g/) ) {
+				scale = 2
 				image.quality(40)
 			}
 
+			// allow override of compression quality
+			if ( args.quality ) {
+				image.quality( Math.min( Math.max( Number( args.quality ), 0 ), 100 ) )
+			}
+
+			// allow override of scale
+			if ( args.scale ) {
+				scale = Number( args.scale )
+			}
+
+			// resize & crop
 			if ( args.resize ) {
-				image.resize.apply( image, args.resize.split(',').map( function( v ) { return Number( v ) * sizeModifier } ) )
+				image.resize.apply( image, args.resize.split(',').map( function( v ) { return Number( v ) * scale } ) )
 			} else if ( args.fit ) {
-				image.resize.apply( image, args.fit.split(',').map( function( v ) { return Number( v ) * sizeModifier } ) )
+				image.resize.apply( image, args.fit.split(',').map( function( v ) { return Number( v ) * scale } ) )
 				image.max()
 			} else if ( args.w || args.h ) {
-				image.resize( Number( args.w ), Number( args.h ) * sizeModifier )
+				image.resize( Number( args.w ) * scale, Number( args.h ) * scale )
 
 				if ( ! args.crop ) {
 					image.max()
 				}
 			}
 
+			// send image
 			image.toBuffer( function( err, _data, info ) {
 				if ( err ) {
 					return callback( err )
