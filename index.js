@@ -26,12 +26,6 @@ module.exports = function( region, bucket, key, args, callback ) {
 				image.png()
 			}
 
-			// shorthand for retina scale low quality jpegs
-			if ( undefined !== args.retina && path.extname( key ).toLowerCase().match(/jpe?g/) ) {
-				scale = 2
-				image.quality(40)
-			}
-
 			// allow override of compression quality
 			if ( args.quality ) {
 				image.quality( Math.min( Math.max( Number( args.quality ), 0 ), 100 ) )
