@@ -18,8 +18,7 @@ module.exports = function( region, bucket, key, args, callback ) {
 		}
 
 		try {
-			var image = sharp( data.Body ).withMetadata(),
-			    scale = 1
+			var image = sharp( data.Body ).withMetadata()
 
 			// convert gifs to pngs
 			if ( path.extname( key ).toLowerCase() === '.gif' ) {
@@ -31,19 +30,14 @@ module.exports = function( region, bucket, key, args, callback ) {
 				image.quality( Math.min( Math.max( Number( args.quality ), 0 ), 100 ) )
 			}
 
-			// allow override of scale
-			if ( args.scale ) {
-				scale = Number( args.scale )
-			}
-
 			// resize & crop
 			if ( args.resize ) {
-				image.resize.apply( image, args.resize.split(',').map( function( v ) { return Number( v ) * scale } ) )
+				image.resize.apply( image, args.resize.split(',').map( function( v ) { return Number( v ) } ) )
 			} else if ( args.fit ) {
-				image.resize.apply( image, args.fit.split(',').map( function( v ) { return Number( v ) * scale } ) )
+				image.resize.apply( image, args.fit.split(',').map( function( v ) { return Number( v ) } ) )
 				image.max()
 			} else if ( args.w || args.h ) {
-				image.resize( Number( args.w ) * scale, Number( args.h ) * scale )
+				image.resize( Number( args.w ), Number( args.h ) )
 
 				if ( ! args.crop ) {
 					image.max()
