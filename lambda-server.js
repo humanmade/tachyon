@@ -13,7 +13,7 @@ http.createServer( function( request, response ) {
 	var config = {
 		region: request.headers.region,
 		lambdaFunction : request.headers['lambda-function'],
-		lambdaRegion: request.headers['lambda-region'] ? request.headers['lambda-region'] : request.headers['lambda-region'],
+		lambdaRegion: request.headers['lambda-region'] ? request.headers['lambda-region'] : request.headers['region'],
 		bucket: request.headers.bucket
 	}
 
