@@ -39,6 +39,12 @@ module.exports.resizeBuffer = function( buffer, args, callback ) {
 				image.png()
 			}
 
+			// allow override of compression quality
+			if ( args.quality ) {
+				image.quality( Math.min( Math.max( Number( args.quality ), 0 ), 100 ) )
+			}
+
+			// resize & crop
 			if ( args.resize ) {
 				image.resize.apply( image, args.resize.split(',').map( function( v ) { return Number( v ) } ) )
 			} else if ( args.fit ) {
@@ -72,6 +78,7 @@ module.exports.resizeBuffer = function( buffer, args, callback ) {
 				} )
 			}
 
+			// send image
 			image.toBuffer( function( err, _data, info ) {
 				if ( err ) {
 					return callback( err )

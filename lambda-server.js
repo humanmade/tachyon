@@ -8,13 +8,19 @@ var http   = require("http"),
 	debug  = args.indexOf( '--debug' ) > -1,
 	aws = require('aws-sdk')
 
-var config = JSON.parse( fs.readFileSync( 'config.json' ) )
-
-var lambda = new aws.Lambda({
-	region: config.lambdaRegion
-})
-
 http.createServer( function( request, response ) {
+
+	var config = {
+		region: request.headers.region,
+		lambdaFunction : request.headers['lambda-function'],
+		lambdaRegion: request.headers['lambda-region'] ? request.headers['lambda-region'] : request.headers['region'],
+		bucket: request.headers.bucket
+	}
+
+	var lambda = new aws.Lambda({
+		region: config.lambdaRegion
+	})
+
 	var params = url.parse( request.url, true )
 
 	if ( debug ) {

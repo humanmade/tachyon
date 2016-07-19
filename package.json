@@ -1,6 +1,10 @@
 {
   "name": "node-tachyon",
   "version": "1.0.0",
+  "repository" : { 
+    "type" : "git",
+    "url" : "https://github.com/humanmade/node-tachyon.git"
+  },
   "description": "human made tachyon in node",
   "main": "index.js",
   "scripts": {
@@ -9,7 +13,7 @@
   "author": "Joe Hoyle",
   "license": "ISC",
   "dependencies": {
-    "sharp": "^0.12.2",
-    "aws-sdk": "^2.2.17"
+    "aws-sdk": "^2.2.17",
+    "sharp": "^0.15.0"
   }
 }
