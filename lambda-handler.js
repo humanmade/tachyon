@@ -1,11 +1,11 @@
 var tachyon = require( './index' )
 
 exports.handler = function( event, context ) {
-	var key = event.key
-	var bucket = event.bucket
-	var args = event.args
 	var region = event.region
-	tachyon( region, bucket, key, args, function( err, data, info ) {
+	var bucket = event.bucket
+	var key = event.key
+	var args = event.args
+	tachyon( { region: region, bucket: bucket }, key, args, function( err, data, info ) {
 		if ( err ) {
 			context.fail( err )
 		} else {
