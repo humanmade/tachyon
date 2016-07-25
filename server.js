@@ -32,7 +32,7 @@ http.createServer( function( request, response ) {
 		return response.end()
 	}
 
-	tachyon( config.region, config.bucket, decodeURI( params.pathname.substr(1) ), params.query, function( err, data, info ) {
+	tachyon( config, decodeURI( params.pathname.substr(1) ), params.query, function( err, data, info ) {
 
 		if ( err ) {
 			if ( debug ) {
