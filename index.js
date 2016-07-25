@@ -29,7 +29,7 @@ module.exports.resizeBuffer = function( buffer, args, callback ) {
 	try {
 		var image = sharp( buffer ).withMetadata()
 
-		image.metadata( function( err, metadata ) {
+		return image.metadata( function( err, metadata ) {
 			if ( err ) {
 				return callback( err )
 			}
@@ -79,7 +79,7 @@ module.exports.resizeBuffer = function( buffer, args, callback ) {
 			}
 
 			// send image
-			image.toBuffer( function( err, _data, info ) {
+			return image.toBuffer( function( err, _data, info ) {
 				if ( err ) {
 					return callback( err )
 				}

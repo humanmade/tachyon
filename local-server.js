@@ -24,7 +24,7 @@ http.createServer( function( request, response ) {
 		return response.end()
 	}
 
-	tachyon.resizeBuffer( imageData, params.query, function( err, data, info ) {
+	return tachyon.resizeBuffer( imageData, params.query, function( err, data, info ) {
 
 		if ( err ) {
 			if ( debug ) {
@@ -39,7 +39,7 @@ http.createServer( function( request, response ) {
 			'Content-Length': info.size
 		})
 		response.write( data )
-		response.end()
+		return response.end()
 	} );
 }).listen( parseInt( port, 10 ) )
 

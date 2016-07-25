@@ -23,7 +23,7 @@ http.createServer( function( request, response ) {
 		return response.end()
 	}
 
-	tachyon.s3( config.region, config.bucket, decodeURI( params.pathname.substr(1) ), params.query, function( err, data, info ) {
+	return tachyon.s3( config.region, config.bucket, decodeURI( params.pathname.substr(1) ), params.query, function( err, data, info ) {
 
 		if ( err ) {
 			if ( debug ) {
@@ -41,7 +41,7 @@ http.createServer( function( request, response ) {
 			'Cache-Control': 'public, max-age=31557600'
 		})
 		response.write( data )
-		response.end()
+		return response.end()
 	} );
 }).listen( parseInt( port, 10 ) )
 
