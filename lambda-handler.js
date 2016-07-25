@@ -5,7 +5,7 @@ exports.handler = function( event, context ) {
 	var bucket = event.bucket
 	var key = event.key
 	var args = event.args
-	tachyon( { region: region, bucket: bucket }, key, args, function( err, data, info ) {
+	return tachyon.s3( { region: region, bucket: bucket }, key, args, function( err, data, info ) {
 		if ( err ) {
 			context.fail( err )
 		} else {
