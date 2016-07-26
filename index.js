@@ -6,14 +6,21 @@ var regions = {}
 
 module.exports = {}
 
-module.exports.s3 = function( region, bucket, key, args, callback ) {
-	AWS.config.region = region
-	if ( ! regions[ region ] ) {
-		regions[ region ] = new AWS.S3({region: region})
-	}
-	var s3 = regions[ region ]
+module.exports.s3 = function( config, key, args, callback ) {
+	AWS.config.region = config.region
 
-	var file = s3.makeUnauthenticatedRequest( 'getObject', { Bucket: bucket, Key: key }, function( err, data ) {
+	var s3config = {}
+	if ( config.endpoint ) {
+		s3config.endpoint = config.endpoint
+		s3config.s3ForcePathStyle = true
+	}
+
+	if ( ! regions[ config.region ] ) {
+		regions[ config.region ] = new AWS.S3(Object.assign({region: config.region }, s3config))
+	}
+	var s3 = regions[ config.region ]
+
+	return s3.makeUnauthenticatedRequest( 'getObject', { Bucket: config.bucket, Key: key }, function( err, data ) {
 
 		if ( err ) {
 			return callback( err )
@@ -21,7 +28,7 @@ module.exports.s3 = function( region, bucket, key, args, callback ) {
 
 		args.key = key
 
-		module.exports.resizeBuffer( data.Body, args, callback )
+		return module.exports.resizeBuffer( data.Body, args, callback )
 	} )
 }
 
