@@ -18,7 +18,7 @@ module.exports.s3 = function( config, key, args, callback ) {
 	}
 	var s3 = regions[ config.region ]
 
-	var file = s3.makeUnauthenticatedRequest( 'getObject', { Bucket: config.bucket, Key: key }, function( err, data ) {
+	return s3.makeUnauthenticatedRequest( 'getObject', { Bucket: config.bucket, Key: key }, function( err, data ) {
 
 		if ( err ) {
 			return callback( err )
@@ -72,9 +72,11 @@ module.exports.resizeBuffer = function( buffer, args, callback ) {
 
 			// resize
 			if ( args.resize ) {
-				image.resize.apply( image, args.resize.split(',').map( function( v ) { return Number( v ) } ) )
+				args.resize = typeof args.resize === 'string' ? args.resize.split(',') : args.resize
+				image.resize.apply( image, args.resize.map( function( v ) { return v ? Number( v ) : null } ) )
 			} else if ( args.fit ) {
-				image.resize.apply( image, args.fit.split(',').map( function( v ) { return Number( v ) } ) )
+				args.fit = typeof args.fit === 'string' ? args.fit.split( ',' ) : args.fit
+				image.resize.apply( image, args.fit.map( function( v ) { return v ? Number( v ) : null } ) )
 				image.max()
 			} else if ( args.w || args.h ) {
 				image.resize( args.w ? Number( args.w ) : null, args.h ? Number( args.h ) : null )
