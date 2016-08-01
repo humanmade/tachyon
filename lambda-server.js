@@ -37,7 +37,7 @@ http.createServer( function( request, response ) {
 		return response.end()
 	}
 
-	lambda.invoke({
+	return lambda.invoke({
 		FunctionName: config.lambdaFunction,
 		Payload: JSON.stringify( {
 			bucket: config.bucket,
@@ -76,7 +76,7 @@ http.createServer( function( request, response ) {
 		})
 
 		response.write( new Buffer( data.data, 'base64' ) )
-		response.end()
+		return response.end()
 	})
 
 }).listen( parseInt( port, 10 ) )
