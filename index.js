@@ -41,6 +41,9 @@ module.exports.resizeBuffer = function( buffer, args, callback ) {
 				return callback( err )
 			}
 
+			// auto rotate based on orientation exif data
+			image.rotate()
+
 			// convert gifs to pngs
 			if( path.extname( args.key ).toLowerCase() === '.gif' ) {
 				image.png()
