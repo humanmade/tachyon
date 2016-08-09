@@ -7,7 +7,16 @@ var http   = require("http"),
 	port   = Number( args[0] ) ? args[0] : 8080,
 	debug  = args.indexOf( '--debug' ) > -1
 
-var config = JSON.parse( fs.readFileSync( 'config.json' ) )
+var config = {}
+if ( process.env.AWS_REGION && process.env.AWS_S3_BUCKET ) {
+	config = {
+		region: process.env.AWS_REGION,
+		bucket: process.env.AWS_S3_BUCKET,
+		endpoint: process.env.AWS_S3_ENDPOINT,
+	}
+} else if ( fs.existsSync( 'config.json' ) ) {
+	config = JSON.parse( fs.readFileSync( 'config.json' ) )
+}
 
 http.createServer( function( request, response ) {
 	var params = url.parse( request.url, true )

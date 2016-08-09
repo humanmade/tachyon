@@ -16,7 +16,7 @@ module.exports.s3 = function( config, key, args, callback ) {
 	}
 
 	if ( ! regions[ config.region ] ) {
-		regions[ config.region ] = new AWS.S3(Object.assign({region: config.region }, s3config))
+		regions[ config.region ] = new AWS.S3( Object.assign( { region: config.region }, s3config ) )
 	}
 	var s3 = regions[ config.region ]
 
@@ -74,12 +74,14 @@ module.exports.resizeBuffer = function( buffer, args, callback ) {
 
 			// resize
 			if ( args.resize ) {
-				image.resize.apply( image, args.resize.split(',').map( function( v ) { return Number( v ) } ) )
+				args.resize = typeof args.resize === 'string' ? args.resize.split(',') : args.resize
+				image.resize.apply( image, args.resize.map( function( v ) { return Number( v ) || null } ) )
 			} else if ( args.fit ) {
-				image.resize.apply( image, args.fit.split(',').map( function( v ) { return Number( v ) } ) )
+				args.fit = typeof args.fit === 'string' ? args.fit.split( ',' ) : args.fit
+				image.resize.apply( image, args.fit.map( function( v ) { return Number( v ) || null } ) )
 				image.max()
 			} else if ( args.w || args.h ) {
-				image.resize( args.w ? Number( args.w ) : null, args.h ? Number( args.h ) : null )
+				image.resize( Number( args.w ) || null, Number( args.h ) || null )
 				if ( ! args.crop ) {
 					image.max()
 				}
