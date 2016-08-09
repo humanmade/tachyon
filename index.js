@@ -4,6 +4,8 @@ var sharp = require( 'sharp' ),
 
 var regions = {}
 
+module.exports = {}
+
 module.exports.s3 = function( config, key, args, callback ) {
 	AWS.config.region = config.region
 
