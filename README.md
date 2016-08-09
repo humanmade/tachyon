@@ -19,6 +19,12 @@ git clone git@github.com:humanmade/node-tachyon.git
 npm install
 ```
 
+## Installation in Production
+
+As Tachyon is meant for production use on AWS, we have a fully fledged CloudFormation template that is the easiest way to get a production ready instance of Tachyon running in production.
+
+The `cloudformation-template.json` in the root should be used to instantiate a new Stack in CloudFormation. You'll need to build and zip the Lambda function (see below) and place the zip on S3. Pass this ZIP location in the CloudFormation template parameters.
+
 ## Configuration
 
 Populate the `config.json` with the AWS region and bucket name you want to us. In the following format:
