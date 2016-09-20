@@ -44,6 +44,10 @@
 			"Type" : "String",
 			"Description" : "S3 Bucket for storing Access Logs",
 			"MinLength" : 1
+		},
+		"UploadsS3Bucket" : {
+			"Type" : "String",
+			"Description" : "The S3 Bucket to resize images from."
 		}
 	},
 	"Conditions" : {
@@ -179,7 +183,21 @@
 								"OriginProtocolPolicy" : "http-only"
 							},
 							"DomainName" : { "Fn::GetAtt" : [ "ELBInstance", "DNSName" ] },
-							"Id" : { "Ref" : "AWS::StackName" }
+							"Id" : { "Ref" : "AWS::StackName" },
+							"OriginCustomHeaders" : [
+								{
+									"HeaderName" : "bucket",
+									"HeaderValue" : { "Ref" : "UploadsS3Bucket" }
+								},
+								{
+									"HeaderName" : "lambda-function",
+									"HeaderValue" : { "Ref" : "LambdaFunction" }
+								},
+								{
+									"HeaderName" : "region",
+									"HeaderValue" : { "Ref" : "AWS::Region" }
+								}
+							]
 						}
 					],
 					"CustomErrorResponses": [
