@@ -1,6 +1,7 @@
 var sharp = require( 'sharp' ),
 	AWS = require( 'aws-sdk' ),
-	path = require( 'path' )
+	path = require( 'path' ),
+	isAnimated = require( 'animated-gif-detector' )
 
 var regions = {}
 
@@ -46,7 +47,13 @@ module.exports.resizeBuffer = function( buffer, args, callback ) {
 
 			// convert gifs to pngs
 			if( path.extname( args.key ).toLowerCase() === '.gif' ) {
-				image.png()
+
+				if ( isAnimated( buffer ) ) {
+					return callback( null, buffer, { size: buffer.length, format : 'gif' } )
+				} else {
+					image.png()
+				}
+
 			}
 
 			// allow override of compression quality
