@@ -1,6 +1,7 @@
 var sharp = require( 'sharp' ),
 	AWS = require( 'aws-sdk' ),
-	path = require( 'path' )
+	path = require( 'path' ),
+	isAnimated = require( 'animated-gif-detector' )
 
 var regions = {}
 
@@ -44,8 +45,13 @@ module.exports.resizeBuffer = function( buffer, args, callback ) {
 			// auto rotate based on orientation exif data
 			image.rotate()
 
-			// convert gifs to pngs
-			if( path.extname( args.key ).toLowerCase() === '.gif' ) {
+			// convert gifs to pngs unless animated
+			if ( path.extname( args.key ).toLowerCase() === '.gif' ) {
+
+				if ( isAnimated( buffer ) ) {
+					return callback( null, buffer, { size: buffer.length, format : 'gif' } )
+				}
+
 				image.png()
 			}
 
