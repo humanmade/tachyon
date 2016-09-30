@@ -1,7 +1,7 @@
 {
   "name": "node-tachyon",
   "version": "1.0.0",
-  "repository" : { 
+  "repository" : {
     "type" : "git",
     "url" : "https://github.com/humanmade/node-tachyon.git"
   },
@@ -15,6 +15,6 @@
   "dependencies": {
     "animated-gif-detector": "^1.2.0",
     "aws-sdk": "^2.2.17",
-    "sharp": "^0.15.0"
+    "sharp": "^0.16.0"
   }
 }
