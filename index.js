@@ -49,7 +49,7 @@ module.exports.resizeBuffer = function( buffer, args, callback ) {
 			if( path.extname( args.key ).toLowerCase() === '.gif' ) {
 
 				if ( isAnimated( buffer ) ) {
-					return callback( { errorType: 'fallback-to-original', errorMessage: 'Unable to manipulate this file type.' } )
+					return callback( new Error( 'fallback-to-original' ) )
 				} else {
 					image.png()
 				}

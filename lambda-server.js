@@ -55,7 +55,7 @@ http.createServer( function( request, response ) {
 		if ( data.errorMessage ) {
 			// if the response from Lambda is an error which says "fallback-to-original"
 			// we can stream the file from S3 directly to the client.
-			if ( data.errorType === 'fallback-to-original' ) {
+			if ( data.errorMessage === 'fallback-to-original' ) {
 				var s3= new aws.S3( { region: config.region } )
 				s3.makeUnauthenticatedRequest( 'getObject', { Bucket: config.bucket, Key: key }, function( err, data ) {
 					if ( err ) {
