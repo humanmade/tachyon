@@ -17,11 +17,9 @@ http.createServer( function( request, response ) {
 		bucket: request.headers.bucket
 	}
 
-	var lambda = new aws.Lambda({
-		region: config.lambdaRegion
-	})
-
+	var lambda = new aws.Lambda({ region: config.lambdaRegion })
 	var params = url.parse( request.url, true )
+	var key = decodeURI( params.pathname.substr(1) )
 
 	if ( debug ) {
 		console.log( Date(), request.url )
