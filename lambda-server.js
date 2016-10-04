@@ -39,24 +39,48 @@ http.createServer( function( request, response ) {
 		FunctionName: config.lambdaFunction,
 		Payload: JSON.stringify( {
 			bucket: config.bucket,
-			key: decodeURI( params.pathname.substr(1) ),
+			key: key,
 			args: params.query,
 			region: config.region
 		} )
 	}, function( err, data ) {
 
 		// the call may have been a success, but it returned error data
-		if ( data ) {
-			data = JSON.parse( data.Payload )
-
-			if ( data.errorMessage ) {
-				err = {
-					message: data.errorMessage,
-					statusCode: data.errorType === 'NoSuchKey' ? 404 : 500
-				}
-			}
+		if ( err ) {
+			return sendResponse( err, data )
 		}
 
+		data = JSON.parse( data.Payload )
+
+		if ( data.errorMessage ) {
+			// if the response from Lambda is an error which says "fallback-to-original"
+			// we can stream the file from S3 directly to the client.
+			if ( data.errorType === 'fallback-to-original' ) {
+				var s3= new aws.S3( { region: config.region } )
+				s3.makeUnauthenticatedRequest( 'getObject', { Bucket: config.bucket, Key: key }, function( err, data ) {
+					if ( err ) {
+						return sendResponse( err )
+					}
+					return sendResponse( null, {
+						format: data.ContentType.replace( /^image\//, '' ),
+						size: data.ContentLength,
+						buffer: data.Body,
+					} )
+				} )
+			} else {
+				return sendResponse( {
+					message: 'Error returned by lambda function: ' + data.errorMessage + ' (' + data.errorType + ')',
+					statusCode: data.errorType === 'NoSuchKey' ? 404 : 500
+				} )
+			}
+		} else {
+			data.buffer = new Buffer( data.data, 'base64' )
+			delete data.data
+			sendResponse( err, data )
+		}
+	})
+
+	function sendResponse( err, data ) {
 		if ( err ) {
 			if ( debug ) {
 				console.error( Date(), err )
@@ -73,9 +97,9 @@ http.createServer( function( request, response ) {
 			'Cache-Control': 'public, max-age=31557600'
 		})
 
-		response.write( new Buffer( data.data, 'base64' ) )
+		response.write( data.buffer )
 		return response.end()
-	})
+	}
 
 }).listen( parseInt( port, 10 ) )
 

@@ -46,13 +46,14 @@ module.exports.resizeBuffer = function( buffer, args, callback ) {
 			image.rotate()
 
 			// convert gifs to pngs unless animated
-			if ( path.extname( args.key ).toLowerCase() === '.gif' ) {
+			if( path.extname( args.key ).toLowerCase() === '.gif' ) {
 
 				if ( isAnimated( buffer ) ) {
-					return callback( null, buffer, { size: buffer.length, format : 'gif' } )
+					return callback( { errorType: 'fallback-to-original', errorMessage: 'Unable to manipulate this file type.' } )
+				} else {
+					image.png()
 				}
 
-				image.png()
 			}
 
 			// allow override of compression quality
