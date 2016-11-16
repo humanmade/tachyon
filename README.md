@@ -102,8 +102,11 @@ aws lambda update-function-code --function-name node-tachyon-test --zip-file fil
 If you want to test Tachyon using your local uploads directory, with the WordPress plugin:
 
 ```bash
+git clone git@github.com:humanmade/node-tachyon.git ~/node-tachyon
+cd ~/node-tachyon
+npm install // See instructions above for other installations, e.g. OS X
 cd /mysite/wp-content/
-node ~/node-tachyon-path/local-server.js --debug
+node ~/node-tachyon/local-server.js --debug
 ```
 
 You should now be able to view images via `http://localhost:8080/uploads/2016/10/test.jpg` etc. Also, you should be able to apply resize params such as `http://localhost:8080/uploads/2016/10/test.jpg?w=100`.
