@@ -96,3 +96,22 @@ Now, we just need to upload it to the Lambda function:
 ```
 aws lambda update-function-code --function-name node-tachyon-test --zip-file fileb://path/to/zip
 ```
+
+### Local testing without S3
+
+If you want to test Tachyon using your local uploads directory, with the WordPress plugin:
+
+```bash
+cd /mysite/wp-content/
+node ~/node-tachyon-path/local-server.js --debug
+```
+
+You should now be able to view images via `http://localhost:8080/uploads/2016/10/test.jpg` etc. Also, you should be able to apply resize params such as `http://localhost:8080/uploads/2016/10/test.jpg?w=100`.
+
+Now we need to provide the details to the WordPress Tachyon Plugin, in your site's `wp-config.php` add the following configuration:
+
+```php
+define( 'TACHYON_URL', 'http://localhost:8080/uploads' );
+```
+
+Ofcourse, make sure you have the Tachyon WordPress Plugin activated.

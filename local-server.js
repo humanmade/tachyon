@@ -7,8 +7,6 @@ var http   = require("http"),
 	port   = Number( args[0] ) ? args[0] : 8080,
 	debug  = args.indexOf( '--debug' ) > -1
 
-var config = JSON.parse( fs.readFileSync( 'config.json' ) )
-
 http.createServer( function( request, response ) {
 	var params = url.parse( request.url, true )
 
@@ -23,6 +21,8 @@ http.createServer( function( request, response ) {
 		response.write( err.message )
 		return response.end()
 	}
+
+	params.query.key = decodeURI( params.pathname.substr(1) )
 
 	return tachyon.resizeBuffer( imageData, params.query, function( err, data, info ) {
 
