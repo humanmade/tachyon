@@ -237,7 +237,8 @@
 							"MinimumProtocolVersion" : "TLSv1"
 						},
 						{ "Ref" : "AWS::NoValue" }
-					] }
+					] },
+					"HttpVersion" : "http2"
 				}
 			}
 		},
