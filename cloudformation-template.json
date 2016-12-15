@@ -1,5 +1,5 @@
 {
-	"Description": "Human Made Tachyon Image Server with Lambda",
+	"Description": "Human Made Tachyon Image Server with Lambda v1.0",
 	"Parameters": {
 		"KeyPair": {
 			"Type": "AWS::EC2::KeyPair::KeyName",
@@ -19,9 +19,9 @@
 			"Description" : "AMI ID of the tachyon server (e.g ami-f27048ef)",
 			"Default" : "ami-f27048ef"
 		},
-		"SSLIAMCertificateID" : {
+		"SSLACMCertificateARN" : {
 			"Type" : "String",
-			"Description" : "SSL Certificate ID, must be added to the AWS account already. (optional)"
+			"Description" : "SSL ACM Certificate ARN, either specify this or SSLIAMCertificateID."
 		},
 		"VPC" : {
 			"Type" : "AWS::EC2::VPC::Id",
@@ -49,9 +49,6 @@
 			"Type" : "String",
 			"Description" : "The S3 Bucket to resize images from."
 		}
-	},
-	"Conditions" : {
-		"UseSSLCertificate" : {"Fn::Not" : [{"Fn::Equals" : [{"Ref" : "SSLIAMCertificateID"}, ""]} ] }
 	},
 	"Resources" : {
 		"EC2SecurityGroup" : {
@@ -230,14 +227,11 @@
 							"ErrorCode" : 504
 						}
 					],
-					"ViewerCertificate" : { "Fn::If" : [ "UseSSLCertificate",
-						{
-							"IamCertificateId" : { "Ref" : "SSLIAMCertificateID" },
-							"SslSupportMethod" : "sni-only",
-							"MinimumProtocolVersion" : "TLSv1"
-						},
-						{ "Ref" : "AWS::NoValue" }
-					] },
+					"ViewerCertificate" : {
+						"AcmCertificateArn" : { "Ref" : "SSLACMCertificateARN" },
+						"SslSupportMethod" : "sni-only",
+						"MinimumProtocolVersion" : "TLSv1"
+					},
 					"HttpVersion" : "http2"
 				}
 			}
