@@ -3,11 +3,13 @@
 	"Parameters": {
 		"KeyPair": {
 			"Type": "AWS::EC2::KeyPair::KeyName",
-			"Description": "Keypair Name"
+			"Description": "Keypair Name",
+			"MinLength" : 1
 		},
 		"NodeTachyonBucket" : {
 			"Type" : "String",
-			"Description" : "The S3 Bucket containing the Lambda code ZIP"
+			"Description" : "The S3 Bucket containing the Lambda code ZIP",
+			"MinLength" : 1
 		},
 		"NodeTachyonLambdaPath" : {
 			"Type" : "String",
@@ -47,7 +49,8 @@
 		},
 		"UploadsS3Bucket" : {
 			"Type" : "String",
-			"Description" : "The S3 Bucket to resize images from."
+			"Description" : "The S3 Bucket to resize images from.",
+			"MinLength" : 1
 		}
 	},
 	"Resources" : {
@@ -180,12 +183,7 @@
 								"OriginProtocolPolicy" : "http-only"
 							},
 							"DomainName" : { "Fn::GetAtt" : [ "ELBInstance", "DNSName" ] },
-							"Id" : { "Ref" : "AWS::StackName" },
 							"OriginCustomHeaders" : [
-								{
-									"HeaderName" : "bucket",
-									"HeaderValue" : { "Ref" : "UploadsS3Bucket" }
-								},
 								{
 									"HeaderName" : "lambda-function",
 									"HeaderValue" : { "Ref" : "LambdaFunction" }
@@ -194,7 +192,8 @@
 									"HeaderName" : "region",
 									"HeaderValue" : { "Ref" : "AWS::Region" }
 								}
-							]
+							],
+							"Id" : { "Ref" : "AWS::StackName" }
 						}
 					],
 					"CustomErrorResponses": [
@@ -340,8 +339,14 @@
 				},
 				"Runtime": "nodejs4.3",
 				"Timeout": "60",
-				"MemorySize": 256,
-				"Handler": "lambda-handler.handler"
+				"MemorySize": 512,
+				"Handler": "lambda-handler.handler",
+				"Environment": {
+					"Variables": {
+						"S3_BUCKET" : { "Ref" : "UploadsS3Bucket" },
+						"S3_REGION" : { "Ref" : "AWS::Region" }
+					}
+				}
 			}
 		}
 	},
