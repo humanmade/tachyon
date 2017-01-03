@@ -13,8 +13,7 @@ http.createServer( function( request, response ) {
 	var config = {
 		region: request.headers.region,
 		lambdaFunction : request.headers['lambda-function'],
-		lambdaRegion: request.headers['lambda-region'] ? request.headers['lambda-region'] : request.headers['region'],
-		bucket: request.headers.bucket
+		lambdaRegion: request.headers['lambda-region'] ? request.headers['lambda-region'] : request.headers['region']
 	}
 
 	var lambda = new aws.Lambda({ region: config.lambdaRegion })
@@ -38,10 +37,8 @@ http.createServer( function( request, response ) {
 	return lambda.invoke({
 		FunctionName: config.lambdaFunction,
 		Payload: JSON.stringify( {
-			bucket: config.bucket,
 			key: key,
-			args: params.query,
-			region: config.region
+			args: params.query
 		} )
 	}, function( err, data ) {
 
