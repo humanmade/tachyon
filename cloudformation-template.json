@@ -1,10 +1,6 @@
 {
 	"Description": "Human Made Tachyon Image Server with Lambda",
 	"Parameters": {
-		"KeyPair": {
-			"Type": "AWS::EC2::KeyPair::KeyName",
-			"Description": "Keypair Name"
-		},
 		"NodeTachyonBucket" : {
 			"Type" : "String",
 			"Description" : "The S3 Bucket containing the Lambda code ZIP"
@@ -14,31 +10,13 @@
 			"Description" : "The path to the Lambda code ZIP",
 			"Default" : "lambda/node-tachyon/lambda-nodejs4.3.zip"
 		},
-		"AMI" : {
-			"Type" : "AWS::EC2::Image::Id",
-			"Description" : "AMI ID of the tachyon server (e.g ami-f27048ef)",
-			"Default" : "ami-f27048ef"
-		},
 		"SSLIAMCertificateID" : {
 			"Type" : "String",
 			"Description" : "SSL Certificate ID, must be added to the AWS account already. (optional)"
 		},
-		"VPC" : {
-			"Type" : "AWS::EC2::VPC::Id",
-			"Description" : "ID of the VPC"
-		},
 		"Domains" : {
 			"Type" : "CommaDelimitedList",
 			"Description" : "Domain Name(s)"
-		},
-		"EC2InstanceType" : {
-			"Type" : "String",
-			"Description" : "Instance size. E.g. m3.medium",
-			"Default" : "m3.medium"
-		},
-		"Subnets" : {
-			"Type" : "List<AWS::EC2::Subnet::Id>",
-			"Description" : "Subnets to launch instances into (must be in the VPC)"
 		},
 		"AccessLogsBucket" : {
 			"Type" : "String",
@@ -54,234 +32,53 @@
 		"UseSSLCertificate" : {"Fn::Not" : [{"Fn::Equals" : [{"Ref" : "SSLIAMCertificateID"}, ""]} ] }
 	},
 	"Resources" : {
-		"EC2SecurityGroup" : {
-			"Type": "AWS::EC2::SecurityGroup",
-			"Properties" : {
-				"GroupDescription": "Web servers security group",
-				"VpcId" : { "Ref" : "VPC" },
-				"SecurityGroupIngress" : [
-					{
-						"IpProtocol" : "tcp",
-						"FromPort" : "80",
-						"ToPort" : "80",
-						"SourceSecurityGroupId" : { "Ref" : "LoadBalancerSecurityGroup" }
-					}
-				]
+		"ApiGatewayRestApi": {
+			"Type": "AWS::ApiGateway::RestApi",
+			"Properties": {
+				"Name" : "Tachyon"
 			}
 		},
-		"LoadBalancerSecurityGroup" : {
-			"Type" : "AWS::EC2::SecurityGroup",
-			"Properties" : {
-				"GroupDescription" : "Enable HTTP access on port 80",
-				"VpcId" : { "Ref" : "VPC" },
-				"SecurityGroupIngress" : { "IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "CidrIp" : "0.0.0.0/0" },
-				"SecurityGroupEgress" : [ { "IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "CidrIp" : "0.0.0.0/0"} ]
+		"ApiGatewayMethod": {
+			"Type": "AWS::ApiGateway::Method",
+			"Properties": {
+				"RestApiId": {"Ref":"ApiGatewayRestApi"},
+				"ResourceId": {"Ref":"ApiGatewayResource"},
+				"HttpMethod": "GET",
+				"AuthorizationType": "NONE",
+				"Integration": {
+					"Type": "AWS_PROXY",
+					"IntegrationHttpMethod": "POST",
+					"Uri": { "Fn::Sub":"arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaFunction.Arn}/invocations"}
+				}
 			}
 		},
-		"ELBInstance" : {
-			"Type" : "AWS::ElasticLoadBalancing::LoadBalancer",
-			"Properties" : {
-				"Listeners" : [
-					{
-						"InstancePort" : 80,
-						"LoadBalancerPort" : 80,
-						"Protocol" : "HTTP"
-					}
-				],
-				"SecurityGroups" : [ { "Ref" : "LoadBalancerSecurityGroup" } ],
-				"Subnets" : { "Ref" : "Subnets" },
-				"AccessLoggingPolicy": {
-					"S3BucketName": { "Ref" : "AccessLogsBucket" },
-					"S3BucketPrefix": "",
-					"Enabled": "true",
-					"EmitInterval" : "60"
-				},
-				"HealthCheck" : {
-					"HealthyThreshold" : "5",
-					"Interval" : "30",
-					"Target" : "HTTP:80/healthcheck.php",
-					"Timeout" : "5",
-					"UnhealthyThreshold" : "2"
-				},
-				"CrossZone" : true
+		"ApiGatewayResource": {
+			"Type": "AWS::ApiGateway::Resource",
+			"Properties": {
+				"RestApiId": { "Ref":"ApiGatewayRestApi"},
+				"ParentId": { "Fn::GetAtt" : [
+					"ApiGatewayRestApi",
+					"RootResourceId"
+				]},
+				"PathPart": "{proxy+}"
 			}
 		},
-		"Ec2AutoScalingGroup" : {
-			"Type" : "AWS::AutoScaling::AutoScalingGroup",
-			"Properties" : {
-				"LaunchConfigurationName" : { "Ref" : "Ec2AutoScalingLaunchConfig" },
-				"MinSize" : 2,
-				"MaxSize" : 4,
-				"LoadBalancerNames" : [ { "Ref" : "ELBInstance" } ],
-				"HealthCheckGracePeriod" : 120,
-				"HealthCheckType" : "ELB",
-				"VPCZoneIdentifier" : { "Ref" : "Subnets" },
-				"Tags": [
-					{ "Key" : "Name", "Value": { "Ref" : "AWS::StackName" }, "PropagateAtLaunch" : "true" },
-					{ "Key" : "hmn:role", "Value": "photonserver", "PropagateAtLaunch" : "true" }
-				]
+		"ApiGatewayDeployment": {
+			"Type": "AWS::ApiGateway::Deployment",
+			"Properties": {
+				"RestApiId": { "Ref": "ApiGatewayRestApi" },
+				"Description": "Production",
+				"StageName": "Prod"
 			},
-			"UpdatePolicy" : {
-				"AutoScalingRollingUpdate" : {
-					"MinInstancesInService" : "1",
-					"MaxBatchSize" : "1",
-					"PauseTime" : "PT1M"
-				}
-			}
+			"DependsOn":"ApiGatewayMethod"
 		},
-		"Ec2AutoScalingLaunchConfig" : {
-			"Type" : "AWS::AutoScaling::LaunchConfiguration",
-			"Properties" : {
-				"InstanceType": { "Ref" : "EC2InstanceType" },
-				"KeyName": { "Ref": "KeyPair" },
-				"AssociatePublicIpAddress" : "true",
-				"SecurityGroups": [ { "Ref": "EC2SecurityGroup" } ],
-				"ImageId": { "Ref" : "AMI" },
-				"IamInstanceProfile": { "Ref" : "Ec2InstanceProfile" },
-				"UserData" : { "Fn::Base64" : { "Fn::Join" : ["\n",[
-					"#cloud-config",
-					"packages:",
-					"  - git-core",
-					"  - build-essential",
-					"runcmd:",
-					"  - curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -",
-					"  - apt-get install -y nodejs",
-					"  - apt-get install -y npm",
-					"  - npm install -g pm2",
-					"  - mkdir /srv/www",
-					"  - git clone https://github.com/humanmade/node-tachyon.git /srv/www/webroot",
-					"  - cd /srv/www/webroot ; npm install",
-					"  - export HOME=/root ; pm2 -n tachyon start /srv/www/webroot/lambda-server.js -- 80 --debug"
-				] ] } }
-			}
-		},
-		"CloudFrontDistribution" : {
-			"Type" : "AWS::CloudFront::Distribution",
-			"Properties" : {
-				"DistributionConfig" : {
-					"Aliases": { "Ref" : "Domains" },
-					"DefaultCacheBehavior": {
-						"AllowedMethods" : [ "HEAD", "GET" ],
-						"CachedMethods" : [ "HEAD", "GET" ],
-						"ForwardedValues" : {
-							"Cookies" : {
-								"Forward" : "none"
-							},
-							"Headers" : [],
-							"QueryString" : "true"
-						},
-						"MinTTL" : "0",
-						"DefaultTTL":"0",
-						"MaxTTL":"63115200",
-						"TargetOriginId" : { "Ref" : "AWS::StackName" },
-						"ViewerProtocolPolicy" : "allow-all"
-					},
-					"Enabled" : true,
-					"Origins" : [
-						{
-							"CustomOriginConfig" : {
-								"OriginProtocolPolicy" : "http-only"
-							},
-							"DomainName" : { "Fn::GetAtt" : [ "ELBInstance", "DNSName" ] },
-							"Id" : { "Ref" : "AWS::StackName" },
-							"OriginCustomHeaders" : [
-								{
-									"HeaderName" : "bucket",
-									"HeaderValue" : { "Ref" : "UploadsS3Bucket" }
-								},
-								{
-									"HeaderName" : "lambda-function",
-									"HeaderValue" : { "Ref" : "LambdaFunction" }
-								},
-								{
-									"HeaderName" : "region",
-									"HeaderValue" : { "Ref" : "AWS::Region" }
-								}
-							]
-						}
-					],
-					"CustomErrorResponses": [
-						{
-							"ErrorCachingMinTTL" : 10,
-							"ErrorCode" : 400
-						},
-						{
-							"ErrorCachingMinTTL" : 300,
-							"ErrorCode" : 404
-						},
-						{
-							"ErrorCachingMinTTL" : 10,
-							"ErrorCode" : 500
-						},
-						{
-							"ErrorCachingMinTTL" : 10,
-							"ErrorCode" : 501
-						},
-						{
-							"ErrorCachingMinTTL" : 10,
-							"ErrorCode" : 502
-						},
-						{
-							"ErrorCachingMinTTL" : 10,
-							"ErrorCode" : 503
-						},
-						{
-							"ErrorCachingMinTTL" : 10,
-							"ErrorCode" : 504
-						}
-					],
-					"ViewerCertificate" : { "Fn::If" : [ "UseSSLCertificate",
-						{
-							"IamCertificateId" : { "Ref" : "SSLIAMCertificateID" },
-							"SslSupportMethod" : "sni-only",
-							"MinimumProtocolVersion" : "TLSv1"
-						},
-						{ "Ref" : "AWS::NoValue" }
-					] }
-				}
-			}
-		},
-		"Ec2InstanceProfile": {
-			"Type": "AWS::IAM::InstanceProfile",
+		"LambdaInvokePermission": {
+			"Type": "AWS::Lambda::Permission",
 			"Properties": {
-				"Path": "/",
-				"Roles": [ {
-					"Ref": "Ec2IstanceIAMRole"
-				} ]
-			}
-		},
-		"Ec2IstanceIAMRole": {
-			"Type": "AWS::IAM::Role",
-			"Properties": {
-				"AssumeRolePolicyDocument": {
-					"Version" : "2012-10-17",
-					"Statement": [ {
-						"Effect": "Allow",
-						"Principal": {
-							"Service": [ "ec2.amazonaws.com" ]
-						},
-						"Action": [ "sts:AssumeRole" ]
-					} ]
-				},
-				"Path": "/",
-				"Policies": [ {
-					"PolicyName": "node-tachyon-lambda",
-					"PolicyDocument" : {
-						"Version": "2012-10-17",
-						"Statement": [
-							{
-								"Sid": "Stmt1456188848000",
-								"Effect": "Allow",
-								"Action": [
-									"lambda:InvokeFunction"
-								],
-								"Resource": [
-									{ "Fn::GetAtt" : [ "LambdaFunction", "Arn"] }
-								]
-							}
-						]
-					}
-				} ]
+				"FunctionName" : { "Fn::GetAtt" : ["LambdaFunction", "Arn"] },
+				"Action": "lambda:InvokeFunction",
+				"Principal": "apigateway.amazonaws.com",
+				"SourceArn": {"Fn::Join": ["", ["arn:aws:execute-api:", {"Ref": "AWS::Region"}, ":", {"Ref": "AWS::AccountId"}, ":", {"Ref": "ApiGatewayRestApi"}, "/*"]]}
 			}
 		},
 		"LambdaFunctionIAMRole" : {
@@ -346,14 +143,95 @@
 				"Runtime": "nodejs4.3",
 				"Timeout": "60",
 				"MemorySize": 256,
-				"Handler": "lambda-handler.handler"
+				"Handler": "lambda-handler.handler",
+				"Environment" : {
+					"Variables" : {
+						"S3_BUCKET" : { "Ref": "UploadsS3Bucket" },
+						"S3_REGION": {"Ref": "AWS::Region"}
+					}
+				}
+			}
+		},
+		"CloudFrontDistribution" : {
+			"Type" : "AWS::CloudFront::Distribution",
+			"Properties" : {
+				"DistributionConfig" : {
+					"Aliases": { "Ref" : "Domains" },
+					"DefaultCacheBehavior": {
+						"AllowedMethods" : [ "HEAD", "GET" ],
+						"CachedMethods" : [ "HEAD", "GET" ],
+						"ForwardedValues" : {
+							"Cookies" : {
+								"Forward" : "none"
+							},
+							"Headers" : [],
+							"QueryString" : "true"
+						},
+						"MinTTL" : "63115200",
+						"DefaultTTL":"63115200",
+						"MaxTTL":"63115200",
+						"TargetOriginId" : { "Ref" : "AWS::StackName" },
+						"ViewerProtocolPolicy" : "allow-all"
+					},
+					"Enabled" : true,
+					"Origins" : [
+						{
+							"CustomOriginConfig" : {
+								"OriginProtocolPolicy" : "https-only"
+							},
+							"DomainName" : { "Fn::Sub":"${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com"},
+							"OriginPath" : "/Prod",
+							"Id" : { "Ref" : "AWS::StackName" },
+							"OriginCustomHeaders" : [
+								{
+									"HeaderName" : "Accept",
+									"HeaderValue" : "image/*"
+								}
+							]
+						}
+					],
+					"CustomErrorResponses": [
+						{
+							"ErrorCachingMinTTL" : 10,
+							"ErrorCode" : 400
+						},
+						{
+							"ErrorCachingMinTTL" : 300,
+							"ErrorCode" : 404
+						},
+						{
+							"ErrorCachingMinTTL" : 10,
+							"ErrorCode" : 500
+						},
+						{
+							"ErrorCachingMinTTL" : 10,
+							"ErrorCode" : 501
+						},
+						{
+							"ErrorCachingMinTTL" : 10,
+							"ErrorCode" : 502
+						},
+						{
+							"ErrorCachingMinTTL" : 10,
+							"ErrorCode" : 503
+						},
+						{
+							"ErrorCachingMinTTL" : 10,
+							"ErrorCode" : 504
+						}
+					],
+					"ViewerCertificate" : { "Fn::If" : [ "UseSSLCertificate",
+						{
+							"IamCertificateId" : { "Ref" : "SSLIAMCertificateID" },
+							"SslSupportMethod" : "sni-only",
+							"MinimumProtocolVersion" : "TLSv1"
+						},
+						{ "Ref" : "AWS::NoValue" }
+					] }
+				}
 			}
 		}
 	},
 	"Outputs": {
-		"LoadBalencerHostName" : {
-			"Description" : "Hostname of the ELB instance",
-			"Value" : { "Fn::GetAtt" : [ "ELBInstance", "DNSName" ] }
-		}
 	}
 }
