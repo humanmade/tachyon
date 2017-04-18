@@ -1,5 +1,5 @@
 {
-  "name": "node-tachyon",
+  "name": "tachyon",
   "version": "1.0.0",
   "repository" : {
     "type" : "git",
@@ -7,14 +7,26 @@
   },
   "description": "human made tachyon in node",
   "main": "index.js",
+  "config" : {
+    "bucket":"",
+    "path":"",
+    "region":"us-east-1",
+    "function-name" : ""
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-docker" : "docker built . -t tachyon-build",
+    "build-node-modules": "docker run -v `pwd`:/build -t tachyon-build",
+    "build-zip": "zip -r lambda.zip ./node_modules/ index.js lambda-handler.js",
+    "upload-zip": "aws s3 --region=$npm_config_region cp ./lambda.zip s3://$npm_config_bucket/$npm_config_path",
+    "update-function-code": "aws lambda update-function-code --region $npm_config_region --function-name $npm_config_function_name --zip-file 'fileb://`pwd`/lambda.zip'"
   },
   "author": "Joe Hoyle",
   "license": "ISC",
   "dependencies": {
     "animated-gif-detector": "^1.2.0",
-    "aws-sdk": "^2.2.17",
     "sharp": "^0.16.0"
+  },
+  "devDependancies": {
+    "aws-sdk": "^2.2.17"
   }
 }
