@@ -1,18 +1,20 @@
 {
-	"Description": "Human Made Tachyon Image Server with Lambda",
+	"Description": "Human Made Tachyon Image Server with Lambda v2.0",
 	"Parameters": {
 		"NodeTachyonBucket" : {
 			"Type" : "String",
-			"Description" : "The S3 Bucket containing the Lambda code ZIP"
+			"Description" : "The S3 Bucket containing the Lambda code ZIP",
+			"MinLength" : 1
 		},
 		"NodeTachyonLambdaPath" : {
 			"Type" : "String",
 			"Description" : "The path to the Lambda code ZIP",
 			"Default" : "lambda/node-tachyon/lambda-nodejs4.3.zip"
 		},
-		"SSLIAMCertificateID" : {
+		"SSLACMCertificateARN" : {
 			"Type" : "String",
-			"Description" : "SSL Certificate ID, must be added to the AWS account already. (optional)"
+			"Description" : "SSL ACM Certificate ARN.",
+      "MinLength" : 1
 		},
 		"Domains" : {
 			"Type" : "CommaDelimitedList",
@@ -25,11 +27,9 @@
 		},
 		"UploadsS3Bucket" : {
 			"Type" : "String",
-			"Description" : "The S3 Bucket to resize images from."
+			"Description" : "The S3 Bucket to resize images from.",
+			"MinLength" : 1
 		}
-	},
-	"Conditions" : {
-		"UseSSLCertificate" : {"Fn::Not" : [{"Fn::Equals" : [{"Ref" : "SSLIAMCertificateID"}, ""]} ] }
 	},
 	"Resources" : {
 		"ApiGatewayRestApi": {
@@ -187,7 +187,8 @@
 									"HeaderName" : "Accept",
 									"HeaderValue" : "image/*"
 								}
-							]
+							],
+							"Id" : { "Ref" : "AWS::StackName" }
 						}
 					],
 					"CustomErrorResponses": [
@@ -220,14 +221,12 @@
 							"ErrorCode" : 504
 						}
 					],
-					"ViewerCertificate" : { "Fn::If" : [ "UseSSLCertificate",
-						{
-							"IamCertificateId" : { "Ref" : "SSLIAMCertificateID" },
-							"SslSupportMethod" : "sni-only",
-							"MinimumProtocolVersion" : "TLSv1"
-						},
-						{ "Ref" : "AWS::NoValue" }
-					] }
+					"ViewerCertificate" : {
+						"AcmCertificateArn" : { "Ref" : "SSLACMCertificateARN" },
+						"SslSupportMethod" : "sni-only",
+						"MinimumProtocolVersion" : "TLSv1"
+					},
+					"HttpVersion" : "http2"
 				}
 			}
 		}
