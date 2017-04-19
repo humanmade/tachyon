@@ -1,5 +1,2 @@
-FROM ubuntu:latest
-RUN apt-get update && apt-get install -y curl
-RUN curl -sL https://deb.nodesource.com/setup_7.x | bash -
-RUN apt-get update && apt-get -y install nodejs
+FROM mhart/alpine-node:4.8.2
 CMD cd /build ; npm install

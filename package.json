@@ -14,7 +14,7 @@
     "function-name" : ""
   },
   "scripts": {
-    "build-docker" : "docker built . -t tachyon-build",
+    "build-docker" : "docker build . -t tachyon-build",
     "build-node-modules": "docker run -v `pwd`:/build -t tachyon-build",
     "build-zip": "zip -r lambda.zip ./node_modules/ index.js lambda-handler.js",
     "upload-zip": "aws s3 --region=$npm_config_region cp ./lambda.zip s3://$npm_config_bucket/$npm_config_path",
