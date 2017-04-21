@@ -20,11 +20,6 @@
 			"Type" : "CommaDelimitedList",
 			"Description" : "Domain Name(s)"
 		},
-		"AccessLogsBucket" : {
-			"Type" : "String",
-			"Description" : "S3 Bucket for storing Access Logs",
-			"MinLength" : 1
-		},
 		"UploadsS3Bucket" : {
 			"Type" : "String",
 			"Description" : "The S3 Bucket to resize images from.",
