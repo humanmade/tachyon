@@ -14,7 +14,7 @@
 		"SSLACMCertificateARN" : {
 			"Type" : "String",
 			"Description" : "SSL ACM Certificate ARN.",
-      "MinLength" : 1
+			"MinLength" : 1
 		},
 		"Domains" : {
 			"Type" : "CommaDelimitedList",
