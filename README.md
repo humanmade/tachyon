@@ -2,7 +2,7 @@
 	<tr>
 		<td align="left" colspan="2">
 			<strong>Tachyon</strong><br />
-			Faster than light image resizing service that runs on AWS. It's super simple to set up, highly available and very performant.
+			Faster than light image resizing service that runs on AWS. Super simple to set up, highly available and very performant.
 		</td>
 	</tr>
 	<tr>
@@ -38,7 +38,7 @@ You'll need to upload the latest release to Amazon S3 and put the location in th
 
 Tachyon provides a simple HTTP interface in the form of:
 
-https://{tachyon-domain}/my/image/path/on/s3.png?w=100&h=80
+`https://{tachyon-domain}/my/image/path/on/s3.png?w=100&h=80`
 
 It's really that simple!
 
@@ -58,8 +58,8 @@ Created by Human Made for high volume and large-scale sites, such as [Happytable
 
 Written and maintained by [Joe Hoyle](https://github.com/joehoyle).
 
-Tachyon is inspired by Photon by Automattic Inc. As Tachyon is not an all-purpose image resizer, rather it uses a media library in Amazon S3, it has a different use case to Photon.
+Tachyon is inspired by Photon by Automattic. As Tachyon is not an all-purpose image resizer, rather it uses a media library in Amazon S3, it has a different use case to [Photon](https://jetpack.com/support/photon/).
 
-Tachyon uses the [Sharp](https://github.com/lovell/sharp) Node.js library for the resizing operations, which in turn uses the great libvips library.
+Tachyon uses the [Sharp](https://github.com/lovell/sharp) (Used under the license Apache License 2.0) Node.js library for the resizing operations, which in turn uses the great libvips library.
 
 Interested in joining in on the fun? [Join us, and become human!](https://hmn.md/is/hiring/)
