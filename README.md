@@ -24,7 +24,7 @@ Tachyon is built with some strong opinions and assumptions:
 
 Tachyon works best with WordPress, coupled with [S3 Uploads](github.com/humanmade/s3-uploads) and the [Tachyon Plugin](https://github.com/humanmade/tachyon-plugin).
 
-![](http://joehoyle-captured.s3.amazonaws.com/I77brfBv.png)
+![](https://engineering.hmn.md/projects/tachyon/diagram.png)
 
 ---
 
