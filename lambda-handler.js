@@ -3,7 +3,7 @@ var tachyon = require('./index');
 exports.handler = function(event, context, callback) {
 	var region = process.env.S3_REGION;
 	var bucket = process.env.S3_BUCKET;
-	var key = event.path.substring(1);
+	var key = decodeURI(event.path.substring(1));
 	var args = event.queryStringParameters;
 	return tachyon.s3({ region: region, bucket: bucket }, key, args, function(
 		err,
