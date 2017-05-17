@@ -1,6 +1,6 @@
 var tachyon = require('./index');
+var proxyFile = require('./proxy-file');
 
-var proxyFile = require('./proxy-file')
 exports.handler = function(event, context, callback) {
 	var region = process.env.S3_REGION;
 	var bucket = process.env.S3_BUCKET;
@@ -12,8 +12,8 @@ exports.handler = function(event, context, callback) {
 		info
 	) {
 		if (err) {
-			if ( err.message === 'fallback-to-original' ) {
-				return proxyFile( region, bucket, key, callback )
+			if (err.message === 'fallback-to-original') {
+				return proxyFile(region, bucket, key, callback);
 			}
 			return context.fail(err);
 		}

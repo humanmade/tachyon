@@ -24,4 +24,4 @@ function sendOriginal(region, bucket, key, callback) {
 	);
 }
 
-module.exports = sendOriginal
+module.exports = sendOriginal;
