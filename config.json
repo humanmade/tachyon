@@ -1,0 +1,6 @@
+{
+	"region": "eu-west-1",
+	"bucket": "hmn-uploads-eu",
+	"lambdaRegion": "eu-west-1",
+	"lambdaFunction": "node-tachyon-test"
+}
