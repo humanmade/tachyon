@@ -56,11 +56,6 @@ module.exports.resizeBuffer = function( buffer, args, callback ) {
 
 			}
 
-			// allow override of compression quality
-			if ( args.quality ) {
-				image.quality( Math.min( Math.max( Number( args.quality ), 0 ), 100 ) )
-			}
-
 			// crop (assumes crop data from original)
 			if ( args.crop ) {
 				var cropValues = typeof args.crop === 'string' ? args.crop.split( ',' ) : args.crop
@@ -95,6 +90,11 @@ module.exports.resizeBuffer = function( buffer, args, callback ) {
 				if ( ! args.crop ) {
 					image.max()
 				}
+			}
+
+			// allow override of compression quality
+			if ( args.quality ) {
+				image.jpeg( {quality: Math.min( Math.max( Number( args.quality ), 0 ), 100 ) });
 			}
 
 			// send image
