@@ -5,6 +5,8 @@ var sharp = require( 'sharp' ),
 
 var regions = {}
 
+var rewriteRegex = /-(\d+)x(\d+)(\.\w+)$/i
+
 module.exports = {}
 
 module.exports.s3 = function( config, key, args, callback ) {
@@ -24,6 +26,9 @@ module.exports.s3 = function( config, key, args, callback ) {
 	return s3.makeUnauthenticatedRequest( 'getObject', { Bucket: config.bucket, Key: key }, function( err, data ) {
 
 		if ( err ) {
+			if ( err.code === 'NoSuchKey' && rewriteRegex.test(key) ) {
+				return module.exports.attemptRewrite( config, key, args, callback )
+			}
 			return callback( err )
 		}
 
@@ -31,6 +36,16 @@ module.exports.s3 = function( config, key, args, callback ) {
 
 		return module.exports.resizeBuffer( data.Body, args, callback )
 	} )
+}
+
+module.exports.attemptRewrite = function ( config, key, args, callback ) {
+	var resizedImage = key.match( rewriteRegex )
+	var key = key.replace( resizedImage[0], resizedImage[3] )
+	var args = {
+		w: resizedImage[1],
+		h: resizedImage[2]
+	};
+	module.exports.s3( config, key, args, callback )
 }
 
 module.exports.resizeBuffer = function( buffer, args, callback ) {
