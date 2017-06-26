@@ -6,7 +6,9 @@ exports.handler = function(event, context, callback) {
 	var bucket = process.env.S3_BUCKET;
 	var key = decodeURI(event.path.substring(1));
 	var args = event.queryStringParameters || {};
-	args.webp = args.webp || !!event.headers['X-WebP'];
+	if ( typeof args.webp === 'undefined' ) {
+		args.webp = !!event.headers['X-WebP'];
+	}
 	return tachyon.s3({ region: region, bucket: bucket }, key, args, function(
 		err,
 		data,
