@@ -2,3 +2,4 @@ node_modules/
 .idea
 lambda.zip
 config.json
+test-filesize/output
