@@ -1,23 +1,38 @@
-var tachyon = require( './index' )
+var tachyon = require('./index');
+var proxyFile = require('./proxy-file');
 
-exports.handler = function( event, context ) {
-	var region = event.region
-	var bucket = event.bucket
-	var key = event.key
-	var args = event.args
-	return tachyon.s3( { region: region, bucket: bucket }, key, args, function( err, data, info ) {
-		if ( err ) {
-			context.fail( err )
-		} else {
-			context.succeed( {
-				data: new Buffer( data ).toString( 'base64' ),
-				format: info.format,
-				size: info.size
-			} )
+exports.handler = function(event, context, callback) {
+	var region = process.env.S3_REGION;
+	var bucket = process.env.S3_BUCKET;
+	var key = decodeURI(event.path.substring(1));
+	var args = event.queryStringParameters || {};
+	if ( typeof args.webp === 'undefined' ) {
+		args.webp = !!event.headers['X-WebP'];
+	}
+	return tachyon.s3({ region: region, bucket: bucket }, key, args, function(
+		err,
+		data,
+		info
+	) {
+		if (err) {
+			if (err.message === 'fallback-to-original') {
+				return proxyFile(region, bucket, key, callback);
+			}
+			return context.fail(err);
 		}
+		var resp = {
+			statusCode: 200,
+			headers: {
+				'Content-Type': 'image/' + info.format,
+				'Cache-Control': 'max-age=31536000',
+			},
+			body: new Buffer(data).toString('base64'),
+			isBase64Encoded: true,
+		};
+		callback(null, resp);
 
-		data = null
-		info = null
-		err = null
-	} )
-}
+		data = null;
+		info = null;
+		err = null;
+	});
+};
