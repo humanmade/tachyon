@@ -1,4 +1,6 @@
-FROM mhart/alpine-node:4.8.2
-RUN apk add vips-dev --update-cache --repository http://wjordan-apk.s3.amazonaws.com/ --allow-untrusted
-RUN apk update && apk add vips build-base python
-CMD cd /build ; npm install
+FROM ubuntu:latest
+RUN apt-get update && apt-get install -y curl build-essential python2.7
+RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
+RUN apt-get update && apt-get -y install nodejs
+RUN ln -s /usr/bin/python2.7 /usr/bin/python
+CMD cd /build ; npm install --production

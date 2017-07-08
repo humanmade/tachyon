@@ -15,8 +15,8 @@
   },
   "scripts": {
     "build-docker" : "docker build . -t tachyon-build",
-    "build-node-modules": "docker run -v `pwd`:/build -t tachyon-build",
-    "build-zip": "zip -r lambda.zip ./node_modules/ index.js lambda-handler.js",
+    "build-node-modules": "rm -R node_modules ; docker run -v `pwd`:/build -t tachyon-build",
+    "build-zip": "rm lambda.zip ; zip -r lambda.zip ./node_modules/ index.js lambda-handler.js",
     "upload-zip": "aws s3 --region=$npm_config_region cp ./lambda.zip s3://$npm_config_bucket/$npm_config_path",
     "update-function-code": "aws lambda update-function-code --region $npm_config_region --function-name $npm_config_function_name --zip-file 'fileb://`pwd`/lambda.zip'"
   },
