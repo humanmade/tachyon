@@ -21,6 +21,7 @@ exports.handler = function(event, context, callback) {
 			statusCode: 200,
 			headers: {
 				'Content-Type': 'image/' + info.format,
+				'Cache-Control': 'max-age=31536000',
 			},
 			body: new Buffer(data).toString('base64'),
 			isBase64Encoded: true,
