@@ -131,14 +131,14 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 				}
 				
 				// embed
-                        	if ( args.embed ) {
-                                	args.embed = 
+				if ( args.embed ) {
+					args.embed =
 						typeof args.embed === 'string' 
 							? args.embed.split(',') 
 							: args.embed;
-                                	image.background(args.embed[0]);
-                                	image.embed();
-                        	}
+					image.background(args.embed[0]);
+					image.embed();
+				}
 
 				// allow override of compression quality
 				if (args.webp) {
