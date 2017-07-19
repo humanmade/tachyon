@@ -1,5 +1,5 @@
 {
-	"Description": "Human Made Tachyon Image Server with Lambda v2.0",
+	"Description": "Human Made Tachyon Image Server with Lambda v2.1",
 	"Parameters": {
 		"NodeTachyonBucket" : {
 			"Type" : "String",
@@ -9,7 +9,7 @@
 		"NodeTachyonLambdaPath" : {
 			"Type" : "String",
 			"Description" : "The path to the Lambda code ZIP",
-			"Default" : "lambda/node-tachyon/lambda-nodejs4.3.zip"
+			"Default" : "lambda/node-tachyon/lambda-nodejs6.10.zip"
 		},
 		"SSLACMCertificateARN" : {
 			"Type" : "String",
@@ -148,7 +148,7 @@
 					"S3Bucket": { "Ref" : "NodeTachyonBucket" },
 					"S3Key": { "Ref" : "NodeTachyonLambdaPath" }
 				},
-				"Runtime": "nodejs4.3",
+				"Runtime": "nodejs6.10",
 				"Timeout": "60",
 				"MemorySize": 256,
 				"Handler": "lambda-handler.handler",
