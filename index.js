@@ -137,7 +137,7 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 							? Math.min(Math.max(Number(args.quality), 0), 100)
 							: 80,
 					});
-				} else if (args.quality) {
+				} else if (metadata.format === 'jpeg' && args.quality) {
 					image.jpeg({
 						quality: Math.min(
 							Math.max(Number(args.quality), 0),
