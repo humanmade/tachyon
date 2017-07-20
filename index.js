@@ -109,36 +109,36 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 						})
 					);
 				} else if (args.fit) {
-          args.fit =
-            typeof args.fit === 'string'
-              ? args.fit.split(',')
-              : args.fit;
-          image.resize.apply(
-            image,
-            args.fit.map(function (v) {
-              return Number(v) || null;
-            })
-          );
-          image.max();
-        } else if ( args.lb) {
-          args.lb =
-            typeof args.lb === 'string'
-              ? args.lb.split(',')
-              : args.lb;
-          image.resize.apply(
-            image,
-            args.lb.map(function (v) {
-              return Number(v) || null;
-            })
-          );
+					args.fit =
+						typeof args.fit === 'string'
+							? args.fit.split(',')
+							: args.fit;
+					image.resize.apply(
+						image,
+						args.fit.map(function(v) {
+							return Number(v) || null;
+						})
+					);
+					image.max();
+				} else if (args.lb) {
+					args.lb =
+						typeof args.lb === 'string'
+							? args.lb.split(',')
+							: args.lb;
+					image.resize.apply(
+						image,
+						args.lb.map(function(v) {
+							return Number(v) || null;
+						})
+					);
 
-          // default to a black background to replicate Photon API behaviour
+					// default to a black background to replicate Photon API behaviour
 					// when no background colour specified
-          if (!args.background) {
-          	args.background = 'black';
+					if (!args.background) {
+						args.background = 'black';
 					}
 					image.background(args.background);
-          image.embed();
+					image.embed();
 				} else if (args.w || args.h) {
 					image.resize(
 						Number(args.w) || null,
