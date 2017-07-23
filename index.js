@@ -120,6 +120,25 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 						})
 					);
 					image.max();
+				} else if (args.lb) {
+					args.lb =
+						typeof args.lb === 'string'
+							? args.lb.split(',')
+							: args.lb;
+					image.resize.apply(
+						image,
+						args.lb.map(function(v) {
+							return Number(v) || null;
+						})
+					);
+
+					// default to a black background to replicate Photon API behaviour
+					// when no background colour specified
+					if (!args.background) {
+						args.background = 'black';
+					}
+					image.background(args.background);
+					image.embed();
 				} else if (args.w || args.h) {
 					image.resize(
 						Number(args.w) || null,
