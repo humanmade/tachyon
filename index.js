@@ -1,7 +1,7 @@
-var sharp = require("sharp"),
-  AWS = require("aws-sdk"),
-  path = require("path"),
-  isAnimated = require("animated-gif-detector");
+var sharp = require('sharp'),
+  AWS = require('aws-sdk'),
+  path = require('path'),
+  isAnimated = require('animated-gif-detector');
 
 var regions = {};
 
@@ -24,7 +24,7 @@ module.exports.s3 = function(config, key, args, callback) {
   var s3 = regions[config.region];
 
   return s3.makeUnauthenticatedRequest(
-    "getObject",
+    'getObject',
     { Bucket: config.bucket, Key: key },
     function(err, data) {
       if (err) {
@@ -56,9 +56,9 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
         image.rotate();
 
         // convert gifs to pngs unless animated
-        if (args.key && path.extname(args.key).toLowerCase() === ".gif") {
+        if (args.key && path.extname(args.key).toLowerCase() === '.gif') {
           if (isAnimated(buffer)) {
-            return callback(new Error("fallback-to-original"));
+            return callback(new Error('fallback-to-original'));
           } else {
             image.png();
           }
@@ -67,16 +67,16 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
         // crop (assumes crop data from original)
         if (args.crop) {
           var cropValues =
-            typeof args.crop === "string" ? args.crop.split(",") : args.crop;
+            typeof args.crop === 'string' ? args.crop.split(',') : args.crop;
 
           // convert percantages to px values
           cropValues = cropValues.map(function(value, index) {
-            if (value.indexOf("px") > -1) {
+            if (value.indexOf('px') > -1) {
               return Number(value.substr(0, value.length - 2));
             } else {
               return Number(
                 Number(
-                  metadata[index % 2 ? "height" : "width"] * (value / 100)
+                  metadata[index % 2 ? 'height' : 'width'] * (value / 100)
                 ).toFixed(0)
               );
             }
@@ -93,8 +93,8 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
         // resize
         if (args.resize) {
           args.resize =
-            typeof args.resize === "string"
-              ? args.resize.split(",")
+            typeof args.resize === 'string'
+              ? args.resize.split(',')
               : args.resize;
           image.resize.apply(
             image,
@@ -104,7 +104,7 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
           );
         } else if (args.fit) {
           args.fit =
-            typeof args.fit === "string" ? args.fit.split(",") : args.fit;
+            typeof args.fit === 'string' ? args.fit.split(',') : args.fit;
           image.resize.apply(
             image,
             args.fit.map(function(v) {
@@ -113,7 +113,7 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
           );
           image.max();
         } else if (args.lb) {
-          args.lb = typeof args.lb === "string" ? args.lb.split(",") : args.lb;
+          args.lb = typeof args.lb === 'string' ? args.lb.split(',') : args.lb;
           image.resize.apply(
             image,
             args.lb.map(function(v) {
@@ -124,7 +124,7 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
           // default to a black background to replicate Photon API behaviour
           // when no background colour specified
           if (!args.background) {
-            args.background = "black";
+            args.background = 'black';
           }
           image.background(args.background);
           image.embed();
@@ -142,7 +142,7 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
               ? Math.min(Math.max(Number(args.quality), 0), 100)
               : 80
           });
-        } else if (args.quality) {
+        } else if (metadata.format === 'jpeg' && args.quality) {
           image.jpeg({
             quality: Math.min(Math.max(Number(args.quality), 0), 100)
           });
