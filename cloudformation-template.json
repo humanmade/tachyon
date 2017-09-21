@@ -1,5 +1,5 @@
 {
-	"Description": "Human Made Tachyon Image Server with Lambda v2.1",
+	"Description": "Human Made Tachyon Image Server with Lambda v2.1.1",
 	"Parameters": {
 		"NodeTachyonBucket" : {
 			"Type" : "String",
@@ -172,7 +172,7 @@
 							"Cookies" : {
 								"Forward" : "none"
 							},
-							"Headers" : [],
+							"Headers" : [ "X-WebP" ],
 							"QueryString" : "true"
 						},
 						"MinTTL" : "63115200",
