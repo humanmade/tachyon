@@ -25,6 +25,7 @@ exports.handler = function(event, context, callback) {
 			headers: {
 				'Content-Type': 'image/' + info.format,
 				'Cache-Control': 'max-age=31536000',
+				'Last-Modified': (new Date()).toUTCString(),
 			},
 			body: new Buffer(data).toString('base64'),
 			isBase64Encoded: true,
