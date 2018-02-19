@@ -1,5 +1,5 @@
 {
-	"Description": "Human Made Tachyon Image Server with Lambda v2.1.1",
+	"Description": "Human Made Tachyon Image Server with Lambda v2.1.2",
 	"Parameters": {
 		"NodeTachyonBucket" : {
 			"Type" : "String",
@@ -181,6 +181,20 @@
 						"TargetOriginId" : { "Ref" : "AWS::StackName" },
 						"ViewerProtocolPolicy" : "allow-all"
 					},
+					"CacheBehaviors" : [
+						{
+							"AllowedMethods" : [ "GET", "HEAD" ],
+							"CachedMethods" : [ "HEAD", "GET" ],
+							"ForwardedValues" : {
+								"QueryString" : "true",
+								"Headers" : [ "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers" ]
+							},
+							"PathPattern" : "*.gif",
+							"DefaultTTL" : "63115200",
+							"TargetOriginId" : "S3-Proxy",
+							"ViewerProtocolPolicy" : "allow-all"
+						}
+					],
 					"Enabled" : true,
 					"Origins" : [
 						{
@@ -197,6 +211,15 @@
 								}
 							],
 							"Id" : { "Ref" : "AWS::StackName" }
+						},
+						{
+							"DomainName" : { "Fn::Join" : [ "", [
+								{ "Ref" : "UploadsS3Bucket" }, ".s3.amazonaws.com"
+							] ] },
+							"Id" : "S3-Proxy",
+							"S3OriginConfig" : {
+
+							}
 						}
 					],
 					"CustomErrorResponses": [
