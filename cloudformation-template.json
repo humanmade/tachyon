@@ -24,7 +24,14 @@
 			"Type" : "String",
 			"Description" : "The S3 Bucket to resize images from.",
 			"MinLength" : 1
+		},
+		"WebPDetectionLambdaFunctionARN" : {
+			"Type" : "String",
+			"Description" : "ARN for a WebP detection lambda@edge function. Must be versioned."
 		}
+	},
+	"Conditions" : {
+		"UseWebPDetectionFunction" : {"Fn::Not" : [{"Fn::Equals" : [{"Ref" : "WebPDetectionLambdaFunctionARN"}, ""]} ] }
 	},
 	"Resources" : {
 		"ApiGatewayRestApi": {
@@ -175,11 +182,22 @@
 							"Headers" : [ "X-WebP" ],
 							"QueryString" : "true"
 						},
-						"MinTTL" : "63115200",
-						"DefaultTTL":"63115200",
-						"MaxTTL":"63115200",
+						"MinTTL" : 63115200,
+						"DefaultTTL": 63115200,
+						"MaxTTL": 63115200,
 						"TargetOriginId" : { "Ref" : "AWS::StackName" },
-						"ViewerProtocolPolicy" : "allow-all"
+						"ViewerProtocolPolicy" : "allow-all",
+						"LambdaFunctionAssociations" : { "Fn::If" : [
+							"UseWebPDetectionFunction",
+							[
+								{
+									"EventType" : "viewer-request",
+									"LambdaFunctionARN" : { "Ref" : "WebPDetectionLambdaFunctionARN" }
+								}
+							],
+							[]
+							]
+						}
 					},
 					"Enabled" : true,
 					"Origins" : [
