@@ -5,6 +5,7 @@ exports.handler = function(event, context, callback) {
 	var region = process.env.S3_REGION;
 	var bucket = process.env.S3_BUCKET;
 	var key = decodeURI(event.path.substring(1));
+	key = key.replace( '/uploads/tachyon/', '/uploads/' );
 	var args = event.queryStringParameters || {};
 	if ( typeof args.webp === 'undefined' ) {
 		args.webp = !!event.headers['X-WebP'];
