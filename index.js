@@ -108,6 +108,9 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 							return Number(v) || null;
 						})
 					);
+					if ( args.gravity ) {
+						image.crop( args.gravity );
+					}
 				} else if (args.fit) {
 					args.fit =
 						typeof args.fit === 'string'
