@@ -88,12 +88,15 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 						}
 					});
 
-					image.extract({
-						left: cropValues[0],
-						top: cropValues[1],
-						width: cropValues[2],
-						height: cropValues[3],
-					});
+					// If count is not 4 the server errors out.
+					if ( 4 === cropValues.length ) {
+						image.extract({
+							left: cropValues[0],
+							top: cropValues[1],
+							width: cropValues[2],
+							height: cropValues[3],
+						});
+					}
 				}
 
 				// resize
