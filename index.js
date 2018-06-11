@@ -90,6 +90,9 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 
 					numericCrops = function( value ) { return ! isNaN( value ) };
 
+					console.log( cropValues.reduce( numericCrops ) );
+					console.error( cropValues.reduce( numericCrops ) );
+
 					// If count is not 4 the server fatals.
 					if ( 4 === cropValues.length && cropValues.reduce( numericCrops ) ) {
 						image.extract({
