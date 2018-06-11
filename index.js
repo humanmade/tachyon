@@ -88,8 +88,10 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 						}
 					});
 
-					// If count is not 4 the server errors out.
-					if ( 4 === cropValues.length ) {
+					numericCrops = function( value ) { return ! isNaN( value ) };
+
+					// If count is not 4 the server fatals.
+					if ( 4 === cropValues.length && cropValues.reduce( numericCrops ) ) {
 						image.extract({
 							left: cropValues[0],
 							top: cropValues[1],
