@@ -1,5 +1,5 @@
 {
-	"Description": "Human Made Tachyon Image Server with Lambda v2.0",
+	"Description": "Human Made Tachyon Image Server with Lambda v2.1.3",
 	"Parameters": {
 		"NodeTachyonBucket" : {
 			"Type" : "String",
@@ -9,7 +9,7 @@
 		"NodeTachyonLambdaPath" : {
 			"Type" : "String",
 			"Description" : "The path to the Lambda code ZIP",
-			"Default" : "lambda/node-tachyon/lambda-nodejs4.3.zip"
+			"Default" : "lambda/node-tachyon/lambda-nodejs6.10.zip"
 		},
 		"SSLACMCertificateARN" : {
 			"Type" : "String",
@@ -24,7 +24,14 @@
 			"Type" : "String",
 			"Description" : "The S3 Bucket to resize images from.",
 			"MinLength" : 1
+		},
+		"WebPDetectionLambdaFunctionARN" : {
+			"Type" : "String",
+			"Description" : "ARN for a WebP detection lambda@edge function. Must be versioned."
 		}
+	},
+	"Conditions" : {
+		"UseWebPDetectionFunction" : {"Fn::Not" : [{"Fn::Equals" : [{"Ref" : "WebPDetectionLambdaFunctionARN"}, ""]} ] }
 	},
 	"Resources" : {
 		"ApiGatewayRestApi": {
@@ -148,7 +155,7 @@
 					"S3Bucket": { "Ref" : "NodeTachyonBucket" },
 					"S3Key": { "Ref" : "NodeTachyonLambdaPath" }
 				},
-				"Runtime": "nodejs4.3",
+				"Runtime": "nodejs6.10",
 				"Timeout": "60",
 				"MemorySize": 256,
 				"Handler": "lambda-handler.handler",
@@ -172,15 +179,40 @@
 							"Cookies" : {
 								"Forward" : "none"
 							},
-							"Headers" : [],
+							"Headers" : [ "X-WebP" ],
 							"QueryString" : "true"
 						},
-						"MinTTL" : "63115200",
-						"DefaultTTL":"63115200",
-						"MaxTTL":"63115200",
+						"MinTTL" : 63115200,
+						"DefaultTTL": 63115200,
+						"MaxTTL": 63115200,
 						"TargetOriginId" : { "Ref" : "AWS::StackName" },
-						"ViewerProtocolPolicy" : "allow-all"
+						"ViewerProtocolPolicy" : "allow-all",
+						"LambdaFunctionAssociations" : { "Fn::If" : [
+							"UseWebPDetectionFunction",
+							[
+								{
+									"EventType" : "viewer-request",
+									"LambdaFunctionARN" : { "Ref" : "WebPDetectionLambdaFunctionARN" }
+								}
+							],
+							[]
+							]
+						}
 					},
+					"CacheBehaviors" : [
+						{
+							"AllowedMethods" : [ "GET", "HEAD" ],
+							"CachedMethods" : [ "HEAD", "GET" ],
+							"ForwardedValues" : {
+								"QueryString" : "true",
+								"Headers" : [ "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers" ]
+							},
+							"PathPattern" : "*.gif",
+							"DefaultTTL" : "63115200",
+							"TargetOriginId" : "S3-Proxy",
+							"ViewerProtocolPolicy" : "allow-all"
+						}
+					],
 					"Enabled" : true,
 					"Origins" : [
 						{
@@ -197,6 +229,15 @@
 								}
 							],
 							"Id" : { "Ref" : "AWS::StackName" }
+						},
+						{
+							"DomainName" : { "Fn::Join" : [ "", [
+								{ "Ref" : "UploadsS3Bucket" }, ".s3.amazonaws.com"
+							] ] },
+							"Id" : "S3-Proxy",
+							"S3OriginConfig" : {
+
+							}
 						}
 					],
 					"CustomErrorResponses": [
