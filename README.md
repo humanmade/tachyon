@@ -49,9 +49,12 @@ It's really that simple!
 |`w`|Number|Max width of the image.|
 |`h`|Number|Max height of the image.|
 |`quality`|Number, 0-100|Image quality.|
-|`resize`|String, "300,300"|A comma separated string of the target width and height in pixels. Crops the image.|
-|`fit`|String, "300,300"|A comma separated string of the target maximum width and height. Does not crop the image.|
-|`crop`|Boolean\|String, "100,50,20,100", "smart", "entropy" or "attention"|Whether to crop the image, resize proportionally or use one of 3 available strategies for use with `resize`. <ul><li>`attention`: good results, ~70% slower</li><li>`entropy`: mediocre results, ~30% slower</li><li>`smart`: best results, ~50% slower</li>|
+|`resize`|String, "w,h"|A comma separated string of the target width and height in pixels. Crops the image.|
+|`fit`|String, "w,h"|A comma separated string of the target maximum width and height. Does not crop the image.|
+|`crop`|Boolean\|String, "x,y,w,h", "smart", "entropy", "attention"|Crop an image by percentages x-offset, y-offset, width and height (x,y,w,h). Percentages are used so that you don’t need to recalculate the cropping when transforming the image in other ways such as resizing it. `crop=160px,160px,788px,788px` takes a 788 by 788 pixel square starting at 160 by 160.<br/><br />There are also 3 automatic cropping strategies available for use with `resize`: <ul><li>`attention`: good results, ~70% slower</li><li>`entropy`: mediocre results, ~30% slower</li><li>`smart`: best results, ~50% slower</li>|
+|`webp`|Boolean, 1|Force WebP format.|
+|`lb`|String, "w,h"|Add letterboxing effect to images, by scaling them to width, height while maintaining the aspect ratio and filling the rest with black or `background`.|
+|`background`|String|Add background color via name (red) or hex value (%23ff0000). Don't forget to escape # as `%23`.|
 
 For more details checkout the [docs](https://engineering.hmn.md/projects/tachyon/).
 
