@@ -48,8 +48,12 @@ It's really that simple!
 |---|----|---|
 |`w`|Number|Max width of the image.|
 |`h`|Number|Max height of the image.|
+|`resize`|String, "w,h"|Resize and crop an image to exact width,height pixel dimensions.|
 |`quality`|Number, 0-100|Image quality.|
-|`crop`|Boolean or "100,50,20,100"|Whether to crop the image, or resize proportionally.|
+|`crop`|String, "x,y,w,h"|Crop an image by percentages x-offset, y-offset, width, height (x,y,w,h). Percentages are used so that you don’t need to recalculate the cropping when transforming the image in other ways such as resizing it. `crop=160px,160px,788px,788px` takes a 788 by 788 square starting at 160 by 160.|
+|`webp`|Boolean, 1|Force WebP format.|
+|`lb`|String, "w,h"|Add letterboxing effect to images, by scaling them to width, height while maintaining the aspect ratio and filling the rest with black or `background`.|
+|`background`|String|Add background color via name (red) or hex value (%23ff0000). Don't forget to escape # as `%23`.|
 
 For more details checkout the [docs](https://engineering.hmn.md/projects/tachyon/).
 
