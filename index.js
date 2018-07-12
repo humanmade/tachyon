@@ -147,9 +147,7 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 						args.lb = getDimArray( args.lb );
 						image.resize.apply(
 							image,
-							args.lb.map(function(v) {
-								return Number(v) || null;
-							})
+							args.lb
 						);
 
 						// default to a black background to replicate Photon API behaviour
