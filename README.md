@@ -49,7 +49,9 @@ It's really that simple!
 |`w`|Number|Max width of the image.|
 |`h`|Number|Max height of the image.|
 |`quality`|Number, 0-100|Image quality.|
-|`crop`|Boolean or "100,50,20,100"|Whether to crop the image, or resize proportionally.|
+|`resize`|String, "300,300"|A comma separated string of the target width and height in pixels. Crops the image.|
+|`fit`|String, "300,300"|A comma separated string of the target maximum width and height. Does not crop the image.|
+|`crop`|Boolean\|String, "100,50,20,100", "smart", "entropy" or "attention"|Whether to crop the image, resize proportionally or use one of 3 available strategies for use with `resize`. <ul><li>`attention`: good results, ~70% slower</li><li>`entropy`: mediocre results, ~30% slower</li><li>`smart`: best results, ~50% slower</li>|
 
 For more details checkout the [docs](https://engineering.hmn.md/projects/tachyon/).
 
