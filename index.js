@@ -40,17 +40,16 @@ module.exports.s3 = function(config, key, args, callback) {
 };
 
 var getDimArray = function( dims ) {
-	return ( typeof dims === 'string'
+	var dimArr = ( typeof dims === 'string'
 		? dims.split(',')
 		: dims
-	).map(function(v) {
+	);
+	return dimArr.map(function(v) {
 		return Number(v) || null;
 	});
 }
 
 module.exports.resizeBuffer = function(buffer, args, callback) {
-
-
 	return new Promise(function(resolve, reject) {
 		try {
 			var image = sharp(buffer).withMetadata();
@@ -80,7 +79,7 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 					}
 
 					// crop (assumes crop data from original)
-					if (args.crop && !args.crop.match(/(smart|attention|entropy)/)) {
+					if (args.crop) {
 						var cropValues =
 							typeof args.crop === 'string'
 								? args.crop.split(',')
@@ -113,22 +112,22 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 						args.resize = getDimArray( args.resize );
 
 						// apply cropping strategies
-						if ( args.crop === 'attention' ) {
+						if ( args.gravity ) {
+							image.crop( args.gravity );
+						}
+						if ( args.crop_strategy === 'attention' ) {
 							image.crop( sharp.strategy.attention );
 						}
-						if ( args.crop === 'entropy' ) {
+						if ( args.crop_strategy === 'entropy' ) {
 							image.crop( sharp.strategy.entropy );
 						}
-						if ( args.crop === 'smart' && crop ) {
+						if ( args.crop_strategy === 'smart' && crop ) {
 							image.extract({
 								left: crop.x,
 								top: crop.y,
 								width: crop.width,
 								height: crop.height,
 							});
-						}
-						if ( args.gravity ) {
-							image.crop( args.gravity );
 						}
 
 						// apply the resize
@@ -203,7 +202,7 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 			}
 
 			// handle smartcrop promise
-			if ( args.crop === 'smart' && args.resize ) {
+			if ( args.crop_strategy === 'smart' && args.resize ) {
 				args.resize = getDimArray( args.resize );
 				return smartcrop.crop(buffer, { width: args.resize[0], height: args.resize[1] })
 					.then(function(result) {
