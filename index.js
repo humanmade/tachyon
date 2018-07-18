@@ -40,10 +40,7 @@ module.exports.s3 = function(config, key, args, callback) {
 };
 
 var getDimArray = function( dims ) {
-	var dimArr = ( typeof dims === 'string'
-		? dims.split(',')
-		: dims
-	);
+	var dimArr = typeof dims === 'string' ? dims.split(',') : dims;
 	return dimArr.map(function(v) {
 		return Number(v) || null;
 	});
