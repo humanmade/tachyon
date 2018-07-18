@@ -1,6 +1,6 @@
 {
   "name": "node-tachyon",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "repository": {
     "type": "git",
     "url": "https://github.com/humanmade/node-tachyon.git"
