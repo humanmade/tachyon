@@ -7,14 +7,14 @@
   },
   "description": "human made tachyon in node",
   "main": "index.js",
-  "config" : {
-    "bucket":"",
-    "path":"",
-    "region":"us-east-1",
-    "function-name" : ""
+  "config": {
+    "bucket": "",
+    "path": "",
+    "region": "us-east-1",
+    "function-name": ""
   },
   "scripts": {
-    "build-docker" : "docker build . -t tachyon-build",
+    "build-docker": "docker build . -t tachyon-build",
     "build-node-modules": "rm -R node_modules ; docker run -v `pwd`:/build -t tachyon-build",
     "build-zip": "zip -r lambda.zip ./node_modules/ index.js proxy-file.js lambda-handler.js",
     "upload-zip": "aws s3 --region=$npm_config_region cp ./lambda.zip s3://$npm_config_bucket/$npm_config_path",
@@ -24,7 +24,8 @@
   "license": "ISC",
   "dependencies": {
     "animated-gif-detector": "^1.2.0",
-    "sharp": "^0.17.3"
+    "sharp": "^0.17.3",
+    "smartcrop-sharp": "^2.0.3"
   },
   "devDependencies": {
     "aws-sdk": "^2.2.17",
