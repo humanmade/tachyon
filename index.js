@@ -39,10 +39,11 @@ module.exports.s3 = function(config, key, args, callback) {
 	);
 };
 
-var getDimArray = function( dims ) {
+var getDimArray = function( dims, zoom ) {
 	var dimArr = typeof dims === 'string' ? dims.split(',') : dims;
+	zoom = zoom || 1;
 	return dimArr.map(function(v) {
-		return Number(v) || null;
+		return (Number(v) * zoom) || null;
 	});
 }
 
@@ -104,9 +105,12 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 						});
 					}
 
+					// get zoom value
+					var zoom = parseFloat( args.zoom ) || 1;
+
 					// resize
 					if (args.resize) {
-						args.resize = getDimArray( args.resize );
+						args.resize = getDimArray( args.resize, zoom );
 
 						// apply cropping strategies
 						if ( args.gravity ) {
@@ -133,14 +137,14 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 							args.resize
 						);
 					} else if (args.fit) {
-						args.fit = getDimArray( args.fit );
+						args.fit = getDimArray( args.fit, zoom );
 						image.resize.apply(
 							image,
 							args.fit
 						);
 						image.max();
 					} else if (args.lb) {
-						args.lb = getDimArray( args.lb );
+						args.lb = getDimArray( args.lb, zoom );
 						image.resize.apply(
 							image,
 							args.lb
@@ -155,27 +159,36 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 						image.embed();
 					} else if (args.w || args.h) {
 						image.resize(
-							Number(args.w) || null,
-							Number(args.h) || null
+							(Number(args.w) * zoom) || null,
+							(Number(args.h) * zoom) || null
 						);
 						if (!args.crop) {
 							image.max();
 						}
 					}
 
+					// return a default compression value based on a logarithmic scale
+					// defaultValue = 100, zoom = 2; = 65
+					// defaultValue = 80, zoom = 2; = 50
+					// defaultValue = 100, zoom = 1.5; = 86
+					// defaultValue = 80, zoom = 1.5; = 68
+					var applyZoomCompression = function( defaultValue, zoom ) {
+						return Math.min(Math.max(Math.round( defaultValue - ( (Math.log(zoom) / Math.log(defaultValue / zoom)) * (defaultValue * zoom) ) ), Math.round(defaultValue / zoom)), defaultValue);
+					}
+
+					// set default quality slightly higher than sharp's default
+					if ( ! args.quality ) {
+						args.quality = applyZoomCompression( 82.5, zoom );
+					}
+
 					// allow override of compression quality
 					if (args.webp) {
 						image.webp({
-							quality: args.quality
-								? Math.min(Math.max(Number(args.quality), 0), 100)
-								: 80,
+							quality: Math.min(Math.max(Number(args.quality), 0), 100),
 						});
-					} else if (metadata.format === 'jpeg' && args.quality) {
+					} else if (metadata.format === 'jpeg') {
 						image.jpeg({
-							quality: Math.min(
-								Math.max(Number(args.quality), 0),
-								100
-							),
+							quality: Math.min(Math.max(Number(args.quality), 0), 100),
 						});
 					}
 
