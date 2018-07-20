@@ -178,17 +178,17 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 
 					// set default quality slightly higher than sharp's default
 					if ( ! args.quality ) {
-						args.quality = applyZoomCompression( 82.5, zoom );
+						args.quality = applyZoomCompression( 82, zoom );
 					}
 
 					// allow override of compression quality
 					if (args.webp) {
 						image.webp({
-							quality: Math.min(Math.max(Number(args.quality), 0), 100),
+							quality: Math.round(Math.min(Math.max(Number(args.quality), 0), 100)),
 						});
 					} else if (metadata.format === 'jpeg') {
 						image.jpeg({
-							quality: Math.min(Math.max(Number(args.quality), 0), 100),
+							quality: Math.round(Math.min(Math.max(Number(args.quality), 0), 100)),
 						});
 					}
 
