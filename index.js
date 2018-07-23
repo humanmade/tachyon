@@ -47,6 +47,10 @@ var getDimArray = function( dims, zoom ) {
 	});
 }
 
+var clamp = function( val, min, max ) {
+	return Math.min( Math.max( Number( val ), min ), max );
+}
+
 module.exports.resizeBuffer = function(buffer, args, callback) {
 	return new Promise(function(resolve, reject) {
 		try {
@@ -173,7 +177,7 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 					// defaultValue = 100, zoom = 1.5; = 86
 					// defaultValue = 80, zoom = 1.5; = 68
 					var applyZoomCompression = function( defaultValue, zoom ) {
-						return Math.min(Math.max(Math.round( defaultValue - ( (Math.log(zoom) / Math.log(defaultValue / zoom)) * (defaultValue * zoom) ) ), Math.round(defaultValue / zoom)), defaultValue);
+						return clamp( Math.round( defaultValue - ( (Math.log(zoom) / Math.log(defaultValue / zoom)) * (defaultValue * zoom) ) ), Math.round(defaultValue / zoom), defaultValue );
 					}
 
 					// set default quality slightly higher than sharp's default
@@ -184,11 +188,11 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 					// allow override of compression quality
 					if (args.webp) {
 						image.webp({
-							quality: Math.round(Math.min(Math.max(Number(args.quality), 0), 100)),
+							quality: Math.round( clamp( args.quality, 0, 100 ) ),
 						});
 					} else if (metadata.format === 'jpeg') {
 						image.jpeg({
-							quality: Math.round(Math.min(Math.max(Number(args.quality), 0), 100)),
+							quality: Math.round( clamp( args.quality, 0, 100 ) ),
 						});
 					}
 
