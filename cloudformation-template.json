@@ -183,8 +183,8 @@
 							"QueryString" : "true"
 						},
 						"MinTTL" : 63115200,
-						"DefaultTTL": 63115200,
-						"MaxTTL": 63115200,
+						"DefaultTTL": 63115201,
+						"MaxTTL": 63115202,
 						"TargetOriginId" : { "Ref" : "AWS::StackName" },
 						"ViewerProtocolPolicy" : "allow-all",
 						"LambdaFunctionAssociations" : { "Fn::If" : [
