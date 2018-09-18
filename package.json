@@ -24,7 +24,7 @@
   "license": "ISC",
   "dependencies": {
     "animated-gif-detector": "^1.2.0",
-    "sharp": "^0.20.0",
+    "sharp": "^0.17.0",
     "smartcrop-sharp": "^2.0.3"
   },
   "devDependencies": {
