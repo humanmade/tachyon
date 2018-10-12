@@ -50,13 +50,8 @@ It's really that simple!
 
 **[View Args Reference →](docs/using.md)**
 
-## Release Process
-
-1. Create and push a new tag following the convention `vx.x.x`
-1. Build a new ZIP file by running `npm run build-docker && npm run build-node-modules && build-zip`
-1. Publish a new GitHub release, uploading `lambda.zip` as the built artifact to GitHub
-
 ## Credits
+
 Created by Human Made for high volume and large-scale sites, such as [Happytables](http://happytables.com/). We run Tachyon on sites with millions of monthly page views, and thousands of sites.
 
 Written and maintained by [Joe Hoyle](https://github.com/joehoyle).
