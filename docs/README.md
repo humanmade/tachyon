@@ -16,4 +16,4 @@ The server is also available as a [Docker image](docker.md), which can be used i
 * [Server Setup](server.md) (or, [Docker Setup](docker.md))
 * [Plugin Setup](plugin.md)
 * [Using Tachyon](using.md)
-* [Hints and Tips][tips.md]
+* [Hints and Tips](tips.md)
