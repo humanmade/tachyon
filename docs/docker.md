@@ -5,7 +5,7 @@ Tachyon Docker is a docker image that runs the app in a container.
 * [Download from GitHub →](https://github.com/humanmade/tachyon-docker)
 * [View on Docker Hub →](https://hub.docker.com/r/humanmade/tachyon/)
 
-# Installation
+## Installation
 
 You'll need a server with docker engine installed. Vagrant has a convenience provider built in,
 and you can also install the [Docker command line tools for OSX, Windows or Linux](https://www.docker.com/products/overview).
@@ -24,7 +24,7 @@ docker build -t humanmade/tachyon
 ```
 
 
-# Usage
+## Usage
 
 To run Tachyon as a service simply run the container passing a few environment variables to it.
 We recommend passing the `-d` flag to daemonize the container and keep it running.
@@ -41,13 +41,13 @@ By default the service will expose port `8080`. You can change this by passing t
 to [`docker run`](https://docs.docker.com/engine/reference/run/) and map it to another port.
 
 
-## Custom S3 endpoint
+### Custom S3 endpoint
 
 You can specify a custom S3 endpoint if you're running a tool like [fakeS3][] by passing
 the `AWS_S3_ENDPOINT` environment variable to `docker run`.
 
 
-# Vagrant
+## Vagrant
 
 Tachyon Docker comes with a `Vagrantfile` you can use to spin up a [fakeS3][] server and Tachyon
 server locally.
@@ -70,7 +70,7 @@ You can configure the URLs and endpoints as well as add additional Tachyon serve
 the `config.yml` file in the cloned repository.
 
 
-## Configuring WordPress
+### Configuring WordPress
 
 To configure WordPress to use the VM add the following to `wp-config.php` once you've
 installed [S3 Uploads](https://github.com/humanmade/S3-Uploads).

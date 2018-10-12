@@ -5,7 +5,7 @@ The Tachyon server is responsible for generating and serving images.
 It can be installed [using AWS CloudFormation](#installation-on-aws), [manually on AWS Lambda](#manual-installation-on-lambda), or [manually using Node.js](#manual-installation). Alternatively, you can use [the Docker installation](docker.md).
 
 
-# Installation on AWS
+## Installation on AWS
 
 We highly recommend using Tachyon on [AWS Lambda](https://aws.amazon.com/lambda/details/) to offload image processing task in a serverless configuration. This ensures you don't need lots of hardware to handle thousands of image resize requests, and can scale essentially infinitely. One Tachyon stack is required per S3 bucket, so we recommend using a common region bucket for all sites, which then only requires a single Tachyon stack per region.
 
@@ -14,7 +14,7 @@ We highly recommend using Tachyon on [AWS Lambda](https://aws.amazon.com/lambda/
 Setting up Tachyon using CloudFormation is a three-step process.
 
 
-## Step 1: Creating Prerequisites
+### Step 1: Creating Prerequisites
 
 Before provisioning Tachyon itself, you need to first upload Tachyon to an S3 bucket. This needs to be accessible by Lambda, and you need to note the bucket and key (path) for use during CloudFormation provisioning.
 
@@ -23,7 +23,7 @@ You also need to create an SSL certificate in [Amazon Certificate Manager](https
 **Important Note:** Due to [AWS limitations](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distributionconfig-viewercertificate.html#cfn-cloudfront-distributionconfig-viewercertificate-acmcertificatearn), this certificate **must be created in us-east-1**.
 
 
-## Step 2: Creating CloudFormation Stack
+### Step 2: Creating CloudFormation Stack
 
 The next step is creating the CloudFormation stack. This provisions all the necessary resources to run Tachyon, and configures them to all work well with each other.
 
@@ -40,7 +40,7 @@ This needs to be configured with all the necessary details:
 Once you've configured the stack, wait for it to provision. This is usually quite slow, as CloudFront can take up to an hour to provision.
 
 
-## Step 3: Tweak API Gateway
+### Step 3: Tweak API Gateway
 
 Currently, API Gateway does not support setting the method into binary mode (required for images) via CloudFormation. This means we need to tweak it after the stack has been created.
 
@@ -49,7 +49,7 @@ Open the AWS Console, head to API Gateway, and select the newly created <kbd>Tac
 Save, and once the changes have been applied, Tachyon should be fully configured for your domain.
 
 
-# Manual Installation on Lambda
+## Manual Installation on Lambda
 
 Tachyon can also be manually installed on Lambda, however you will need to handle triggering the Lambda function yourself. This can be done via EC2 instances or another reverse proxy as required.
 
@@ -64,7 +64,7 @@ Select Node 4.3 for the environment. Tachyon requires the S3 bucket and region t
 Configure the rest of your Lambda function as desired.
 
 
-# Manual Installation
+## Manual Installation
 
 If desired, Tachyon can be run on your own servers using Node 4.3. This can also be used for local installations during development.
 
@@ -82,7 +82,7 @@ npm install
 ```
 
 
-## Configuration
+### Configuration
 
 Populate the `config.json` with the AWS region and bucket name you want to use, in the following format:
 
@@ -96,7 +96,7 @@ Populate the `config.json` with the AWS region and bucket name you want to use, 
 These can also be passed via the `AWS_REGION`, and `AWS_S3_BUCKET` environment variables if required.
 
 
-## Running the server
+### Running the server
 
 ```
 node server.js [port] [--debug]
