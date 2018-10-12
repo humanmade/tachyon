@@ -56,14 +56,6 @@ It's really that simple!
 1. Build a new ZIP file by running `npm run build-docker && npm run build-node-modules && build-zip`
 1. Publish a new GitHub release, uploading `lambda.zip` as the built artifact to GitHub
 
-## Update Process
-
-Updates to Tachyon can be a combination of the CloudFormation template and a change in the JavaScript code-base. In either case, the CloudFormation stack should be updated with the latest template and the latest build of the code base.
-
-Download the latest version of Tachyon from the GitHub releases page, and upload it to your S3 bucket you used when creating the initial Tachyon stack. It's recommended to use the pattern `tachyon-vx.x.x.zip` in the S3 path name to not overwrite old versions which allows rollbacks.
-
-Update the CloudFormation Tachyon stack with the latest CloudFormation template from this repository, and specify the S3 path to the latest Tachyon version ZIP file.
-
 ## Credits
 Created by Human Made for high volume and large-scale sites, such as [Happytables](http://happytables.com/). We run Tachyon on sites with millions of monthly page views, and thousands of sites.
 
