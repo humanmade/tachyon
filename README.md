@@ -28,17 +28,17 @@ Tachyon works best with WordPress, coupled with [S3 Uploads](https://github.com/
 
 ![](docs/diagram.png)
 
----
-
 ## Documentation
 
 **[View Documentation →](docs/README.md)**
+
 
 ### Setup
 
 Tachyon comes in two parts: the [server to serve images](docs/server.md), and the [plugin to use it](docs/plugin.md). To use Tachyon, you need to run at least one server, as well as the plugin on all sites you want to use it.
 
 The server is also available as a [Docker image](docs/docker.md), which can be used in production or to set up a local test environment.
+
 
 ## Using
 
@@ -49,6 +49,7 @@ Tachyon provides a simple HTTP interface in the form of:
 It's really that simple!
 
 **[View Args Reference →](docs/using.md)**
+
 
 ## Credits
 
