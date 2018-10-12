@@ -1,14 +1,9 @@
----
-title: Tachyon Docker
-menu_title: Using Docker
-project: tachyon
-permalink: '/projects/tachyon/docker/'
----
+# Using Docker
 
 Tachyon Docker is a docker image that runs the app in a container.
 
-<a class="Btn Btn-Small" href="https://github.com/humanmade/tachyon-docker">Download from GitHub</a>
-<a class="Btn Btn-Small" href="https://hub.docker.com/r/humanmade/tachyon/">View on Docker Hub</a>
+* [Download from GitHub →](https://github.com/humanmade/tachyon-docker)
+* [View on Docker Hub →](https://hub.docker.com/r/humanmade/tachyon/)
 
 # Installation
 
@@ -45,6 +40,7 @@ docker run -d \
 By default the service will expose port `8080`. You can change this by passing the `-p` flag
 to [`docker run`](https://docs.docker.com/engine/reference/run/) and map it to another port.
 
+
 ## Custom S3 endpoint
 
 You can specify a custom S3 endpoint if you're running a tool like [fakeS3][] by passing
@@ -73,10 +69,11 @@ http://tchyn.srv      # Tachyon server
 You can configure the URLs and endpoints as well as add additional Tachyon servers by editing
 the `config.yml` file in the cloned repository.
 
+
 ## Configuring WordPress
 
 To configure WordPress to use the VM add the following to `wp-config.php` once you've
-installed [S3 Uploads](/projects/s3-uploads/).
+installed [S3 Uploads](https://github.com/humanmade/S3-Uploads).
 
 ```php
 <?php
@@ -101,7 +98,7 @@ add_filter( 's3_uploads_s3_client_params', function( $params ) {
 } );
 ```
 
-You can then install the [Tachyon plugin](plugin/) and configure it:
+You can then install the [Tachyon plugin](plugin.md) and configure it:
 
 ```php
 <?php
