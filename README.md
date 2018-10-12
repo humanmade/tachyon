@@ -53,7 +53,7 @@ It's really that simple!
 
 ## Credits
 
-Created by Human Made for high volume and large-scale sites, such as [Happytables](http://happytables.com/). We run Tachyon on sites with millions of monthly page views, and thousands of sites.
+Created by Human Made for high volume and large-scale sites. We run Tachyon on sites with millions of monthly page views, and thousands of sites.
 
 Written and maintained by [Joe Hoyle](https://github.com/joehoyle).
 
