@@ -1,8 +1,4 @@
----
-title: Hints and Tips
-project: tachyon
-permalink: '/projects/tachyon/tips/'
----
+# Hints and Tips
 
 ## Regions
 
