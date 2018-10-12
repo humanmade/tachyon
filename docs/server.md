@@ -1,14 +1,9 @@
----
-title: Server Setup
-project: tachyon
-permalink: '/projects/tachyon/server/'
----
+# Server Setup
 
 The Tachyon server is responsible for generating and serving images.
 
-It can be installed [using AWS CloudFormation](#installation-on-aws), [manually on AWS Lambda](#manual-installation-on-lambda), or [manually using Node.js](#manual-installation). Alternatively, you can use [the Docker installation](/projects/tachyon/docker/).
+It can be installed [using AWS CloudFormation](#installation-on-aws), [manually on AWS Lambda](#manual-installation-on-lambda), or [manually using Node.js](#manual-installation). Alternatively, you can use [the Docker installation](docker.md).
 
-<a class="Btn Btn-Small" href="https://github.com/humanmade/tachyon">Download from GitHub</a>
 
 # Installation on AWS
 
@@ -44,6 +39,7 @@ This needs to be configured with all the necessary details:
 
 Once you've configured the stack, wait for it to provision. This is usually quite slow, as CloudFront can take up to an hour to provision.
 
+
 ## Step 3: Tweak API Gateway
 
 Currently, API Gateway does not support setting the method into binary mode (required for images) via CloudFormation. This means we need to tweak it after the stack has been created.
@@ -59,11 +55,11 @@ Tachyon can also be manually installed on Lambda, however you will need to handl
 
 Simply upload Tachyon to S3 per Step 1 above, then create a new Lambda function with this path set.
 
-<img src="/projects/tachyon/lambda-upload.png" style="width: 464px" />
+![](lambda-upload.png)
 
 Select Node 4.3 for the environment. Tachyon requires the S3 bucket and region to be configured as Environment Variables, with the keys `S3_BUCKET` and `S3_REGION` (these can be changed after creation if required).
 
-<img src="/projects/tachyon/lambda-env.png" style="width: 817px" />
+![](lambda-env.png)
 
 Configure the rest of your Lambda function as desired.
 
@@ -85,6 +81,7 @@ git clone git@github.com:humanmade/node-tachyon.git
 npm install
 ```
 
+
 ## Configuration
 
 Populate the `config.json` with the AWS region and bucket name you want to use, in the following format:
@@ -98,10 +95,11 @@ Populate the `config.json` with the AWS region and bucket name you want to use, 
 
 These can also be passed via the `AWS_REGION`, and `AWS_S3_BUCKET` environment variables if required.
 
+
 ## Running the server
 
 ```
 node server.js [port] [--debug]
 ```
 
-With no options passed you should see the server running by default on `http://localhost:8080/` - this is your Tachyon URL, which you need to configure [when installing the plugin](../plugin/).
+With no options passed you should see the server running by default on `http://localhost:8080/` - this is your Tachyon URL, which you need to configure [when installing the plugin](plugin.md).
