@@ -14,6 +14,10 @@ The server is also available as a [Docker image](docker.md), which can be used i
 
 * [Design](design.md) - Motivation and Design
 * [Server Setup](server.md) (or, [Docker Setup](docker.md))
+	* [Installation on AWS](server.md#installation-on-aws)
+	* [Manual Installation on Lambda](server.md#manual-installation-on-lambda)
+	* [Manual Installation](server.md#manual-installation)
+	* [Update Process](server.md#update-process)
 * [Plugin Setup](plugin.md)
 * [Using Tachyon](using.md)
 * [Hints and Tips](tips.md)
