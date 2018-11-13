@@ -208,7 +208,9 @@
 								"Headers" : [ "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers" ]
 							},
 							"PathPattern" : "*.gif",
-							"DefaultTTL" : "63115200",
+							"MinTTL" : 63115200,
+							"DefaultTTL": 63115201,
+							"MaxTTL": 63115202,
 							"TargetOriginId" : "S3-Proxy",
 							"ViewerProtocolPolicy" : "allow-all"
 						}
