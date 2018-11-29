@@ -43,7 +43,7 @@ var getDimArray = function( dims, zoom ) {
 	var dimArr = typeof dims === 'string' ? dims.split(',') : dims;
 	zoom = zoom || 1;
 	return dimArr.map(function(v) {
-		return (Number(v) * zoom) || null;
+		return Math.round((Number(v) * zoom)) || null;
 	});
 }
 
