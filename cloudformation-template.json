@@ -155,7 +155,7 @@
 					"S3Bucket": { "Ref" : "NodeTachyonBucket" },
 					"S3Key": { "Ref" : "NodeTachyonLambdaPath" }
 				},
-				"Runtime": "nodejs6.10",
+				"Runtime": "nodejs8.10",
 				"Timeout": "60",
 				"MemorySize": 256,
 				"Handler": "lambda-handler.handler",

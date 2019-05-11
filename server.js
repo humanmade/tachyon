@@ -32,7 +32,7 @@ http.createServer( function( request, response ) {
 		return response.end()
 	}
 
-	return tachyon.s3( config, decodeURI( params.pathname.substr(1) ), params.query, function( err, data, info ) {
+	return tachyon.s3( config, decodeURIComponent( params.pathname.substr(1) ), params.query, function( err, data, info ) {
 		if ( err ) {
 			if ( debug ) {
 				console.error( Date(), err )
