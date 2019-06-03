@@ -30,6 +30,13 @@ http.createServer( function( request, response ) {
 		response.writeHead( 200 )
 		response.write( 'All good.' )
 		return response.end()
+  }
+
+	// robots.txt
+	if ( params.pathname === '/robots.txt' ) {
+		response.writeHead( 200 )
+		response.write( 'User-agent: *' + '\n' + 'Disallow: /' )
+		return response.end()
 	}
 
 	return tachyon.s3( config, decodeURIComponent( params.pathname.substr(1) ), params.query, function( err, data, info ) {
