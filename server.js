@@ -30,12 +30,12 @@ http.createServer( function( request, response ) {
 		response.writeHead( 200 )
 		response.write( 'All good.' )
 		return response.end()
-  }
+	}
 
 	// robots.txt
 	if ( params.pathname === '/robots.txt' ) {
-    response.writeHead( 200 )
-    response.type('text/plain');
+		response.writeHead( 200 )
+		response.type('text/plain');
 		response.write( 'User-agent: *' + '\n' + 'Allow: /' )
 		return response.end()
 	}
