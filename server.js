@@ -34,8 +34,7 @@ http.createServer( function( request, response ) {
 
 	// robots.txt
 	if ( params.pathname === '/robots.txt' ) {
-		response.writeHead( 200 )
-		response.type('text/plain');
+		response.writeHead( 200 );
 		response.write( 'User-agent: *' + '\n' + 'Allow: /' )
 		return response.end()
 	}
