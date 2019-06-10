@@ -2,6 +2,7 @@ var http   = require("http"),
 	url    = require("url"),
 	path   = require("path"),
 	fs     = require("fs"),
+	os     = require("os"),
 	tachyon= require( './index' ),
 	args = process.argv.slice(2),
 	port   = Number( args[0] ) ? args[0] : 8080,
@@ -35,7 +36,7 @@ http.createServer( function( request, response ) {
 	// robots.txt
 	if ( params.pathname === '/robots.txt' ) {
 		response.writeHead( 200 );
-		response.write( 'User-agent: *' + '\n' + 'Allow: /' )
+		response.write( 'User-agent: *' + os.EOL + 'Allow: /' )
 		return response.end()
 	}
 
