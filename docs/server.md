@@ -40,15 +40,6 @@ This needs to be configured with all the necessary details:
 Once you've configured the stack, wait for it to provision. This is usually quite slow, as CloudFront can take up to an hour to provision.
 
 
-### Step 3: Tweak API Gateway
-
-Currently, API Gateway does not support setting the method into binary mode (required for images) via CloudFormation. This means we need to tweak it after the stack has been created.
-
-Open the AWS Console, head to API Gateway, and select the newly created <kbd>Tachyon</kbd>, then the <kbd>Binary Support</kbd> item. Set this to `image/*`.
-
-Save, and once the changes have been applied, Tachyon should be fully configured for your domain.
-
-
 ## Manual Installation on Lambda
 
 Tachyon can also be manually installed on Lambda, however you will need to handle triggering the Lambda function yourself. This can be done via EC2 instances or another reverse proxy as required.
