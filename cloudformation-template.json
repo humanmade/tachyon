@@ -1,5 +1,5 @@
 {
-	"Description": "Human Made Tachyon Image Server with Lambda v2.1.8",
+	"Description": "Human Made Tachyon Image Server with Lambda v2.1.9",
 	"Parameters": {
 		"NodeTachyonBucket" : {
 			"Type" : "String",
@@ -37,7 +37,8 @@
 		"ApiGatewayRestApi": {
 			"Type": "AWS::ApiGateway::RestApi",
 			"Properties": {
-				"Name" : "Tachyon"
+				"Name" : "Tachyon",
+                "BinaryMediaTypes": [ "image~1*" ]
 			}
 		},
 		"ApiGatewayMethod": {
