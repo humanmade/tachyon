@@ -39,7 +39,6 @@ Tachyon comes in two parts: the [server to serve images](docs/server.md), and th
 
 The server is also available as a [Docker image](docs/docker.md), which can be used in production or to set up a local test environment.
 
-
 ## Using
 
 Tachyon provides a simple HTTP interface in the form of:
@@ -49,6 +48,12 @@ Tachyon provides a simple HTTP interface in the form of:
 It's really that simple!
 
 **[View Args Reference →](docs/using.md)**
+
+### Upgrading
+
+When upgrading, be sure to perform an API Gateway deployment from the AWS Console. Navigate to API Gateway from the AWS Console and select the "Tachyon" API. Once selected, click "Actions" and then "Deploy API."
+
+![](docs/perform-deployment.png)
 
 
 ## Credits
