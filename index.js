@@ -24,7 +24,7 @@ module.exports.s3 = function(config, key, args, callback) {
 	}
 	var s3 = regions[config.region];
 
-	return s3.makeRequest(
+	return s3.makeUnauthenticatedRequest(
 		'getObject',
 		{ Bucket: config.bucket, Key: key },
 		function(err, data) {
