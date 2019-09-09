@@ -150,13 +150,12 @@
 		"LambdaFunction": {
 			"Type": "AWS::Lambda::Function",
 			"Properties": {
-				"Handler": "index.handler",
 				"Role": { "Fn::GetAtt" : [ "LambdaFunctionIAMRole", "Arn"] },
 				"Code": {
 					"S3Bucket": { "Ref" : "NodeTachyonBucket" },
 					"S3Key": { "Ref" : "NodeTachyonLambdaPath" }
 				},
-				"Runtime": "nodejs8.10",
+				"Runtime": "nodejs10.x",
 				"Timeout": "60",
 				"MemorySize": 256,
 				"Handler": "lambda-handler.handler",

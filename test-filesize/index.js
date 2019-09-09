@@ -44,7 +44,7 @@ async function test() {
 
 			// Save each one to the file system for viewing.
 			Object.entries(resized).forEach(([size, image]) => {
-				fs.writeFile( `${__dirname}/output/${imageName}-${size}.${image.info.format}`, image.data );
+				fs.writeFile( `${__dirname}/output/${imageName}-${size}.${image.info.format}`, image.data, () => {});
 			});
 
 			table.push([

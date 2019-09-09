@@ -48,7 +48,7 @@ Simply upload Tachyon to S3 per Step 1 above, then create a new Lambda function 
 
 ![](lambda-upload.png)
 
-Select Node 4.3 for the environment. Tachyon requires the S3 bucket and region to be configured as Environment Variables, with the keys `S3_BUCKET` and `S3_REGION` (these can be changed after creation if required).
+Select Node 10.x for the environment. Tachyon requires the S3 bucket and region to be configured as Environment Variables, with the keys `S3_BUCKET` and `S3_REGION` (these can be changed after creation if required).
 
 ![](lambda-env.png)
 
