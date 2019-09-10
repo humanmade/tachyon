@@ -114,18 +114,7 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 
 					// resize
 					if (args.resize) {
-						args.resize = getDimArray( args.resize, zoom );
-
-						// apply cropping strategies
-						if ( args.gravity ) {
-							image.crop( args.gravity );
-						}
-						if ( args.crop_strategy === 'attention' ) {
-							image.crop( sharp.strategy.attention );
-						}
-						if ( args.crop_strategy === 'entropy' ) {
-							image.crop( sharp.strategy.entropy );
-						}
+						// apply smart crop if available
 						if ( args.crop_strategy === 'smart' && crop ) {
 							image.extract({
 								left: crop.x,
@@ -136,39 +125,39 @@ module.exports.resizeBuffer = function(buffer, args, callback) {
 						}
 
 						// apply the resize
-						image.resize.apply(
-							image,
-							args.resize
-						);
+						args.resize = getDimArray( args.resize, zoom );
+						image.resize({
+							width: args.resize[0],
+							height: args.resize[1],
+							withoutEnlargement: true,
+							position: ( args.crop_strategy !== 'smart' && args.crop_strategy ) || args.gravity || 'centre',
+						});
 					} else if (args.fit) {
 						args.fit = getDimArray( args.fit, zoom );
-						image.resize.apply(
-							image,
-							args.fit
-						);
-						image.max();
+						image.resize({
+							width: args.fit[0],
+							height: args.fit[1],
+							fit: 'inside',
+							withoutEnlargement: true,
+						});
 					} else if (args.lb) {
 						args.lb = getDimArray( args.lb, zoom );
-						image.resize.apply(
-							image,
-							args.lb
-						);
-
-						// default to a black background to replicate Photon API behaviour
-						// when no background colour specified
-						if (!args.background) {
-							args.background = 'black';
-						}
-						image.background(args.background);
-						image.embed();
+						image.resize({
+							width: args.lb[0],
+							height: args.lb[1],
+							fit: 'contain',
+							// default to a black background to replicate Photon API behaviour
+							// when no background colour specified
+							background: args.background || 'black',
+							withoutEnlargement: true,
+						});
 					} else if (args.w || args.h) {
-						image.resize(
-							(Number(args.w) * zoom) || null,
-							(Number(args.h) * zoom) || null
-						);
-						if (!args.crop) {
-							image.max();
-						}
+						image.resize({
+							width: (Number(args.w) * zoom) || null,
+							height: (Number( args.h ) * zoom) || null,
+							fit: args.crop ? 'cover' : 'inside',
+							withoutEnlargement: true,
+						});
 					}
 
 					// return a default compression value based on a logarithmic scale
