@@ -39,7 +39,7 @@ module.exports.s3 = function(config, key, args, callback) {
 	);
 };
 
-var getDimArray = function( dims, zoom ) {
+const getDimArray = function( dims, zoom ) {
 	var dimArr = typeof dims === 'string' ? dims.split(',') : dims;
 	zoom = zoom || 1;
 	return dimArr.map(function(v) {
@@ -47,176 +47,150 @@ var getDimArray = function( dims, zoom ) {
 	});
 }
 
-var clamp = function( val, min, max ) {
+const clamp = function( val, min, max ) {
 	return Math.min( Math.max( Number( val ), min ), max );
 }
 
-module.exports.resizeBuffer = function(buffer, args, callback) {
-	return new Promise(function(resolve, reject) {
-		try {
-			var image = sharp(buffer).withMetadata();
-			var metadata = function(crop) {
-				return image.metadata(function(err, metadata) {
-					if (err) {
-						reject(err);
-						if (callback) {
-							callback(err);
-						}
-						return;
-					}
+// return a default compression value based on a logarithmic scale
+// defaultValue = 100, zoom = 2; = 65
+// defaultValue = 80, zoom = 2; = 50
+// defaultValue = 100, zoom = 1.5; = 86
+// defaultValue = 80, zoom = 1.5; = 68
+const applyZoomCompression = function( defaultValue, zoom ) {
+	return clamp( Math.round( defaultValue - ( (Math.log(zoom) / Math.log(defaultValue / zoom)) * (defaultValue * zoom) ) ), Math.round(defaultValue / zoom), defaultValue );
+}
 
-					// auto rotate based on orientation exif data
-					image.rotate();
+module.exports.resizeBuffer = async function(buffer, args, callback) {
+	try {
+		const image = sharp(buffer).withMetadata();
 
-					// convert gifs to pngs unless animated
-					if (
-						args.key &&
-						path.extname(args.key).toLowerCase() === '.gif'
-					) {
-						if (isAnimated(buffer)) {
-							return callback(new Error('fallback-to-original'));
-						} else {
-							image.png();
-						}
-					}
+		// check we can get valid metadata
+		const metadata = await image.metadata();
 
-					// crop (assumes crop data from original)
-					if (args.crop) {
-						var cropValues =
-							typeof args.crop === 'string'
-								? args.crop.split(',')
-								: args.crop;
+		// auto rotate based on orientation exif data
+		image.rotate();
 
-						// convert percentages to px values
-						cropValues = cropValues.map(function(value, index) {
-							if (value.indexOf('px') > -1) {
-								return Number(value.substr(0, value.length - 2));
-							} else {
-								return Number(
-									Number(
-										metadata[index % 2 ? 'height' : 'width'] *
-											(value / 100)
-									).toFixed(0)
-								);
-							}
-						});
-
-						image.extract({
-							left: cropValues[0],
-							top: cropValues[1],
-							width: cropValues[2],
-							height: cropValues[3],
-						});
-					}
-
-					// get zoom value
-					var zoom = parseFloat( args.zoom ) || 1;
-
-					// resize
-					if (args.resize) {
-						// apply smart crop if available
-						if ( args.crop_strategy === 'smart' && crop ) {
-							image.extract({
-								left: crop.x,
-								top: crop.y,
-								width: crop.width,
-								height: crop.height,
-							});
-						}
-
-						// apply the resize
-						args.resize = getDimArray( args.resize, zoom );
-						image.resize({
-							width: args.resize[0],
-							height: args.resize[1],
-							withoutEnlargement: true,
-							position: ( args.crop_strategy !== 'smart' && args.crop_strategy ) || args.gravity || 'centre',
-						});
-					} else if (args.fit) {
-						args.fit = getDimArray( args.fit, zoom );
-						image.resize({
-							width: args.fit[0],
-							height: args.fit[1],
-							fit: 'inside',
-							withoutEnlargement: true,
-						});
-					} else if (args.lb) {
-						args.lb = getDimArray( args.lb, zoom );
-						image.resize({
-							width: args.lb[0],
-							height: args.lb[1],
-							fit: 'contain',
-							// default to a black background to replicate Photon API behaviour
-							// when no background colour specified
-							background: args.background || 'black',
-							withoutEnlargement: true,
-						});
-					} else if (args.w || args.h) {
-						image.resize({
-							width: (Number(args.w) * zoom) || null,
-							height: (Number( args.h ) * zoom) || null,
-							fit: args.crop ? 'cover' : 'inside',
-							withoutEnlargement: true,
-						});
-					}
-
-					// return a default compression value based on a logarithmic scale
-					// defaultValue = 100, zoom = 2; = 65
-					// defaultValue = 80, zoom = 2; = 50
-					// defaultValue = 100, zoom = 1.5; = 86
-					// defaultValue = 80, zoom = 1.5; = 68
-					var applyZoomCompression = function( defaultValue, zoom ) {
-						return clamp( Math.round( defaultValue - ( (Math.log(zoom) / Math.log(defaultValue / zoom)) * (defaultValue * zoom) ) ), Math.round(defaultValue / zoom), defaultValue );
-					}
-
-					// set default quality slightly higher than sharp's default
-					if ( ! args.quality ) {
-						args.quality = applyZoomCompression( 82, zoom );
-					}
-
-					// allow override of compression quality
-					if (args.webp) {
-						image.webp({
-							quality: Math.round( clamp( args.quality, 0, 100 ) ),
-						});
-					} else if (metadata.format === 'jpeg') {
-						image.jpeg({
-							quality: Math.round( clamp( args.quality, 0, 100 ) ),
-						});
-					}
-
-					// send image
-					return image.toBuffer(function(err, _data, info) {
-						if (err) {
-							reject(err);
-							if (callback) {
-								callback(err);
-							}
-							return;
-						}
-
-						resolve({ data: _data, info: info });
-						if (callback) {
-							callback(err, _data, info);
-						}
-						return;
-					});
-				});
+		// convert gifs to pngs unless animated
+		if (
+			args.key &&
+			path.extname(args.key).toLowerCase() === '.gif'
+		) {
+			if (isAnimated(buffer)) {
+				return callback(new Error('fallback-to-original'));
+			} else {
+				image.png();
 			}
-
-			// handle smartcrop promise
-			if ( args.crop_strategy === 'smart' && args.resize ) {
-				args.resize = getDimArray( args.resize );
-				return smartcrop.crop(buffer, { width: args.resize[0], height: args.resize[1] })
-					.then(function(result) {
-						return metadata(result.topCrop);
-					});
-			}
-
-			return metadata();
-		} catch (err) {
-			reject(err);
-			callback(err);
 		}
-	});
+
+		// crop (assumes crop data from original)
+		if (args.crop) {
+			var cropValues =
+				typeof args.crop === 'string'
+					? args.crop.split(',')
+					: args.crop;
+
+			// convert percentages to px values
+			cropValues = cropValues.map(function(value, index) {
+				if (value.indexOf('px') > -1) {
+					return Number(value.substr(0, value.length - 2));
+				} else {
+					return Number(
+						Number(
+							metadata[index % 2 ? 'height' : 'width'] *
+								(value / 100)
+						).toFixed(0)
+					);
+				}
+			});
+
+			image.extract({
+				left: cropValues[0],
+				top: cropValues[1],
+				width: cropValues[2],
+				height: cropValues[3],
+			});
+		}
+
+		// get zoom value
+		const zoom = parseFloat( args.zoom ) || 1;
+
+		// resize
+		if (args.resize) {
+			// apply smart crop if available
+			if (args.crop_strategy === 'smart' && ! args.crop) {
+				const cropResize = getDimArray( args.resize );
+				const rotatedImage = await image.toBuffer();
+				const result = await smartcrop.crop(rotatedImage, { width: cropResize[0], height: cropResize[1] });
+
+				if (result && result.topCrop) {
+					image.extract({
+						left: result.topCrop.x,
+						top: result.topCrop.y,
+						width: result.topCrop.width,
+						height: result.topCrop.height,
+					});
+				}
+			}
+
+			// apply the resize
+			args.resize = getDimArray( args.resize, zoom );
+			image.resize({
+				width: args.resize[0],
+				height: args.resize[1],
+				withoutEnlargement: true,
+				position: ( args.crop_strategy !== 'smart' && args.crop_strategy ) || args.gravity || 'centre',
+			});
+		} else if (args.fit) {
+			args.fit = getDimArray( args.fit, zoom );
+			image.resize({
+				width: args.fit[0],
+				height: args.fit[1],
+				fit: 'inside',
+				withoutEnlargement: true,
+			});
+		} else if (args.lb) {
+			args.lb = getDimArray( args.lb, zoom );
+			image.resize({
+				width: args.lb[0],
+				height: args.lb[1],
+				fit: 'contain',
+				// default to a black background to replicate Photon API behaviour
+				// when no background colour specified
+				background: args.background || 'black',
+				withoutEnlargement: true,
+			});
+		} else if (args.w || args.h) {
+			image.resize({
+				width: (Number(args.w) * zoom) || null,
+				height: (Number( args.h ) * zoom) || null,
+				fit: args.crop ? 'cover' : 'inside',
+				withoutEnlargement: true,
+			});
+		}
+
+		// set default quality slightly higher than sharp's default
+		if ( ! args.quality ) {
+			args.quality = applyZoomCompression( 82, zoom );
+		}
+
+		// allow override of compression quality
+		if (args.webp) {
+			image.webp({
+				quality: Math.round( clamp( args.quality, 0, 100 ) ),
+			});
+		} else if (metadata.format === 'jpeg') {
+			image.jpeg({
+				quality: Math.round( clamp( args.quality, 0, 100 ) ),
+			});
+		}
+
+		// send image
+		const output = await image.toBuffer();
+		callback(null, output, {
+			format: metadata.format,
+			size: Buffer.byteLength(output),
+		});
+	} catch (err) {
+		callback(err);
+	}
 };
