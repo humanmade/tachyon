@@ -56,8 +56,10 @@ const clamp = function( val, min, max ) {
 // defaultValue = 80, zoom = 2; = 50
 // defaultValue = 100, zoom = 1.5; = 86
 // defaultValue = 80, zoom = 1.5; = 68
-const applyZoomCompression = function( defaultValue, zoom ) {
-	return clamp( Math.round( defaultValue - ( (Math.log(zoom) / Math.log(defaultValue / zoom)) * (defaultValue * zoom) ) ), Math.round(defaultValue / zoom), defaultValue );
+const applyZoomCompression = function ( defaultValue, zoom ) {
+	const value = Math.round( defaultValue - ( ( Math.log( zoom ) / Math.log( defaultValue / zoom ) ) * ( defaultValue * zoom ) ) );
+	const min = Math.round( defaultValue / zoom );
+	return clamp( value, min, defaultValue );
 }
 
 module.exports.resizeBuffer = async function(buffer, args, callback) {
