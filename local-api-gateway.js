@@ -18,13 +18,19 @@ http.createServer(function (request, response) {
 		queryStringParameters: querystring.parse( query ),
 		headers: request.headers,
 	};
-	const childArgs = ['run', '--rm', '-e', `S3_BUCKET=${ bucket }`, '-e', `S3_REGION=${ region }`, '-v', `${ task }:/var/task`, 'lambci/lambda:nodejs6.10', 'lambda-handler.handler', JSON.stringify(args)];
+	const childArgs = ['run', '--rm', '-e', `S3_BUCKET=${ bucket }`, '-e', `S3_REGION=${ region }`, '-v', `${ task }:/var/task`, 'lambci/lambda:nodejs10.x', 'lambda-handler.handler', JSON.stringify(args)];
 	const child = spawn('docker', childArgs);
 	var stdout = '';
 	child.stdout.on('data', data => stdout += data);
 	child.stderr.on('data', data => console.warn(String(data)));
 	child.on('close', function () {
-		const lambdaExec = JSON.parse(stdout);
+		let lambdaExec;
+		try {
+			lambdaExec = JSON.parse(stdout);
+		} catch ( e ) {
+			console.error( e );
+			return;
+		}
 		if ( lambdaExec.errorMessage ) {
 			response.writeHead( 500 );
 			response.write(JSON.stringify( lambdaExec ) );
@@ -32,7 +38,12 @@ http.createServer(function (request, response) {
 			return;
 		}
 		response.writeHead(lambdaExec.statusCode, lambdaExec.headers);
-		response.write(Buffer.from(lambdaExec.body, 'base64'));
+		if ( lambdaExec.isBase64Encoded ) {
+			response.write(Buffer.from(lambdaExec.body, 'base64'));
+		} else {
+			response.write(lambdaExec.body);
+		}
+
 		response.end();
 	});
 }).listen(7000);
