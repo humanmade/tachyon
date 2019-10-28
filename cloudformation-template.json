@@ -28,7 +28,12 @@
 		"WebPDetectionLambdaFunctionARN" : {
 			"Type" : "String",
 			"Description" : "ARN for a WebP detection lambda@edge function. Must be versioned."
-		}
+		},
+		"LambdaFunctionMemoryLimit" : {
+			"Type" : "Number",
+			"Description" : "The amount of memory the AWS Lambda function will get.",
+			"Default" : 256
+		},
 	},
 	"Conditions" : {
 		"UseWebPDetectionFunction" : {"Fn::Not" : [{"Fn::Equals" : [{"Ref" : "WebPDetectionLambdaFunctionARN"}, ""]} ] }
@@ -157,7 +162,7 @@
 				},
 				"Runtime": "nodejs10.x",
 				"Timeout": "60",
-				"MemorySize": 256,
+				"MemorySize": { "Ref": "LambdaFunctionMemoryLimit" },
 				"Handler": "lambda-handler.handler",
 				"Environment" : {
 					"Variables" : {
