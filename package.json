@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "aws-sdk": "^2.276.1",
+    "aws-xray-sdk-core": "^2.4.0",
     "cli-table": "^0.3.1",
     "filesize": "^4.1.2"
   }
