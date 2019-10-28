@@ -1,8 +1,10 @@
 var sharp = require('sharp'),
-	AWS = require('aws-sdk'),
+	AWSXRay = require('aws-xray-sdk-core'),
 	path = require('path'),
 	isAnimated = require('animated-gif-detector'),
 	smartcrop = require('smartcrop-sharp');
+
+var AWS = AWSXRay.captureAWS(require('aws-sdk'));
 
 var regions = {};
 
