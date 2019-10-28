@@ -33,7 +33,7 @@
 			"Type" : "Number",
 			"Description" : "The amount of memory the AWS Lambda function will get.",
 			"Default" : 256
-		},
+		}
 	},
 	"Conditions" : {
 		"UseWebPDetectionFunction" : {"Fn::Not" : [{"Fn::Equals" : [{"Ref" : "WebPDetectionLambdaFunctionARN"}, ""]} ] }
