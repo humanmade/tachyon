@@ -4,7 +4,12 @@ var sharp = require('sharp'),
 	isAnimated = require('animated-gif-detector'),
 	smartcrop = require('smartcrop-sharp');
 
-var AWS = AWSXRay.captureAWS(require('aws-sdk'));
+let AWS;
+if ( process.env.AWS_XRAY_DAEMON_ADDRESS ) {
+	AWS = AWSXRay.captureAWS(require('aws-sdk'));
+} else {
+	AWS = require('aws-sdk');
+}
 
 var regions = {};
 
