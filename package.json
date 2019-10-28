@@ -14,7 +14,7 @@
     "function-name": ""
   },
   "scripts": {
-    "build-node-modules": "rm -R node_modules ; docker run --rm -v `pwd`:/var/task lambci/lambda:build-nodejs10.x npm instal",
+    "build-node-modules": "rm -R node_modules ; docker run --rm -v `pwd`:/var/task lambci/lambda:build-nodejs10.x npm install",
     "test-file": "docker run --rm -e S3_BUCKET=hmn-uploads-eu -e S3_REGION=eu-west-1 -v `pwd`:/var/task lambci/lambda:nodejs10.x lambda-handler.handler '{\"path\":\"/'$npm_config_path'\", \"headers\":{}}'",
     "build-zip": "zip -r lambda.zip ./node_modules/ index.js proxy-file.js lambda-handler.js",
     "upload-zip": "aws s3 --region=$npm_config_region cp ./lambda.zip s3://$npm_config_bucket/$npm_config_path",
