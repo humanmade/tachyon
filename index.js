@@ -189,12 +189,17 @@ module.exports.resizeBuffer = async function(buffer, args, callback) {
 		}
 
 		// send image
-		const output = await image.toBuffer();
-		callback(null, output, {
-			format: metadata.format,
-			size: Buffer.byteLength(output),
+		return new Promise((resolve, reject) => {
+			image.toBuffer(async (err, data, info) => {
+				if (err) {
+					reject(err);
+				}
+				callback && callback(null, data, info);
+				resolve({ data, info });
+			});
 		});
 	} catch (err) {
-		callback(err);
+		callback && callback(err);
+		return err;
 	}
 };
