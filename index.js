@@ -207,8 +207,8 @@ module.exports.resizeBuffer = async function(buffer, args, callback) {
 				if ( info.format === 'png' ) {
 
 					if ( enableTracing ) {
-						var segment = new AWSXRay.Segment( 'imagemin-pngquant' );
-						AWSXRay.setSegment( segment );
+						var mainSegment = AWSXRay.getSegment();
+						var segment = mainSegment.addNewSubsegment( 'imagemin-pngquant' );
 					}
 
 					data = await imageminPngquant()( data );
