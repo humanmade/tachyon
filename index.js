@@ -211,9 +211,7 @@ module.exports.resizeBuffer = async function(buffer, args, callback) {
 						AWSXRay.setSegment( segment );
 					}
 
-					data = await imagemin.buffer( data, {
-						plugins: [ imageminPngquant() ],
-					} );
+					data = await imageminPngquant()( data );
 
 					if ( enableTracing ) {
 						segment.close();
