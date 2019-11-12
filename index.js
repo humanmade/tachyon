@@ -3,7 +3,6 @@ var sharp = require('sharp'),
 	path = require('path'),
 	isAnimated = require('animated-gif-detector'),
 	smartcrop = require('smartcrop-sharp'),
-	imagemin = require('imagemin'),
 	imageminPngquant = require('imagemin-pngquant');
 
 const enableTracing = process.env.AWS_XRAY_DAEMON_ADDRESS ;
