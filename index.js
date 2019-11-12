@@ -2,10 +2,12 @@ var sharp = require('sharp'),
 	AWSXRay = require('aws-xray-sdk-core'),
 	path = require('path'),
 	isAnimated = require('animated-gif-detector'),
-	smartcrop = require('smartcrop-sharp');
+	smartcrop = require('smartcrop-sharp'),
+	imageminPngquant = require('imagemin-pngquant');
 
+const enableTracing = process.env.AWS_XRAY_DAEMON_ADDRESS ;
 let AWS;
-if ( process.env.AWS_XRAY_DAEMON_ADDRESS ) {
+if ( enableTracing ) {
 	AWS = AWSXRay.captureAWS(require('aws-sdk'));
 } else {
 	AWS = require('aws-sdk');
@@ -199,6 +201,29 @@ module.exports.resizeBuffer = async function(buffer, args, callback) {
 				if (err) {
 					reject(err);
 				}
+
+				// Pass PNG images through PNGQuant as Sharp is not good at compressing them.
+				// See https://github.com/lovell/sharp/issues/478
+				if ( info.format === 'png' ) {
+
+					if ( enableTracing ) {
+						var segment = new AWSXRay.Segment( 'imagemin-pngquant' );
+						AWSXRay.setSegment( segment );
+					}
+
+					data = await imagemin.buffer( data, {
+						plugins: [ imageminPngquant() ],
+					} );
+
+					if ( enableTracing ) {
+						segment.close();
+					}
+
+					// Make sure we update the size in the info, to reflect the new
+					// size after lossless-compression.
+					info.size = data.length;
+				}
+
 				callback && callback(null, data, info);
 				resolve({ data, info });
 			});

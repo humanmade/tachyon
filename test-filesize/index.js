@@ -2,7 +2,14 @@ const Table = require('cli-table');
 const Filesize = require('filesize');
 const tachyon = require('../index');
 const fs = require('fs');
-const images = fs.readdirSync('./images');
+
+let images = fs.readdirSync('./images');
+
+const args = process.argv.slice(2);
+
+if ( args[0] ) {
+	images = images.filter( file => args[0] === file );
+}
 
 const table = new Table({
 	head: [
