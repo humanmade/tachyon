@@ -1,3 +1,3 @@
 #!/bin/bash
 # Build node_modules
-docker run --rm -v `pwd`:/var/task lambci/lambda:build-nodejs10.x npm install --production
+docker run --rm -v `pwd`:/var/task lambci/lambda:build-nodejs10.x npm install
