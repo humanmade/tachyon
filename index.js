@@ -5,7 +5,7 @@ var sharp = require('sharp'),
 	smartcrop = require('smartcrop-sharp'),
 	imageminPngquant = require('imagemin-pngquant');
 
-const enableTracing = process.env.AWS_XRAY_DAEMON_ADDRESS ;
+const enableTracing = process.env.AWS_XRAY_DAEMON_ADDRESS;
 let AWS;
 if ( enableTracing ) {
 	AWS = AWSXRay.captureAWS(require('aws-sdk'));
