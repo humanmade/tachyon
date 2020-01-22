@@ -52,9 +52,44 @@ Select Node 10.x for the environment. Tachyon requires the S3 bucket and region 
 
 ![](lambda-env.png)
 
-If you have the need of keeping your S3 bucket private, you can add an Environment Variable, with the key `S3_AUTHENTICATED_REQUEST` and the value `true` (case insensitive).
+If you have the need of keeping your S3 bucket private, you can add an Environment Variable, with the key `S3_AUTHENTICATED_REQUEST` and the value `true` (case insensitive). In this case, it will be necessary to create an IAM Role for the function to be able to fetch data from the S3 Bucket.
 
 ![](lambda-env-authenticated-request.png)
+
+Here is an example of IAM Role that should be created for this functionality to work. This policy allows the role to access any S3 Bucket with Get and Put permissions, and allows to create logs and log groups as well as Put log events and describe log streams:
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::*"
+            ],
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+                "logs:DescribeLogStreams"
+            ],
+            "Resource": [
+                "arn:aws:logs:*:*:*"
+            ],
+            "Effect": "Allow"
+        }
+    ]
+}
+```
+
+After creation, this Role should be attached to the Lambda Function as the Execution Role. You should select the option `Use an existing role` and select the role you created for your function.
+
+![](use-existing-role.png)
 
 Configure the rest of your Lambda function as desired.
 
