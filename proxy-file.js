@@ -4,8 +4,8 @@ var authenticatedRequest = !!process.env.S3_AUTHENTICATED_REQUEST
 
 function sendOriginal(region, bucket, key, callback) {
 	var s3 = new AWS.S3(Object.assign({ region: region }));
-	var s3_request = authenticatedRequest ? s3.makeRequest : s3.makeUnauthenticatedRequest
-	return s3_request(
+	var s3Request = authenticatedRequest ? s3.makeRequest : s3.makeUnauthenticatedRequest
+	return s3Request(
 		'getObject',
 		{ Bucket: bucket, Key: key },
 		function(err, data) {
