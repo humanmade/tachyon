@@ -63,8 +63,7 @@ Here is an example of IAM Role that should be created for this functionality to 
     "Statement": [
         {
             "Action": [
-                "s3:GetObject",
-                "s3:PutObject"
+                "s3:GetObject"
             ],
             "Resource": [
                 "arn:aws:s3:::*"
