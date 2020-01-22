@@ -52,6 +52,10 @@ Select Node 10.x for the environment. Tachyon requires the S3 bucket and region 
 
 ![](lambda-env.png)
 
+If you have the need of keeping your S3 bucket private, you can add an Environment Variable, with the key `S3_AUTHENTICATED_REQUEST` and the value `true` (case insensitive).
+
+![](lambda-env-authenticated-request.png)
+
 Configure the rest of your Lambda function as desired.
 
 
