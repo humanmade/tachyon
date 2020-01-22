@@ -13,7 +13,7 @@ if ( enableTracing ) {
 	AWS = require('aws-sdk');
 }
 
-var authenticatedRequest = !!process.env.S3_AUTHENTICATED_REQUEST
+var authenticatedRequest = !!process.env.S3_AUTHENTICATED_REQUEST ? process.env.S3_AUTHENTICATED_REQUEST.toLowerCase() == 'true' : false
 
 var regions = {};
 
