@@ -130,7 +130,7 @@
 									"s3:GetObject"
 								],
 								"Resource": [
-									{"Fn::Sub" : "arn:aws:s3:::${UploadsS3Bucket}"}
+									{"Fn::Sub" : "arn:aws:s3:::${UploadsS3Bucket}/*"}
 								]
 							},
 							{
