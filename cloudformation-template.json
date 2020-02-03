@@ -33,6 +33,12 @@
 			"Type" : "Number",
 			"Description" : "The amount of memory the AWS Lambda function will get.",
 			"Default" : 256
+		},
+		"PrivateS3Bucket": {
+			"Type" : "String",
+			"Description" : "Wether or not the S3 Bucket will be private.",
+			"AllowedValues" : ["false", "true"],
+			"Default" : "false"
 		}
 	},
 	"Conditions" : {
@@ -130,7 +136,7 @@
 									"s3:GetObject"
 								],
 								"Resource": [
-									"arn:aws:s3:::*"
+									{"Fn::Sub" : "arn:aws:s3:::${UploadsS3Bucket}/*"}
 								]
 							},
 							{
@@ -165,7 +171,8 @@
 				"Environment" : {
 					"Variables" : {
 						"S3_BUCKET" : { "Ref": "UploadsS3Bucket" },
-						"S3_REGION": {"Ref": "AWS::Region"}
+						"S3_REGION": {"Ref": "AWS::Region"},
+						"S3_AUTHENTICATED_REQUEST": {"Ref": "PrivateS3Bucket"}
 					}
 				}
 			}
