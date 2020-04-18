@@ -192,7 +192,7 @@
 							"Headers" : [ "X-WebP" ],
 							"QueryString" : "true"
 						},
-						"MinTTL" : 63115200,
+						"MinTTL" : 0,
 						"DefaultTTL": 63115201,
 						"MaxTTL": 63115202,
 						"TargetOriginId" : { "Ref" : "AWS::StackName" },
@@ -218,7 +218,7 @@
 								"Headers" : [ "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers" ]
 							},
 							"PathPattern" : "*.gif",
-							"MinTTL" : 63115200,
+							"MinTTL" : 0,
 							"DefaultTTL": 63115201,
 							"MaxTTL": 63115202,
 							"TargetOriginId" : "S3-Proxy",
