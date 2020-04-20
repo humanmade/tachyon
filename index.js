@@ -59,7 +59,7 @@ module.exports.s3 = function(config, key, args, callback) {
 			});
 		}
 	}
-	request.send( function(err, data) {
+	request.send( function( err, data ) {
 		if (err) {
 			return callback(err);
 		}
