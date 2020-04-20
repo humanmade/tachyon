@@ -60,8 +60,8 @@ module.exports.s3 = function(config, key, args, callback) {
 		}
 	}
 	request.send( function( err, data ) {
-		if (err) {
-			return callback(err);
+		if ( err ) {
+			return callback( err );
 		}
 
 		args.key = key;
