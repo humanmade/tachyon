@@ -45,7 +45,7 @@ module.exports.s3 = function(config, key, args, callback) {
 		// To support forwarding presigned URLs, we hook into the post `build` step to add/forward
 		// the Amz signing URL query params from the current request.
 		if ( isPresigned ) {
-			request.addListener('build', function( req ) {
+			request.addListener( 'build', function ( req ) {
 				const params = querystring.stringify({
 					'X-Amz-Algorithm': args['X-Amz-Algorithm'],
 					'X-Amz-Content-Sha256': args['X-Amz-Content-Sha256'],
