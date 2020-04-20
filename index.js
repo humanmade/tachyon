@@ -26,7 +26,6 @@ module.exports.s3 = function(config, key, args, callback) {
 	var s3config = {};
 	if (config.endpoint) {
 		s3config.endpoint = config.endpoint;
-		s3config.s3ForcePathStyle = true;
 	}
 
 	if (!regions[config.region]) {
