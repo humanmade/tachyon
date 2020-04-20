@@ -35,7 +35,8 @@ exports.handler = function(event, context, callback) {
 		let maxAge = 31536000;
 		if ( args['X-Amz-Expires'] ) {
 			// Date format of X-Amz-Date is YYYYMMDDTHHMMSSZ, which is not parsable by Date.
-			const date = new Date( args['X-Amz-Date'].replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/, '$1-$2-$3T$4:$5:$6Z' ) );
+			const dateString = args['X-Amz-Date'].replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/, '$1-$2-$3T$4:$5:$6Z' );
+			const date = new Date( dateString );
 
 			// Calculate when the signed URL will expire, as we'll set the max-age
 			// cache control to this value.
