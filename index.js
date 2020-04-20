@@ -66,7 +66,7 @@ module.exports.s3 = function(config, key, args, callback) {
 
 		args.key = key;
 
-		return module.exports.resizeBuffer(data.Body, args, callback);
+		return module.exports.resizeBuffer( data.Body, args, callback );
 	} );
 
 	return request;
