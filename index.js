@@ -4,7 +4,7 @@ var sharp = require('sharp'),
 	isAnimated = require('animated-gif-detector'),
 	smartcrop = require('smartcrop-sharp'),
 	imageminPngquant = require('imagemin-pngquant'),
-	querystring = require("querystring");
+	querystring = require('querystring');
 
 const enableTracing = process.env.AWS_XRAY_DAEMON_ADDRESS;
 let AWS;
@@ -58,14 +58,14 @@ module.exports.s3 = function(config, key, args, callback) {
 			// Append the presigned URL params to the S3 file request URL.
 			request.addListener( 'build', function ( req ) {
 				const urlParams = presignedParams.reduce( ( params, urlParam ) => {
-					params[ urlParam ] = args[ urlParam ]
+					params[ urlParam ] = args[ urlParam ];
 					return params;
 				}, {} );
 				req.httpRequest.path += `?${ querystring.stringify( urlParams ) }`;
 			});
 		}
 	}
-	request.send( function( err, data ) {
+	request.send( function ( err, data ) {
 		if ( err ) {
 			return callback( err );
 		}
