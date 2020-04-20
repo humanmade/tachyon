@@ -36,7 +36,12 @@ exports.handler = function(event, context, callback) {
 		if ( args['X-Amz-Expires'] ) {
 			// Date format of X-Amz-Date is YYYYMMDDTHHMMSSZ, which is not parsable by Date.
 			const date = new Date( args['X-Amz-Date'].replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/, '$1-$2-$3T$4:$5:$6Z' ) );
+
+			// Calculate when the signed URL will expire, as we'll set the max-age
+			// cache control to this value.
 			const expires = ( date.getTime() / 1000 ) + Number( args['X-Amz-Expires'] );
+
+			// Mage age is the date the URL expires minus the current time.
 			maxAge = Math.round( expires - ( new Date().getTime() / 1000 ) );
 		}
 		var resp = {
