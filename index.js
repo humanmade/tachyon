@@ -3,7 +3,8 @@ var sharp = require('sharp'),
 	path = require('path'),
 	isAnimated = require('animated-gif-detector'),
 	smartcrop = require('smartcrop-sharp'),
-	imageminPngquant = require('imagemin-pngquant');
+	imageminPngquant = require('imagemin-pngquant'),
+	querystring = require('querystring');
 
 const enableTracing = process.env.AWS_XRAY_DAEMON_ADDRESS;
 let AWS;
@@ -33,22 +34,48 @@ module.exports.s3 = function(config, key, args, callback) {
 			Object.assign({ region: config.region }, s3config)
 		);
 	}
+
 	var s3 = regions[config.region];
-	var s3Request = authenticatedRequest ? s3.makeRequest : s3.makeUnauthenticatedRequest
+	var isPresigned = !! args['X-Amz-Algorithm'];
 
-	return s3Request(
-		'getObject',
-		{ Bucket: config.bucket, Key: key },
-		function(err, data) {
-			if (err) {
-				return callback(err);
-			}
-
-			args.key = key;
-
-			return module.exports.resizeBuffer(data.Body, args, callback);
+	if ( authenticatedRequest ) {
+		request = s3.makeRequest( 'getObject', { Bucket: config.bucket, Key: key } );
+	} else {
+		request = s3.makeUnauthenticatedRequest( 'getObject', { Bucket: config.bucket, Key: key } );
+		// To support forwarding presigned URLs, we hook into the post `build` step to add/forward
+		// the Amz signing URL query params from the current request.
+		if ( isPresigned ) {
+			// All the URL params that should be forwarded from the current request to the S3 file request.
+			const presignedParams = [
+				'X-Amz-Algorithm',
+				'X-Amz-Content-Sha256',
+				'X-Amz-Credential',
+				'X-Amz-SignedHeaders',
+				'X-Amz-Expires',
+				'X-Amz-Signature',
+				'X-Amz-Date',
+			];
+			// Append the presigned URL params to the S3 file request URL.
+			request.addListener( 'build', function ( req ) {
+				const urlParams = presignedParams.reduce( ( params, urlParam ) => {
+					params[ urlParam ] = args[ urlParam ];
+					return params;
+				}, {} );
+				req.httpRequest.path += `?${ querystring.stringify( urlParams ) }`;
+			});
 		}
-	);
+	}
+	request.send( function ( err, data ) {
+		if ( err ) {
+			return callback( err );
+		}
+
+		args.key = key;
+
+		return module.exports.resizeBuffer( data.Body, args, callback );
+	} );
+
+	return request;
 };
 
 const getDimArray = function( dims, zoom ) {
