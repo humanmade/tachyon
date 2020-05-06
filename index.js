@@ -53,11 +53,14 @@ module.exports.s3 = function(config, key, args, callback) {
 				'X-Amz-Expires',
 				'X-Amz-Signature',
 				'X-Amz-Date',
+				'X-Amz-Security-Token',
 			];
 			// Append the presigned URL params to the S3 file request URL.
 			request.addListener( 'build', function ( req ) {
 				const urlParams = presignedParams.reduce( ( params, urlParam ) => {
-					params[ urlParam ] = args[ urlParam ];
+					if ( args[ urlParam ] ) {
+						params[ urlParam ] = args[ urlParam ];
+					}
 					return params;
 				}, {} );
 				req.httpRequest.path += `?${ querystring.stringify( urlParams ) }`;
