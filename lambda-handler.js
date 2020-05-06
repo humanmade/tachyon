@@ -8,7 +8,7 @@ exports.handler = function(event, context, callback) {
 	key = key.replace( '/uploads/tachyon/', '/uploads/' );
 	var args = event.queryStringParameters || {};
 	if ( typeof args.webp === 'undefined' ) {
-		args.webp = !!event.headers['X-WebP'];
+		args.webp = !!(event.headers && event.headers['X-WebP']);
 	}
 	return tachyon.s3({ region: region, bucket: bucket }, key, args, function(
 		err,
@@ -52,7 +52,7 @@ exports.handler = function(event, context, callback) {
 				'Cache-Control': `max-age=${ maxAge }`,
 				'Last-Modified': (new Date()).toUTCString(),
 			},
-			body: new Buffer(data).toString('base64'),
+			body: Buffer.from(data).toString('base64'),
 			isBase64Encoded: true,
 		};
 		callback(null, resp);

@@ -18,7 +18,7 @@ function sendOriginal(region, bucket, key, callback) {
 				headers: {
 					'Content-Type': data.ContentType,
 				},
-				body: new Buffer(data.Body).toString('base64'),
+				body: Buffer.from(data.Body).toString('base64'),
 				isBase64Encoded: true,
 			};
 
