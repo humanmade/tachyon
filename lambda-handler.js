@@ -32,7 +32,7 @@ exports.handler = function(event, context, callback) {
 			return context.fail(err);
 		}
 		// If this is a signed URL, we need to calculate the max-age of the image.
-		let maxAge = 31536000;
+		let maxAge = 2592000;
 		if ( args['X-Amz-Expires'] ) {
 			// Date format of X-Amz-Date is YYYYMMDDTHHMMSSZ, which is not parsable by Date.
 			const dateString = args['X-Amz-Date'].replace( /(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/, '$1-$2-$3T$4:$5:$6Z' );
