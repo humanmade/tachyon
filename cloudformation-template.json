@@ -49,7 +49,7 @@
 			"Type": "AWS::ApiGateway::RestApi",
 			"Properties": {
 				"Name" : "Tachyon",
-				"BinaryMediaTypes": [ "image~1*" ]
+				"BinaryMediaTypes": [ "image/*" ]
 			}
 		},
 		"ApiGatewayMethod": {
