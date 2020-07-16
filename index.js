@@ -105,7 +105,7 @@ const applyZoomCompression = function ( defaultValue, zoom ) {
 
 module.exports.resizeBuffer = async function(buffer, args, callback) {
 	try {
-		const image = sharp(buffer).withMetadata();
+		const image = sharp(buffer, {failOnError: false}).withMetadata();
 
 		// check we can get valid metadata
 		const metadata = await image.metadata();
