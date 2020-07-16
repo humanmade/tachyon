@@ -1,9 +1,19 @@
 var tachyon = require('./index');
 var proxyFile = require('./proxy-file');
+const querystring = require('querystring');
 
 exports.handler = function(event, context, callback) {
 	var region = process.env.S3_REGION;
 	var bucket = process.env.S3_BUCKET;
+
+	// adapt request for lambda edge, if no event.path
+	if (!event.path && event.Records && event.Records.length > 0) {
+		let request = event.Records[0].cf.request;
+		event.headers = request.headers;
+		event.path = request.uri;
+		event.queryStringParameters = querystring.parse(request.querystring);
+	}
+
 	var key = decodeURIComponent(event.path.substring(1));
 	key = key.replace( '/uploads/tachyon/', '/uploads/' );
 	var args = event.queryStringParameters || {};
