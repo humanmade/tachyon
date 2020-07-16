@@ -17,7 +17,7 @@ exports.handler = function(event, context, callback) {
 	) {
 		if (err) {
 			if (err.message === 'fallback-to-original') {
-				return proxyFile(region, bucket, key, callback);
+				return proxyFile({ region: region }, bucket, key, callback);
 			} else if ( err.code === 'AccessDenied' ) {
 				// An AccessDenied error means the file is either protected, or doesn't exist.
 				// We don't get a NotFound error because Tachyon makes unauthenticated calls

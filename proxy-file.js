@@ -1,30 +1,35 @@
-var AWS = require('aws-sdk');
+const AWS = require( 'aws-sdk' );
 
-var authenticatedRequest = !!process.env.S3_AUTHENTICATED_REQUEST
+const authenticatedRequest = !!process.env.S3_AUTHENTICATED_REQUEST ? process.env.S3_AUTHENTICATED_REQUEST.toLowerCase() === 'true' : false;
 
-function sendOriginal(region, bucket, key, callback) {
-	var s3 = new AWS.S3(Object.assign({ region: region }));
-	var s3Request = authenticatedRequest ? s3.makeRequest : s3.makeUnauthenticatedRequest
-	return s3Request(
-		'getObject',
-		{ Bucket: bucket, Key: key },
-		function(err, data) {
-			if (err) {
-				return callback(err);
-			}
+function sendOriginal( config, bucket, key, callback ) {
+	const s3 = new AWS.S3(config);
 
-			var resp = {
-				statusCode: 200,
-				headers: {
-					'Content-Type': data.ContentType,
-				},
-				body: Buffer.from(data.Body).toString('base64'),
-				isBase64Encoded: true,
-			};
+	let request;
+	if ( authenticatedRequest ) {
+		request = s3.makeRequest( 'getObject', { Bucket: bucket, Key: key } );
+	} else {
+		request = s3.makeUnauthenticatedRequest( 'getObject', { Bucket: bucket, Key: key } );
+	}
 
-			callback(null, resp);
+	request.send( function( err, data ) {
+		if (err) {
+			return callback(err);
 		}
-	);
+
+		var resp = {
+			statusCode: 200,
+			headers: {
+				'Content-Type': data.ContentType,
+			},
+			body: Buffer.from(data.Body).toString('base64'),
+			isBase64Encoded: true,
+		};
+
+		callback(null, resp);
+	} );
+
+	return request;
 }
 
 module.exports = sendOriginal;
