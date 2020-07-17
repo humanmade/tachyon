@@ -27,7 +27,7 @@ http.createServer( function( request, response ) {
 		if ( err ) {
 			if ( err.message === 'fallback-to-original' ) {
 				response.writeHead( 200, {
-					'Content-Type': 'image/' + path.extname( params.query.key ).replace( '.', '' ),
+					'Content-Type': 'image/gif',
 					'Content-Length': Buffer.byteLength( imageData ),
 				} );
 				response.write( imageData );

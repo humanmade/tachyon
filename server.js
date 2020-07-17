@@ -2,7 +2,6 @@ var http = require("http"),
 	url = require("url"),
 	fs = require("fs"),
 	os = require("os"),
-	path = require( 'path' ),
 	tachyon = require( './index' ),
 	proxyFile = require( './proxy-file' ),
 	args = process.argv.slice(2),
@@ -63,7 +62,7 @@ http.createServer( function( request, response ) {
 					return response.end();
 				}
 				response.writeHead( rsp.statusCode, Object.assign( {
-					'Content-Type': 'image/' + path.extname( key ).replace( '.', '' ),
+					'Content-Type': 'image/gif',
 					'Cache-Control': 'public, max-age=31557600',
 				} ) );
 				response.write( Buffer.from( rsp.body, 'base64' ) );
