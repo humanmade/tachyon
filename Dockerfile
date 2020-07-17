@@ -2,6 +2,7 @@ FROM lambci/lambda:nodejs10.x
 COPY node_modules/ /var/task/node_modules
 COPY server.js /var/task/
 COPY index.js /var/task
+COPY proxy-file.js /var/task
 
 ARG AWS_REGION
 ARG AWS_S3_BUCKET
