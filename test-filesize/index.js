@@ -3,13 +3,15 @@ const Filesize = require('filesize');
 const tachyon = require('../index');
 const fs = require('fs');
 
-let images = fs.readdirSync('./images');
+let images = fs.readdirSync( __dirname + '/images' );
 
 const args = process.argv.slice(2);
 
-if ( args[0] ) {
+if ( args[0] && args[0].indexOf( '--' ) !== 0 ) {
 	images = images.filter( file => args[0] === file );
 }
+
+const saveFixtured = args.indexOf( '--update-fixtures' ) > -1;
 
 const table = new Table({
 	head: [
@@ -23,6 +25,11 @@ const table = new Table({
 	],
 	colWidths: [30, 15, 20, 15, 15, 15, 20],
 });
+
+// Read in existing features for resizes, so we can detect if image resizing
+// has lead to a change in file size from previous runs.
+const oldFixtures = JSON.parse( fs.readFileSync( __dirname + '/fixtures.json' ) );
+const fixtures = {};
 
 async function test() {
 	await Promise.all(
@@ -51,7 +58,9 @@ async function test() {
 
 			// Save each one to the file system for viewing.
 			Object.entries(resized).forEach(([size, image]) => {
-				fs.writeFile( `${__dirname}/output/${imageName}-${size}.${image.info.format}`, image.data, () => {});
+				const imageKey = `${imageName}-${size}.${image.info.format}`;
+				fixtures[ imageKey ] = image.data.length;
+				fs.writeFile( `${__dirname}/output/${imageKey}`, image.data, () => {});
 			});
 
 			table.push([
@@ -69,10 +78,36 @@ async function test() {
 					Math.floor(resized.webp.info.size / resized.large.info.size * 100) +
 					'%)',
 			]);
+
 		})
 	);
 
+	if ( saveFixtured ) {
+		fs.writeFileSync( __dirname + '/fixtures.json', JSON.stringify( fixtures, null, 4 ) );
+	}
+
 	console.log(table.toString());
+
+	let exitCode = 0;
+	for (const key in fixtures) {
+		if ( ! oldFixtures[ key ] ) {
+			exitCode = 1;
+			console.error( `${ key } not found in existing fixtures.` );
+		}
+		if ( fixtures[ key ] > oldFixtures[ key ] ) {
+			const diff = oldFixtures[ key ] / fixtures[ key ] * 100;
+			exitCode = 1;
+			console.error( `${ key } is larger than image in fixtures (${ fixtures[ key ] - oldFixtures[ key ] } bytes larger, ${ diff }%.)` );
+		}
+
+		if ( fixtures[ key ] < oldFixtures[ key ] ) {
+			const diff = oldFixtures[ key ] / fixtures[ key ] * 100;
+			console.log( `${ key } is smaller than image in fixtures (${ fixtures[ key ] - oldFixtures[ key ] } bytes smaller, ${ diff }%.)` );
+		}
+	}
+	// Exit the script if the fixtures have changed in a negative direction. This means
+	// TravisCI etc will detect the failure correctly.
+	process.exit(exitCode);
 }
 
 test();
