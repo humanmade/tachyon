@@ -95,7 +95,7 @@ async function test() {
 			console.error( `${ key } not found in existing fixtures.` );
 		}
 		if ( fixtures[ key ] > oldFixtures[ key ] ) {
-			const diff = oldFixtures[ key ] / fixtures[ key ] * 100;
+			const diff = fixtures[ key ] / oldFixtures[ key ] * 100;
 			exitCode = 1;
 			console.error( `${ key } is larger than image in fixtures (${ fixtures[ key ] - oldFixtures[ key ] } bytes larger, ${ diff }%.)` );
 		}
