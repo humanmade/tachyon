@@ -1,0 +1,13 @@
+# Travis CI Configuration File
+
+services:
+  - docker
+
+notifications:
+  email: false
+
+before_script:
+  - npm run build-node-modules
+
+script:
+  - npm run test
