@@ -36,11 +36,19 @@ requests = requests.map( line => {
 	try {
 		line = JSON.parse( line );
 	} catch {
-
+		console.error( "Unable to parse log line " + line )
+		return null;
 	}
 	return { file: line['cs-uri-stem'], args: line['cs-uri-query'] }
 } );
 
+// Strip all non-tachyon requests.
+requests = requests.filter( item => {
+	if ( ! item ) {
+		return false;
+	}
+	return item.file.indexOf( '/tachyon/' ) === 0;
+} );
 
 // Group requests by file & args and count uniques.
 requests = requests.reduce( ( all, item ) => {
@@ -59,7 +67,7 @@ requests = requests.slice( 0, 1000 );
 requests = requests.map( r => {
 	let [ path, args ] = r[0].split( '?' );
 	args = args.length === 0 ? {} : args.split( '&' ).reduce( ( all, item ) => {
-		all[ item.split('=')[0] ] = item.split('=')[1];
+		all[ item.split('=')[0] ] = decodeURIComponent(decodeURIComponent(item.split('=')[1]));
 		return all;
 	}, {} )
 	path = path.replace( '/tachyon/', '/uploads/' );
@@ -84,14 +92,14 @@ requests = requests.map( r => {
 				const file = await S3.makeUnauthenticatedRequest( 'getObject', { Bucket: s3Bucket, Key: s3Prefix + item.path } ).promise();
 				fs.writeFileSync( item.filePath, file.Body );
 				fileBuffer = file.Body;
-			} catch {
+			} catch ( e ) {
+				console.warn( `Unable to fetch file ${ s3Prefix + item.path }. ${ e.message }`)
 				requests[index] = null;
 				continue;
 			}
 		} else {
 			fileBuffer = fs.readFileSync( item.filePath );
 		}
-
 		const startWebp = new Date().getTime();
 		const webp = await tachyon.resizeBuffer( fileBuffer, { ...item.args, webp: true } );
 		const endWebp = new Date().getTime();

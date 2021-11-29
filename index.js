@@ -103,6 +103,40 @@ const applyZoomCompression = function ( defaultValue, zoom ) {
 	return clamp( value, min, defaultValue );
 }
 
+function normalizeAVIFQuality( jpegQuality ) {
+	const qualityMap = {
+		0: 0,
+		50: 48,
+		60: 51,
+		70: 58,
+		80: 64,
+		82: 65,
+		100: 100
+	}
+
+	if ( qualityMap[ jpegQuality ] ) {
+		return qualityMap[ jpegQuality ];
+	}
+
+	// Interpolate between the ranges
+	let rangeJPEGStart, rangeJPEGEnd, rangeAVIFStart, rangeAVIFEnd;
+	for ( jpeg in qualityMap ) {
+		rangeJPEGEnd = jpeg;
+		rangeAVIFEnd = qualityMap[ jpeg ];
+		if ( jpegQuality < jpeg ) {
+			break;
+		}
+		rangeJPEGStart = jpeg;
+		rangeAVIFStart = qualityMap[ jpeg ];
+	}
+	let jpegRatio = rangeJPEGEnd - rangeJPEGStart;
+	let avifRatio = rangeAVIFEnd - rangeAVIFStart;
+	let ratio = avifRatio / jpegRatio;
+	let avifQualityInterpolation = ( jpegQuality - rangeJPEGStart ) * ratio;
+	let quality = rangeAVIFStart + avifQualityInterpolation;
+	return quality;
+}
+
 module.exports.resizeBuffer = async function(buffer, args, callback) {
 	try {
 		const image = sharp(buffer, {failOnError: false}).withMetadata();
@@ -218,8 +252,14 @@ module.exports.resizeBuffer = async function(buffer, args, callback) {
 
 		// allow override of compression quality
 		if (args.avif) {
+			// If we are using the default quality (82), then map it to an equivelant default
+			// for AVIF, as quality values between formats are not comparable. See
+			// https://www.industrialempathy.com/posts/avif-webp-quality-settings/ for
+			// a comparison of JPG, WebP and AVIF quality.
+			let quality = normalizeAVIFQuality( args.quality );
 			image.avif({
-				quality: Math.round( clamp( args.quality, 0, 100 ) ),
+				quality: Math.round( clamp( quality, 0, 100 ) ),
+				speed: 9,
 			});
 		} else if (args.webp) {
 			image.webp({
