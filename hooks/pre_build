@@ -1,3 +1,0 @@
-#!/bin/bash
-# Build node_modules
-docker run --rm -v `pwd`:/var/task public.ecr.aws/sam/build-nodejs14.x:latest npm install
