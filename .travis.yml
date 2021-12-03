@@ -6,6 +6,9 @@ services:
 notifications:
   email: false
 
+before_install:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
 before_script:
   - npm run build-node-modules
 

@@ -1,4 +1,4 @@
-FROM lambci/lambda:nodejs10.x
+FROM public.ecr.aws/lambda/nodejs:14
 COPY node_modules/ /var/task/node_modules
 COPY server.js /var/task/
 COPY index.js /var/task

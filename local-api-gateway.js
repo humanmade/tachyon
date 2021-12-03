@@ -18,7 +18,7 @@ http.createServer(function (request, response) {
 		queryStringParameters: querystring.parse( query ),
 		headers: request.headers,
 	};
-	const childArgs = ['run', '--rm', '-e', `S3_BUCKET=${ bucket }`, '-e', `S3_REGION=${ region }`, '-v', `${ task }:/var/task`, 'lambci/lambda:nodejs10.x', 'lambda-handler.handler', JSON.stringify(args)];
+	const childArgs = ['run', '--rm', '-e', `S3_BUCKET=${ bucket }`, '-e', `S3_REGION=${ region }`, '-v', `${ task }:/var/task`, 'public.ecr.aws/lambda/nodejs:14', 'lambda-handler.handler', JSON.stringify(args)];
 	const child = spawn('docker', childArgs);
 	var stdout = '';
 	child.stdout.on('data', data => stdout += data);
