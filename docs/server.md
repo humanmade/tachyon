@@ -124,6 +124,28 @@ Populate the `config.json` with the AWS region and bucket name you want to use, 
 
 These can also be passed via the `AWS_REGION`, and `AWS_S3_BUCKET` environment variables if required.
 
+To use a custom endpoint URL, you can use set the `endpoint` key in `config.json` or the environment variable `AWS_S3_ENDPOINT` to point to the endpoint URL.
+
+You can also use the `configArgs` key in `config.json` or environment variable `AWS_S3_CLIENT_ARGS` to pass arbitrary options to the AWS SDK client, as follows:
+
+```json
+{
+    "region": "eu-west-1",
+	"bucket": "hmn-uploads-eu",
+    "endpoint": "project-name.localhost",
+    "clientArgs": {
+        "s3BucketEndpoint": true,
+    }
+}
+```
+
+OR
+
+```bash
+export AWS_S3_ENDPOINT="project-name.localhost"
+export AWS_S3_CLIENT_ARGS="s3BucketEndpoint=true"
+```
+
 
 ### Running the server
 

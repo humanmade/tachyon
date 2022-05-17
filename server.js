@@ -19,6 +19,11 @@ if ( process.env.AWS_REGION && process.env.AWS_S3_BUCKET ) {
 	config = JSON.parse( fs.readFileSync( 'config.json' ) );
 }
 
+config.clientArgs = config.clientArgs || {};
+if ( process.env.AWS_S3_CLIENT_ARGS ) {
+	( new url.URLSearchParams( process.env.AWS_S3_CLIENT_ARGS ) ).forEach( ( value, key ) => config.clientArgs[ key ] = value );
+}
+
 http.createServer( function( request, response ) {
 	var params = url.parse( request.url, true );
 
