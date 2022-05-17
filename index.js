@@ -23,7 +23,7 @@ module.exports = {};
 module.exports.s3 = function(config, key, args, callback) {
 	AWS.config.region = config.region;
 
-	var s3config = {};
+	var s3config = Object.assign( {}, config.clientArgs );
 	if (config.endpoint) {
 		s3config.endpoint = config.endpoint;
 	}

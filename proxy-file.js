@@ -3,7 +3,7 @@ const AWS = require( 'aws-sdk' );
 const authenticatedRequest = !!process.env.S3_AUTHENTICATED_REQUEST ? process.env.S3_AUTHENTICATED_REQUEST.toLowerCase() === 'true' : false;
 
 function sendOriginal( config, bucket, key, callback ) {
-	const s3 = new AWS.S3(config);
+	const s3 = new AWS.S3( Object.assign( {}, config, config.clientArgs ) );
 
 	let request;
 	if ( authenticatedRequest ) {
