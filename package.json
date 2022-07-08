@@ -1,9 +1,9 @@
 {
-  "name": "node-tachyon",
-  "version": "2.3.2",
+  "name": "tachyon",
+  "version": "2.6.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/humanmade/node-tachyon.git"
+    "url": "https://github.com/humanmade/tachyon.git"
   },
   "description": "Human Made Tachyon in node",
   "main": "index.js",
@@ -27,12 +27,12 @@
   "dependencies": {
     "animated-gif-detector": "^1.2.0",
     "imagemin-pngquant": "^8.0.0",
-    "sharp": "^0.23.0",
-    "smartcrop-sharp": "^2.0.3"
+    "sharp": "^0.30.7",
+    "smartcrop-sharp": "^2.0.6"
   },
   "devDependencies": {
     "aws-sdk": "^2.276.1",
-    "aws-xray-sdk-core": "^2.4.0",
+    "aws-xray-sdk-core": "^3.3.6",
     "cli-table": "^0.3.1",
     "filesize": "^4.1.2"
   }
