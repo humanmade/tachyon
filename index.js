@@ -125,6 +125,82 @@ module.exports.resizeBuffer = async function(buffer, args, callback) {
 			}
 		}
 
+		// validate args, remove from the object if not valid
+		var errors = [];
+
+		if (args.w) {
+			if (!/^[1-9]\d*$/.test(args.w)) {
+				delete args.w;
+				errors.push("w arg is not valid");
+			}
+		}
+		if (args.h) {
+			if (!/^[1-9]\d*$/.test(args.h)) {
+				delete args.h;
+				errors.push("h arg is not valid");
+			}
+		}
+		if (args.quality) {
+			if (!/^[0-9]{1,3}$/.test(args.quality) || args.quality < 0 || args.quality > 100) {
+				delete args.quality;
+				errors.push("quality arg is not valid");
+			}
+		}
+		if (args.resize) {
+			if (!/^\d+(px)?,\d+(px)?$/.test(args.resize)) {
+				delete args.resize;
+				errors.push("resize arg is not valid");
+			}
+		}
+		if (args.crop_strategy) {
+			if (!/^(smart|entropy|attention)$/.test(args.crop_strategy)) {
+				delete args.crop_strategy;
+				errors.push("crop_strategy arg is not valid");
+			}
+		}
+		if (args.gravity) {
+			if (!/^(north|northeast|east|southeast|south|southwest|west|northwest|center)$/.test(args.gravity)) {
+				delete args.gravity;
+				errors.push("gravity arg is not valid");
+			}
+		}
+		if (args.fit) {
+			if (!/^\d+(px)?,\d+(px)?$/.test(args.fit)) {
+				delete args.fit;
+				errors.push("fit arg is not valid");
+			}
+		}
+		if (args.crop) {
+			if (!/^\d+(px)?,\d+(px)?,\d+(px)?,\d+(px)?$/.test(args.crop)) {
+				delete args.crop;
+				errors.push("crop arg is not valid");
+			}
+		}
+		if (args.zoom) {
+			if (!/^\d+(\.\d+)?$/.test(args.zoom)) {
+				delete args.zoom;
+				errors.push("zoom arg is not valid");
+			}
+		}
+		if (args.webp) {
+			if (!/^0|1|true|false$/.test(args.webp)) {
+				delete args.webp;
+				errors.push("webp arg is not valid");
+			}
+		}
+		if (args.lb) {
+			if (!/^\d+(px)?,\d+(px)?$/.test(args.lb)) {
+				delete args.lb;
+				errors.push("lb arg is not valid");
+			}
+		}
+		if (args.background) {
+			if (!/^#[a-f0-9]{3}[a-f0-9]{3}?$/.test(args.background)) {
+				delete args.background;
+				errors.push("background arg is not valid");
+			}
+		}
+
 		// crop (assumes crop data from original)
 		if (args.crop) {
 			var cropValues =
@@ -253,6 +329,9 @@ module.exports.resizeBuffer = async function(buffer, args, callback) {
 					// size after lossless-compression.
 					info.size = data.length;
 				}
+
+				// add invalid args
+				info.errors = errors.join(';');
 
 				callback && callback(null, data, info);
 				resolve({ data, info });
