@@ -82,11 +82,15 @@ http.createServer( function( request, response ) {
 			}
 			return callback( err );
 		}
-		response.writeHead( 200, {
+		var resp = {
 			'Content-Type': 'image/' + info.format,
 			'Content-Length': info.size,
 			'Cache-Control': 'public, max-age=31557600',
-		} );
+		}
+		if (info.errors) {
+			resp["X-Tachyon-Errors"] = info.errors;
+		}
+		response.writeHead( 200, resp );
 		response.write( data );
 		return response.end();
 	} );
