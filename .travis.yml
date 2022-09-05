@@ -11,6 +11,7 @@ before_install:
 
 before_script:
   - npm run build-node-modules
+  - npm run update-test-fixtures
 
 script:
   - npm run test
