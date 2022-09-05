@@ -55,6 +55,11 @@ exports.handler = function(event, context, callback) {
 			body: Buffer.from(data).toString('base64'),
 			isBase64Encoded: true,
 		};
+
+		if (info.errors) {
+			resp.headers["X-Tachyon-Errors"] = info.errors;
+		}
+
 		callback(null, resp);
 
 		data = null;
