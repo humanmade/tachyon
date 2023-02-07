@@ -8,7 +8,7 @@ exports.handler = function(event, context, callback) {
 	key = key.replace( '/uploads/tachyon/', '/uploads/' );
 	var args = event.queryStringParameters || {};
 	if ( typeof args.webp === 'undefined' ) {
-		args.webp = !!(event.headers && event.headers['X-WebP']);
+		args.webp = !!(event.headers && Object.keys(event.headers).find(key => key.toLowerCase() == 'x-webp'));
 	}
 	return tachyon.s3({ region: region, bucket: bucket }, key, args, function(
 		err,
