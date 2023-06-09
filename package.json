@@ -31,7 +31,7 @@
     "smartcrop-sharp": "^2.0.6"
   },
   "devDependencies": {
-    "aws-sdk": "^2.276.1",
+    "aws-sdk": "^2.1354.0",
     "aws-xray-sdk-core": "^3.3.6",
     "cli-table": "^0.3.1",
     "filesize": "^4.1.2"
