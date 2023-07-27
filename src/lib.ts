@@ -1,19 +1,14 @@
 import sharp from 'sharp';
-//import isAnimated from 'animated-gif-detector';
 import smartcrop from 'smartcrop-sharp';
 import imageminPngquant from 'imagemin-pngquant';
-import querystring from 'querystring';
 import { S3Client, S3ClientConfig, GetObjectCommand, GetObjectCommandOutput } from '@aws-sdk/client-s3';
-import { Readable, ReadableOptions } from 'stream';
-import path from 'path';
 
-const enableTracing = process.env.AWS_XRAY_DAEMON_ADDRESS;
 const authenticatedRequest = !!process.env.S3_AUTHENTICATED_REQUEST
 	? process.env.S3_AUTHENTICATED_REQUEST.toLowerCase() == 'true'
 	: false;
 
 export interface Args {
-	webp?: string;
+	webp?: string | boolean;
 	background?: string;
 	lb?: string;
 	zoom?: string;
@@ -29,18 +24,22 @@ export interface Args {
 	'X-Amz-Algorithm'?: string;
 }
 
-const getDimArray = function (dims: string | number[], zoom: number = 1): (number | null)[] {
+function getDimArray(dims: string | number[], zoom: number = 1): (number | null)[] {
 	var dimArr = typeof dims === 'string' ? dims.split(',') : dims;
 	return dimArr.map(function (v) {
 		return Math.round(Number(v) * zoom) || null;
 	});
-};
+}
 
-const clamp = function (val: number | string, min: number, max: number): number {
+function clamp(val: number | string, min: number, max: number): number {
 	return Math.min(Math.max(Number(val), min), max);
-};
+}
 
-export async function getS3File(config: S3ClientConfig & { bucket: string }, key: string, args: Args ) : Promise<GetObjectCommandOutput> {
+export async function getS3File(
+	config: S3ClientConfig & { bucket: string },
+	key: string,
+	args: Args
+): Promise<GetObjectCommandOutput> {
 	const s3 = new S3Client(config);
 	var isPresigned = !!args['X-Amz-Algorithm'];
 	const command = new GetObjectCommand({
@@ -78,15 +77,7 @@ export async function getS3File(config: S3ClientConfig & { bucket: string }, key
 	// 		});
 	// 	}
 	// }
-	// function ( err, data ) {
-	// 	if ( err ) {
-	// 		return callback( err );
-	// 	}
 
-	// 	args.key = key;
-
-	// 	return module.exports.resizeBuffer( data.Body, args, callback );
-	// }
 	return s3.send(command);
 }
 
@@ -95,27 +86,23 @@ export async function getS3File(config: S3ClientConfig & { bucket: string }, key
 // defaultValue = 80, zoom = 2; = 50
 // defaultValue = 100, zoom = 1.5; = 86
 // defaultValue = 80, zoom = 1.5; = 68
-const applyZoomCompression = function (defaultValue: number, zoom: number): number {
+function applyZoomCompression(defaultValue: number, zoom: number): number {
 	const value = Math.round(defaultValue - (Math.log(zoom) / Math.log(defaultValue / zoom)) * (defaultValue * zoom));
 	const min = Math.round(defaultValue / zoom);
 	return clamp(value, min, defaultValue);
-};
+}
 
 export async function resizeBuffer(
 	buffer: Buffer | Uint8Array,
 	args: Args
 ): Promise<{ data: Buffer; info: sharp.OutputInfo & { errors: string } }> {
-	const image = sharp(buffer as Buffer, { failOnError: false }).withMetadata();
+	const image = sharp(buffer as Buffer, { failOnError: false, animated: true }).withMetadata();
 
 	// check we can get valid metadata
 	const metadata = await image.metadata();
 
-	// auto rotate based on orientation exif data
+	// auto rotate based on orientation EXIF data.
 	image.rotate();
-
-	if (args.key && path.extname(args.key).toLowerCase() === '.gif') {
-		image.png();
-	}
 
 	// validate args, remove from the object if not valid
 	var errors: string[] = [];
@@ -179,7 +166,7 @@ export async function resizeBuffer(
 		}
 	}
 	if (args.webp) {
-		if (!/^0|1|true|false$/.test(args.webp)) {
+		if (!/^0|1|true|false$/.test(args.webp as string)) {
 			delete args.webp;
 			errors.push('webp arg is not valid');
 		}
@@ -302,21 +289,10 @@ export async function resizeBuffer(
 			if (err) {
 				reject(err);
 			}
-
 			// Pass PNG images through PNGQuant as Sharp is not good at compressing them.
 			// See https://github.com/lovell/sharp/issues/478
-			if (info.format === 'png') {
-				// if ( enableTracing ) {
-				// 	var mainSegment = AWSXRay.getSegment();
-				// 	var segment = mainSegment.addNewSubsegment( 'imagemin-pngquant' );
-				// }
-
+			if (info.format === 'png' && metadata.pages! > 1) {
 				data = await imageminPngquant()(data);
-
-				// if ( enableTracing ) {
-				// 	segment.close();
-				// }
-
 				// Make sure we update the size in the info, to reflect the new
 				// size after lossless-compression.
 				info.size = data.length;

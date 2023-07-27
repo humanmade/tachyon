@@ -1,7 +1,5 @@
-import { APIGatewayProxyEventV2, Handler, APIGatewayProxyResultV2 } from 'aws-lambda';
+import { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { Args, getS3File, resizeBuffer } from './lib.js';
-import path from 'path';
-import isAnimated from 'animated-gif-detector';
 
 type ResponseStream = {
 	setContentType(type: string): void;
@@ -20,23 +18,14 @@ const streamify_handler: StreamifyHandler = async (event, response) => {
 	};
 	args.key = key;
 	if (typeof args.webp === 'undefined') {
-		args.webp = String(
-			!!(event.headers && Object.keys(event.headers).find((key) => key.toLowerCase() == 'x-webp'))
-		);
+		args.webp = !!(event.headers && Object.keys(event.headers).find((key) => key.toLowerCase() == 'x-webp'));
 	}
+	console.log(event);
 	let s3_response = await getS3File({ region: region, bucket: bucket as string }, key, args);
 	if (!s3_response.Body) {
 		throw new Error('No body in file.');
 	}
 	let buffer = Buffer.from(await s3_response.Body.transformToByteArray());
-
-	// Convert GIFs to PNGs unless animated.
-	if (args.key && path.extname(args.key).toLowerCase() === '.gif' && isAnimated(buffer)) {
-		response.setContentType(s3_response.ContentType || 'text/plain');
-		response.write(buffer);
-		response.end();
-		return;
-	}
 
 	let { info, data } = await resizeBuffer(buffer, args);
 	// If this is a signed URL, we need to calculate the max-age of the image.
