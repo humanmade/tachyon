@@ -15,45 +15,32 @@
 	</tr>
 </table>
 
+Tachyon is a faster than light image resizing service that runs on AWS. Super simple to set up, highly available and very performant.
 
-Tachyon is built with some strong opinions and assumptions:
 
-- Runs on AWS (using CloudFront, Lambda and API Gateway.)
-- Expects original image files to be stored on Amazon S3.
-- Only supports simple image resizing, not a full image manipulation service.
+## Setup
 
-Tachyon works best with WordPress, coupled with [S3 Uploads](https://github.com/humanmade/s3-uploads) and the [Tachyon Plugin](https://github.com/humanmade/tachyon-plugin).
+Tachyon comes in two parts: the server to serve images and the [plugin to use it](./docs/plugin.md). To use Tachyon, you need to run at least one server, as well as the plugin on all sites you want to use it.
 
-**[View Documentation →](docs/README.md)**
+## Installation on AWS Lambda
 
-![](docs/diagram.png)
+We require using Tachyon on [AWS Lambda](https://aws.amazon.com/lambda/details/) to offload image processing task in a serverless configuration. This ensures you don't need lots of hardware to handle thousands of image resize requests, and can scale essentially infinitely. One Tachyon stack is required per S3 bucket, so we recommend using a common region bucket for all sites, which then only requires a single Tachyon stack per region.
+
+Tachyon requires the following Lambda Function spec:
+
+- Runtime: Node JS 18
+- Function URL activated
+- Env vars:
+  - S3_BUCKET=my-bucket
+  - S3_REGION=my-bucket-region
+
+Take the `lambda.zip` from the latest release and upload it to your function.
 
 ## Documentation
 
-**[View Documentation →](docs/README.md)**
-
-
-### Setup
-
-Tachyon comes in two parts: the [server to serve images](docs/server.md), and the [plugin to use it](docs/plugin.md). To use Tachyon, you need to run at least one server, as well as the plugin on all sites you want to use it.
-
-The server is also available as a [Docker image](docs/docker.md), which can be used in production or to set up a local test environment.
-
-## Using
-
-Tachyon provides a simple HTTP interface in the form of:
-
-`https://{tachyon-domain}/my/image/path/on/s3.png?w=100&h=80`
-
-It's really that simple!
-
-**[View Args Reference →](docs/using.md)**
-
-### Upgrading
-
-When upgrading, be sure to perform an API Gateway deployment from the AWS Console. Navigate to API Gateway from the AWS Console and select the "Tachyon" API. Once selected, click "Actions" and then "Deploy API."
-
-![](docs/perform-deployment.png)
+* [Plugin Setup](./docs/plugin.md)
+* [Using Tachyon](./docs/using.md)
+* [Hints and Tips](./docs/tips.md)
 
 
 ## Credits
