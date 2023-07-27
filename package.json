@@ -15,9 +15,9 @@
     "function-name": ""
   },
   "scripts": {
-    "build-node-modules": "rm -R node_modules ; docker run --platform linux/amd64 --rm -v `pwd`:/var/task public.ecr.aws/sam/build-nodejs18.x:latest npm install",
-    "test": "docker run --rm -v `pwd`:/var/task -it --entrypoint='node' public.ecr.aws/lambda/nodejs:14 /var/task/test-filesize/index.js",
-    "build-zip": "rm lambda.zip ; zip -r --exclude='node_modules/animated-gif-detector/test/*' lambda.zip ./node_modules/ package.json index.js proxy-file.js lambda-handler.js",
+    "build": "sam build -u",
+    "test": "sam local invoke -e events/animated-gif.json",
+    "build-zip": "rm lambda.zip ; cd .aws-sam/build/Tachyon && zip -r --exclude='node_modules/animated-gif-detector/test/*' ../../../lambda.zip ./node_modules/ package.json ./dist/",
     "upload-zip": "aws s3 --region=$npm_config_region cp ./lambda.zip s3://$npm_config_bucket/$npm_config_path",
     "update-function-code": "aws lambda update-function-code --region $npm_config_region --function-name $npm_config_function_name --zip-file fileb://`pwd`/lambda.zip"
   },
@@ -26,12 +26,12 @@
   "dependencies": {
     "animated-gif-detector": "^1.2.0",
     "imagemin-pngquant": "^8.0.0",
-    "lambda-stream": "^0.5.0",
     "sharp": "^0.32.4",
+    "@aws-sdk/client-s3": "^3.378.0",
     "smartcrop-sharp": "^2.0.6"
   },
   "devDependencies": {
-    "@aws-sdk/client-s3": "^3.378.0",
+    "lambda-stream": "^0.5.0",
     "@types/aws-lambda": "^8.10.119",
     "@types/node": "^20.4.5",
     "aws-lambda": "^1.0.7",

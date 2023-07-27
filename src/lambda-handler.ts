@@ -32,7 +32,7 @@ const streamify_handler: StreamifyHandler = async (event, response) => {
 
 	// Convert GIFs to PNGs unless animated.
 	if (args.key && path.extname(args.key).toLowerCase() === '.gif' && isAnimated(buffer)) {
-		response.setContentType('image/' + s3_response.ContentType || 'text/plain');
+		response.setContentType(s3_response.ContentType || 'text/plain');
 		response.write(buffer);
 		response.end();
 		return;
