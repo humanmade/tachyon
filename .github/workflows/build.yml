@@ -15,7 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: icrawl/action-tsc@v1
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - run: npm install
+      - run: npx tsc
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
