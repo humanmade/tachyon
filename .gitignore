@@ -4,3 +4,4 @@ lambda.zip
 .aws-sam/
 test-filesize
 .DS_Store
+dist/
