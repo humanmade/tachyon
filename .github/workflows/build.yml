@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'master'
+      - 'v3-branch'
   release:
     types: [released]
   pull_request:
