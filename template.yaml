@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  Tachyon:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: dist/lambda-handler.handler
+      Environment:
+        Variables:
+          S3_BUCKET: hmn-uploads
+          S3_REGION: us-east-1
+      Runtime: nodejs18.x
+      Architectures:
+      - x86_64
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: "/{proxy+}"
+            Method: get
+      Timeout: 60
+      FunctionUrlConfig:
+        AuthType: NONE
+        InvokeMode: RESPONSE_STREAM
+

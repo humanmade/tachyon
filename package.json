@@ -1,12 +1,13 @@
 {
   "name": "tachyon",
-  "version": "2.6.1",
+  "version": "3.0.0",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/humanmade/tachyon.git"
   },
   "description": "Human Made Tachyon in node",
-  "main": "index.js",
+  "main": "dist/lambda-handler.js",
   "config": {
     "bucket": "",
     "path": "",
@@ -14,26 +15,33 @@
     "function-name": ""
   },
   "scripts": {
-    "build-node-modules": "rm -R node_modules ; docker run --rm -v `pwd`:/var/task public.ecr.aws/sam/build-nodejs14.x:latest npm install",
-    "test-file": "docker run --rm -e S3_BUCKET=hmn-uploads-eu -e S3_REGION=eu-west-1 -v `pwd`:/var/task public.ecr.aws/lambda/nodejs:14 \"lambda-handler.handler '{\"path\":\"/'$npm_config_path'\", \"headers\":{}}'\"",
+    "build-node-modules": "rm -R node_modules ; docker run --platform linux/amd64 --rm -v `pwd`:/var/task public.ecr.aws/sam/build-nodejs18.x:latest npm install",
     "test": "docker run --rm -v `pwd`:/var/task -it --entrypoint='node' public.ecr.aws/lambda/nodejs:14 /var/task/test-filesize/index.js",
-    "update-test-fixtures": "docker run --rm -v `pwd`:/var/task -it --entrypoint='node' public.ecr.aws/lambda/nodejs:14 /var/task/test-filesize/index.js --update-fixtures",
-    "build-zip": "rm lambda.zip; zip -r --exclude='node_modules/aws-sdk/*' --exclude='node_modules/animated-gif-detector/test/*' lambda.zip ./node_modules/ index.js proxy-file.js lambda-handler.js",
+    "build-zip": "rm lambda.zip ; zip -r --exclude='node_modules/animated-gif-detector/test/*' lambda.zip ./node_modules/ package.json index.js proxy-file.js lambda-handler.js",
     "upload-zip": "aws s3 --region=$npm_config_region cp ./lambda.zip s3://$npm_config_bucket/$npm_config_path",
     "update-function-code": "aws lambda update-function-code --region $npm_config_region --function-name $npm_config_function_name --zip-file fileb://`pwd`/lambda.zip"
   },
   "author": "Joe Hoyle",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.378.0",
+    "@types/aws-sdk": "^2.7.0",
     "animated-gif-detector": "^1.2.0",
+    "aws-lambda": "^1.0.7",
     "imagemin-pngquant": "^8.0.0",
-    "sharp": "^0.30.7",
+    "lambda-stream": "^0.5.0",
+    "sharp": "^0.32.4",
     "smartcrop-sharp": "^2.0.6"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.119",
     "aws-sdk": "^2.1354.0",
-    "aws-xray-sdk-core": "^3.3.6",
     "cli-table": "^0.3.1",
     "filesize": "^4.1.2"
+  },
+  "overrides": {
+    "smartcrop-sharp": {
+      "sharp": "$sharp"
+    }
   }
 }
