@@ -1,14 +1,9 @@
-name: Docker Build
+name: Build PR
 
 on:
-  push:
-    branches:
-      - 'master'
-      - 'v3-branch'
-  release:
-    types: [released]
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches:
+      - '**'
 
 jobs:
   build:
@@ -23,5 +18,10 @@ jobs:
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
-      - run: sam build --use-container
+      - run: npm run build
+      - run: npm run build-zip
+      - uses: actions/upload-artifact@v3
+        with:
+          path: lambda.zip
+          name: lambda
 
