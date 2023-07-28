@@ -33,6 +33,8 @@ Tachyon requires the following Lambda Function spec:
 - Env vars:
   - S3_BUCKET=my-bucket
   - S3_REGION=my-bucket-region
+  - S3_ENDPOINT=http://my-custom-endpoint (optional)
+  - S3_FORCE_PATH_STYLE=1 (optional)
 
 Take the `lambda.zip` from the latest release and upload it to your function.
 

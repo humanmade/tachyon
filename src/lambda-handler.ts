@@ -1,5 +1,7 @@
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { Args, getS3File, resizeBuffer } from './lib.js';
+import { config } from 'process';
+import { S3ClientConfig } from '@aws-sdk/client-s3';
 
 type ResponseStream = {
 	setContentType(type: string): void;
@@ -10,8 +12,20 @@ type ResponseStream = {
 type StreamifyHandler = (event: APIGatewayProxyEventV2, response: ResponseStream) => Promise<any>;
 
 const streamify_handler: StreamifyHandler = async (event, response) => {
-	const region = process.env.S3_REGION;
-	const bucket = process.env.S3_BUCKET;
+	const region = process.env.S3_REGION!;
+	const bucket = process.env.S3_BUCKET!;
+	const config: S3ClientConfig & { bucket: string } = {
+		region: region,
+		bucket: bucket,
+	};
+	if ( process.env.S3_ENDPOINT ) {
+		config.endpoint = process.env.S3_ENDPOINT;
+	}
+
+	if ( process.env.S3_FORCE_PATH_STYLE ) {
+		config.forcePathStyle = true;
+	}
+
 	const key = decodeURIComponent(event.rawPath.substring(1)).replace('/tachyon/', '/');
 	const args = (event.queryStringParameters || {}) as unknown as Args & {
 		'X-Amz-Expires'?: string;
@@ -21,7 +35,7 @@ const streamify_handler: StreamifyHandler = async (event, response) => {
 		args.webp = !!(event.headers && Object.keys(event.headers).find((key) => key.toLowerCase() == 'x-webp'));
 	}
 
-	let s3_response = await getS3File({ region: region, bucket: bucket as string }, key, args);
+	let s3_response = await getS3File(config, key, args);
 	if (!s3_response.Body) {
 		throw new Error('No body in file.');
 	}
