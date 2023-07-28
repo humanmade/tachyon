@@ -51,4 +51,12 @@ const streamify_handler: StreamifyHandler = async (event, response) => {
 	response.end();
 };
 
+if (typeof awslambda === 'undefined') {
+	global.awslambda = {
+		streamifyResponse(handler: StreamifyHandler): StreamifyHandler {
+			return handler;
+		},
+	};
+}
+
 export const handler = awslambda.streamifyResponse(streamify_handler);

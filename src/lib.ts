@@ -52,7 +52,7 @@ export async function getS3File(
 		signer: {
 			sign: async (request) => {
 				const isPresigned = !!args['X-Amz-Algorithm'];
-				if ( ! isPresigned ) {
+				if (!isPresigned) {
 					return request;
 				}
 				const presignedParamNames = [
@@ -83,7 +83,6 @@ export async function getS3File(
 				request.query = presignedParams;
 
 				request.headers = headers;
-				console.log( request );
 				return request;
 			},
 		},
