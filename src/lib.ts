@@ -22,6 +22,13 @@ export interface Args {
 	w?: string;
 	key: string;
 	'X-Amz-Algorithm'?: string;
+	'X-Amz-Content-Sha256'?: string;
+	'X-Amz-Credential'?: string;
+	'X-Amz-SignedHeaders'?: string;
+	'X-Amz-Expires'?: string;
+	'X-Amz-Signature'?: string;
+	'X-Amz-Date'?: string;
+	'X-Amz-Security-Token'?: string;
 }
 
 function getDimArray(dims: string | number[], zoom: number = 1): (number | null)[] {
@@ -40,43 +47,52 @@ export async function getS3File(
 	key: string,
 	args: Args
 ): Promise<GetObjectCommandOutput> {
-	const s3 = new S3Client(config);
-	var isPresigned = !!args['X-Amz-Algorithm'];
+	const s3 = new S3Client({
+		...config,
+		signer: {
+			sign: async (request) => {
+				const isPresigned = !!args['X-Amz-Algorithm'];
+				if ( ! isPresigned ) {
+					return request;
+				}
+				const presignedParamNames = [
+					'X-Amz-Algorithm',
+					'X-Amz-Content-Sha256',
+					'X-Amz-Credential',
+					'X-Amz-SignedHeaders',
+					'X-Amz-Expires',
+					'X-Amz-Signature',
+					'X-Amz-Date',
+					'X-Amz-Security-Token',
+				] as const;
+				const presignedParams: { [K in (typeof presignedParamNames)[number]]?: string } = {};
+				const signedHeaders = args['X-Amz-SignedHeaders']?.split(';') || [];
+
+				for (const paramName of presignedParamNames) {
+					if (args[paramName]) {
+						presignedParams[paramName] = args[paramName];
+					}
+				}
+
+				const headers: typeof request.headers = {};
+				for (const header in request.headers) {
+					if (signedHeaders.includes(header.toLowerCase())) {
+						headers[header] = request.headers[header];
+					}
+				}
+				request.query = presignedParams;
+
+				request.headers = headers;
+				console.log( request );
+				return request;
+			},
+		},
+	});
+
 	const command = new GetObjectCommand({
 		Bucket: config.bucket,
 		Key: key,
 	});
-
-	// if ( authenticatedRequest ) {
-	// 	request = s3.makeRequest( 'getObject', { Bucket: config.bucket, Key: key } );
-	// } else {
-	// 	request = s3.makeUnauthenticatedRequest( 'getObject', { Bucket: config.bucket, Key: key } );
-	// 	// To support forwarding presigned URLs, we hook into the post `build` step to add/forward
-	// 	// the Amz signing URL query params from the current request.
-	// 	if ( isPresigned ) {
-	// 		// All the URL params that should be forwarded from the current request to the S3 file request.
-	// 		const presignedParams = [
-	// 			'X-Amz-Algorithm',
-	// 			'X-Amz-Content-Sha256',
-	// 			'X-Amz-Credential',
-	// 			'X-Amz-SignedHeaders',
-	// 			'X-Amz-Expires',
-	// 			'X-Amz-Signature',
-	// 			'X-Amz-Date',
-	// 			'X-Amz-Security-Token',
-	// 		];
-	// 		// Append the presigned URL params to the S3 file request URL.
-	// 		request.addListener( 'build', function ( req ) {
-	// 			const urlParams = presignedParams.reduce( ( params, urlParam ) => {
-	// 				if ( args[ urlParam ] ) {
-	// 					params[ urlParam ] = args[ urlParam ];
-	// 				}
-	// 				return params;
-	// 			}, {} );
-	// 			req.httpRequest.path += `?${ querystring.stringify( urlParams ) }`;
-	// 		});
-	// 	}
-	// }
 
 	return s3.send(command);
 }

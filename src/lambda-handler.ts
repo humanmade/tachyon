@@ -20,7 +20,7 @@ const streamify_handler: StreamifyHandler = async (event, response) => {
 	if (typeof args.webp === 'undefined') {
 		args.webp = !!(event.headers && Object.keys(event.headers).find((key) => key.toLowerCase() == 'x-webp'));
 	}
-	console.log(event);
+
 	let s3_response = await getS3File({ region: region, bucket: bucket as string }, key, args);
 	if (!s3_response.Body) {
 		throw new Error('No body in file.');
