@@ -45,8 +45,7 @@ const streamify_handler: StreamifyHandler = async (event, response) => {
 	let maxAge = 31536000;
 	if (args['X-Amz-Expires']) {
 		// Date format of X-Amz-Date is YYYYMMDDTHHMMSSZ, which is not parsable by Date.
-		// @ts-ignore
-		const dateString = args['X-Amz-Date'].replace(
+		const dateString = args['X-Amz-Date']!.replace(
 			/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/,
 			'$1-$2-$3T$4:$5:$6Z'
 		);
