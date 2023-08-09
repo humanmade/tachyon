@@ -1,7 +1,7 @@
+import { S3Client, S3ClientConfig, GetObjectCommand, GetObjectCommandOutput } from '@aws-sdk/client-s3';
+import imageminPngquant from 'imagemin-pngquant';
 import sharp from 'sharp';
 import smartcrop from 'smartcrop-sharp';
-import imageminPngquant from 'imagemin-pngquant';
-import { S3Client, S3ClientConfig, GetObjectCommand, GetObjectCommandOutput } from '@aws-sdk/client-s3';
 
 const authenticatedRequest = !!process.env.S3_AUTHENTICATED_REQUEST
 	? process.env.S3_AUTHENTICATED_REQUEST.toLowerCase() == 'true'
