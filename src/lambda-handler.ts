@@ -1,7 +1,8 @@
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
-import { Args, getS3File, resizeBuffer } from './lib.js';
-import { config } from 'process';
 import { S3ClientConfig } from '@aws-sdk/client-s3';
+import { APIGatewayProxyEventV2 } from 'aws-lambda';
+import { config } from 'process';
+
+import { Args, getS3File, resizeBuffer } from './lib.js';
 
 type ResponseStream = {
 	setContentType(type: string): void;
