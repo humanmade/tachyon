@@ -1,8 +1,6 @@
-import { S3ClientConfig } from '@aws-sdk/client-s3';
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
-import { config } from 'process';
 
-import { Args, getS3File, resizeBuffer } from './lib.js';
+import { Args, getS3File, resizeBuffer, Config } from './lib.js';
 
 type ResponseStream = {
 	setContentType(type: string): void;
@@ -15,7 +13,7 @@ type StreamifyHandler = (event: APIGatewayProxyEventV2, response: ResponseStream
 const streamify_handler: StreamifyHandler = async (event, response) => {
 	const region = process.env.S3_REGION!;
 	const bucket = process.env.S3_BUCKET!;
-	const config: S3ClientConfig & { bucket: string } = {
+	const config: Config = {
 		region: region,
 		bucket: bucket,
 	};

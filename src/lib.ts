@@ -3,10 +3,6 @@ import imageminPngquant from 'imagemin-pngquant';
 import sharp from 'sharp';
 import smartcrop from 'smartcrop-sharp';
 
-const authenticatedRequest = !!process.env.S3_AUTHENTICATED_REQUEST
-	? process.env.S3_AUTHENTICATED_REQUEST.toLowerCase() == 'true'
-	: false;
-
 export interface Args {
 	// Required args.
 	key: string;
@@ -34,6 +30,8 @@ export interface Args {
 	'X-Amz-Security-Token'?: string;
 }
 
+export type Config = S3ClientConfig & { bucket: string }
+
 function getDimArray(dims: string | number[], zoom: number = 1): (number | null)[] {
 	var dimArr = typeof dims === 'string' ? dims.split(',') : dims;
 	return dimArr.map(v => Math.round(Number(v) * zoom) || null);
@@ -44,7 +42,7 @@ function clamp(val: number | string, min: number, max: number): number {
 }
 
 export async function getS3File(
-	config: S3ClientConfig & { bucket: string },
+	config: Config,
 	key: string,
 	args: Args
 ): Promise<GetObjectCommandOutput> {

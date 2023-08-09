@@ -13,7 +13,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
 		rawQueryString: url.searchParams.toString(),
 		headers: req.headers,
 		requestContext: {
-			accountId: '123456789012', // replace with your AWS account ID
+			accountId: '123456789012',
 			stage: 'default',
 			http: {
 				method: req.method!,
@@ -22,7 +22,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
 				sourceIp: req.socket.remoteAddress!,
 				userAgent: req.headers['user-agent']!,
 			},
-			requestId: 'c6af9ac6-7b61-11e6-9a41-93e8deadbeef', // you should generate this dynamically
+			requestId: 'c6af9ac6-7b61-11e6-9a41-93e8deadbeef',
 			routeKey: req.url!,
 		},
 		queryStringParameters: Array.from(url.searchParams).reduce(
