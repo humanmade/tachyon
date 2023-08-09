@@ -36,9 +36,7 @@ export interface Args {
 
 function getDimArray(dims: string | number[], zoom: number = 1): (number | null)[] {
 	var dimArr = typeof dims === 'string' ? dims.split(',') : dims;
-	return dimArr.map(function (v) {
-		return Math.round(Number(v) * zoom) || null;
-	});
+	return dimArr.map(v => Math.round(Number(v) * zoom) || null);
 }
 
 function clamp(val: number | string, min: number, max: number): number {
@@ -54,8 +52,7 @@ export async function getS3File(
 		...config,
 		signer: {
 			sign: async (request) => {
-				const isPresigned = !!args['X-Amz-Algorithm'];
-				if (!isPresigned) {
+				if (!args['X-Amz-Algorithm']) {
 					return request;
 				}
 				const presignedParamNames = [
@@ -123,7 +120,7 @@ export async function resizeBuffer(
 	image.rotate();
 
 	// validate args, remove from the object if not valid
-	var errors: string[] = [];
+	const errors: string[] = [];
 
 	if (args.w) {
 		if (!/^[1-9]\d*$/.test(args.w)) {
@@ -204,10 +201,10 @@ export async function resizeBuffer(
 
 	// crop (assumes crop data from original)
 	if (args.crop) {
-		let cropValuesString = typeof args.crop === 'string' ? args.crop.split(',') : args.crop;
+		const cropValuesString = typeof args.crop === 'string' ? args.crop.split(',') : args.crop;
 
 		// convert percentages to px values
-		let cropValues = cropValuesString.map(function (value, index) {
+		const cropValues = cropValuesString.map(function (value, index) {
 			if (value.indexOf('px') > -1) {
 				return Number(value.substring(0, value.length - 2));
 			} else {
