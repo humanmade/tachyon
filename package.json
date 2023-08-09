@@ -19,7 +19,8 @@
 		"test": "sam local invoke -e events/animated-gif.json",
 		"build-zip": "rm lambda.zip ; cd .aws-sam/build/Tachyon && zip -r --exclude='node_modules/animated-gif-detector/test/*' ../../../lambda.zip ./node_modules/ package.json ./dist/",
 		"upload-zip": "aws s3 --region=$npm_config_region cp ./lambda.zip s3://$npm_config_bucket/$npm_config_path",
-		"update-function-code": "aws lambda update-function-code --region $npm_config_region --function-name $npm_config_function_name --zip-file fileb://`pwd`/lambda.zip"
+		"update-function-code": "aws lambda update-function-code --region $npm_config_region --function-name $npm_config_function_name --zip-file fileb://`pwd`/lambda.zip",
+		"lint": "npx eslint ./*.ts ./**/*.ts"
 	},
 	"author": "Joe Hoyle",
 	"license": "ISC",
@@ -65,6 +66,15 @@
 					"jsdoc/require-param": "off",
 					"no-undef": "off",
 					"import/named": "off"
+				}
+			},
+			{
+				"files": [
+					"*.d.ts"
+				],
+				"rules": {
+					"no-unused-vars": "off",
+					"no-var": "off"
 				}
 			}
 		]
