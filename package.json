@@ -82,6 +82,9 @@
 	"overrides": {
 		"smartcrop-sharp": {
 			"sharp": "$sharp"
+		},
+		"@humanmade/eslint-config": {
+			"eslint": "$eslint"
 		}
 	}
 }
