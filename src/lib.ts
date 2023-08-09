@@ -8,19 +8,22 @@ const authenticatedRequest = !!process.env.S3_AUTHENTICATED_REQUEST
 	: false;
 
 export interface Args {
-	webp?: string | boolean;
+	// Required args.
+	key: string;
+
+	// Optional args.
 	background?: string;
-	lb?: string;
-	zoom?: string;
 	crop?: string | string[];
+	crop_strategy?: string;
 	fit?: string;
 	gravity?: string;
-	crop_strategy?: string;
+	h?: string;
+	lb?: string;
 	resize?: string | number[];
 	quality?: string | number;
-	h?: string;
 	w?: string;
-	key: string;
+	webp?: string | boolean;
+	zoom?: string;
 	'X-Amz-Algorithm'?: string;
 	'X-Amz-Content-Sha256'?: string;
 	'X-Amz-Credential'?: string;
