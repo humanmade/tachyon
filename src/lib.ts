@@ -30,22 +30,18 @@ export interface Args {
 	'X-Amz-Security-Token'?: string;
 }
 
-export type Config = S3ClientConfig & { bucket: string }
+export type Config = S3ClientConfig & { bucket: string };
 
 function getDimArray(dims: string | number[], zoom: number = 1): (number | null)[] {
 	var dimArr = typeof dims === 'string' ? dims.split(',') : dims;
-	return dimArr.map(v => Math.round(Number(v) * zoom) || null);
+	return dimArr.map((v) => Math.round(Number(v) * zoom) || null);
 }
 
 function clamp(val: number | string, min: number, max: number): number {
 	return Math.min(Math.max(Number(val), min), max);
 }
 
-export async function getS3File(
-	config: Config,
-	key: string,
-	args: Args
-): Promise<GetObjectCommandOutput> {
+export async function getS3File(config: Config, key: string, args: Args): Promise<GetObjectCommandOutput> {
 	const s3 = new S3Client({
 		...config,
 		signer: {
@@ -105,10 +101,12 @@ function applyZoomCompression(defaultValue: number, zoom: number): number {
 	return clamp(value, min, defaultValue);
 }
 
+type ResizeBufferResult = { data: Buffer; info: sharp.OutputInfo & { errors: string } };
+
 export async function resizeBuffer(
 	buffer: Buffer | Uint8Array,
 	args: Args
-): Promise<{ data: Buffer; info: sharp.OutputInfo & { errors: string } }> {
+): Promise<ResizeBufferResult> {
 	const image = sharp(buffer as Buffer, { failOnError: false, animated: true }).withMetadata();
 
 	// check we can get valid metadata
