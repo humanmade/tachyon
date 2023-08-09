@@ -102,16 +102,13 @@ export async function getS3File( config: Config, key: string, args: Args ): Prom
 
 	return s3.send( command );
 }
-
-// return a default compression value based on a logarithmic scale
-// defaultValue = 100, zoom = 2; = 65
-// defaultValue = 80, zoom = 2; = 50
-// defaultValue = 100, zoom = 1.5; = 86
-// defaultValue = 80, zoom = 1.5; = 68
 /**
- *
- * @param defaultValue
- * @param zoom
+ * Apply a logarithmic compression to a value based on a zoom level.
+ * return a default compression value based on a logarithmic scale
+ * defaultValue = 100, zoom = 2; = 65
+ * defaultValue = 80, zoom = 2; = 50
+ * defaultValue = 100, zoom = 1.5; = 86
+ * defaultValue = 80, zoom = 1.5; = 68
  */
 function applyZoomCompression( defaultValue: number, zoom: number ): number {
 	const value = Math.round( defaultValue - ( Math.log( zoom ) / Math.log( defaultValue / zoom ) ) * ( defaultValue * zoom ) );
