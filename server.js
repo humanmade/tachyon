@@ -51,6 +51,9 @@ http.createServer( function( request, response ) {
 	const args = params.query || {};
 	if ( typeof args.webp === 'undefined' ) {
 		args.webp = !!( request.headers && request.headers['accept'] && request.headers['accept'].match( 'image/webp' ) );
+	} else {
+		// args.webp will always be a string at this point, so lets convert it to a boolean to not break future conditionals.
+		args.webp = (args.webp == true);
 	}
 
 	return tachyon.s3( config, key, args, function( err, data, info ) {
