@@ -116,7 +116,12 @@ function applyZoomCompression( defaultValue: number, zoom: number ): number {
 	return clamp( value, min, defaultValue );
 }
 
-type ResizeBufferResult = { data: Buffer; info: sharp.OutputInfo & { errors: string } };
+type ResizeBufferResult = {
+	data: Buffer;
+	info: sharp.OutputInfo & {
+		errors: string;
+	}
+};
 
 /**
  * Resize a buffer of an image.
