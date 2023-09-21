@@ -125,7 +125,7 @@ export async function resizeBuffer(
 	buffer: Buffer | Uint8Array,
 	args: Args
 ): Promise<ResizeBufferResult> {
-	const image = sharp( buffer as Buffer, {
+	const image = sharp( buffer, {
 		failOnError: false,
 		animated: true,
 	} ).withMetadata();
