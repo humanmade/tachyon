@@ -73,7 +73,7 @@ export async function getS3File( config: Config, key: string, args: Args ): Prom
 					'X-Amz-Security-Token',
 				] as const;
 				const presignedParams: { [K in ( typeof presignedParamNames )[number]]?: string } = {}; // eslint-disable-line no-unused-vars
-				const signedHeaders = args['X-Amz-SignedHeaders']?.split( ';' ) || [];
+				const signedHeaders = ( args['X-Amz-SignedHeaders']?.split( ';' ) || [] ).map( header => header.toLowerCase().trim() );
 
 				for ( const paramName of presignedParamNames ) {
 					if ( args[paramName] ) {
