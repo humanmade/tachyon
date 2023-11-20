@@ -7,6 +7,13 @@ import animatedGifLambdaEvent from './events/animated-gif.json';
 process.env.S3_REGION = 'us-east-1';
 process.env.S3_BUCKET = 'hmn-uploads';
 
+test( 'Test max age headers', async () => {
+	const testResponseStream = new TestResponseStream();
+	await handler( animatedGifLambdaEvent, testResponseStream );
+
+	expect( testResponseStream.headers['Cache-Control'] ).toBe( 'max-age=31536000' );
+} );
+
 test( 'Test content type headers', async () => {
 	const testResponseStream = new TestResponseStream();
 	await handler( animatedGifLambdaEvent, testResponseStream );
@@ -57,5 +64,16 @@ global.awslambda = {
 	 */
 	streamifyResponse( handler: StreamifyHandler ): StreamifyHandler {
 		return handler;
+	},
+
+	HttpResponseStream: {
+		/**
+		 *
+		 */
+		from( stream: ResponseStream, metadata: { statusCode: number, headers: HeadersInit } ): ResponseStream {
+			// @ts-ignore
+			stream.headers = metadata.headers;
+			return stream;
+		},
 	},
 };

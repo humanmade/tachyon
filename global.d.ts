@@ -10,5 +10,8 @@ declare var awslambda: {
 	streamifyResponse: (
 		handler: StreamifyHandler
 	) => ( event: APIGatewayProxyEventV2, context: ResponseStream ) => void,
+	HttpResponseStream: {
+		from: ( responseStream: ResponseStream, metadata: { statusCode: number, headers: HeadersInit } ) => ResponseStream,
+	},
 };
 
