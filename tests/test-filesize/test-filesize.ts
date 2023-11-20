@@ -97,9 +97,9 @@ test( 'Test file sizes', async () => {
 		let increasedPercent = 100 - Math.round( fixtures[key] / oldFixtures[key] * 100 );
 
 		if ( fixtures[key] !== oldFixtures[key] ) {
-			const diff = ( fixtures[key] / oldFixtures[key] ) * 100;
+			const diff = Math.abs( 100 - ( fixtures[key] / oldFixtures[key] * 100 ) );
 			console.log(
-				`${key} is smaller than image in fixtures by (${
+				`${key} is different than image in fixtures by (${
 					filesize( oldFixtures[key] - fixtures[key] )
 				}, ${diff}%.). New ${ filesize( fixtures[key] ) }, old ${ filesize( oldFixtures[key] ) } }`
 			);
