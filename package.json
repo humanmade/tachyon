@@ -15,8 +15,7 @@
 		"function-name": ""
 	},
 	"scripts": {
-		"build": "sam build -u",
-		"test-animated-gif": "sam local invoke -e events/animated-gif.json",
+		"start": "tsc -w & nodemon --watch dist/lambda-handler.js --exec 'node dist/lambda-handler.js'",
 		"test": "jest",
 		"build-zip": "rm lambda.zip ; cd .aws-sam/build/Tachyon && zip -r --exclude='node_modules/animated-gif-detector/test/*' ../../../lambda.zip ./node_modules/ package.json ./dist/",
 		"upload-zip": "aws s3 --region=$npm_config_region cp ./lambda.zip s3://$npm_config_bucket/$npm_config_path",
@@ -48,6 +47,7 @@
 		"filesize": "^10.1.0",
 		"jest": "^29.7.0",
 		"lambda-stream": "^0.5.0",
+		"nodemon": "^3.0.1",
 		"ts-jest": "^29.1.1",
 		"typescript": "^5.2.2"
 	},
