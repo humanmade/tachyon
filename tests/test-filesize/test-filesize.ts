@@ -93,8 +93,9 @@ test( 'Test file sizes', async () => {
 
 		// Make sure the image size is within 1% of the old image size. This is because
 		// file resizing sizes etc across systems and architectures is not 100%
-		// deterministic.
+		// deterministic. See https://github.com/lovell/sharp/issues/3783
 		let increasedPercent = 100 - Math.round( oldFixtures[key] / fixtures[key] * 100 );
+		let increasedSize = fixtures[key] - oldFixtures[key];
 
 		if ( fixtures[key] !== oldFixtures[key] ) {
 			const diff = Math.abs( 100 - ( oldFixtures[key] / fixtures[key] * 100 ) );
@@ -104,7 +105,11 @@ test( 'Test file sizes', async () => {
 				}, ${diff}%.). New ${ filesize( fixtures[key] ) }, old ${ filesize( oldFixtures[key] ) } }`
 			);
 		}
-		expect( increasedPercent ).toBeLessThanOrEqual( 3 );
+
+		// If the file has changed by more than 5kb, then we expect it to be within 3% of the old size.
+		if ( increasedSize > 1024 * 5 ) {
+			expect( increasedPercent ).toBeLessThanOrEqual( 3 );
+		}
 
 	}
 } );
