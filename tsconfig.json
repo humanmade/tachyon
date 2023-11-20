@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"target": "es2020",
+		"target": "es2022",
 		"strict": true,
 		"preserveConstEnums": true,
 		"noEmit": false,
@@ -15,5 +15,5 @@
 		"types": ["node"],
 	},
 	"exclude": ["node_modules", "**/*.test.ts"],
-	"include": ["./src/**/*", "./*.d.ts"],
+	"include": ["./src/**/*.ts", "./*.d.ts", "./tests/**/*.ts"],
 }

@@ -2,6 +2,6 @@ node_modules/
 .idea
 lambda.zip
 .aws-sam/
-test-filesize
 .DS_Store
 dist/
+/tests/test-filesize/output/
