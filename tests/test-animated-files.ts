@@ -46,7 +46,7 @@ test( 'Test animated webp resize', async () => {
 	const result = await resizeBuffer( file, {
 		w: '20',
 	} );
-	expect( result.info.format ).toBe( 'png' );
+	expect( result.info.format ).toBe( 'webp' );
 	expect( result.info.width ).toBe( 20 );
 
 	let image = sharp( file );
