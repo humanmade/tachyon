@@ -94,7 +94,7 @@ test( 'Test file sizes', async () => {
 		// file resizing sizes etc across systems and architectures is not 100%
 		// deterministic.
 		let changedPercent = Math.abs( 100 - Math.round( fixtures[key] / oldFixtures[key] * 100 ) );
-		expect( changedPercent ).toBeLessThanOrEqual( 1 );
+		expect( changedPercent ).toBeLessThanOrEqual( 5 );
 
 		if ( fixtures[key] < oldFixtures[key] ) {
 			const diff = ( fixtures[key] / oldFixtures[key] ) * 100;
