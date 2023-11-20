@@ -91,16 +91,11 @@ test( 'Test file sizes', async () => {
 
 	for ( const key in fixtures ) {
 
-		console.log(
-			`${key} is different than image in fixtures by (${
-				filesize( oldFixtures[key] - fixtures[key] )
-			}, ${diff}%.). New ${ filesize( fixtures[key] ) }, old ${ filesize( oldFixtures[key] ) } }`
-		);
-
 		// Make sure the image size is within 1% of the old image size. This is because
 		// file resizing sizes etc across systems and architectures is not 100%
 		// deterministic.
 		let increasedPercent = 100 - Math.round( fixtures[key] / oldFixtures[key] * 100 );
+
 		if ( fixtures[key] !== oldFixtures[key] ) {
 			const diff = ( fixtures[key] / oldFixtures[key] ) * 100;
 			console.log(
