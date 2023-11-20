@@ -15,6 +15,7 @@
 		"function-name": ""
 	},
 	"scripts": {
+		"build": "sam build -u",
 		"start": "tsc -w & nodemon --watch dist/lambda-handler.js --exec 'node dist/lambda-handler.js'",
 		"test": "jest",
 		"build-zip": "rm lambda.zip ; cd .aws-sam/build/Tachyon && zip -r --exclude='node_modules/animated-gif-detector/test/*' ../../../lambda.zip ./node_modules/ package.json ./dist/",
