@@ -1,7 +1,13 @@
 # Contributing
 
-## Release Process
+## Building
 
-1. Create and push a new tag following the convention `vx.x.x`
-1. Build a new ZIP file by running `npm run build-node-modules && npm run build-zip`
-1. Publish a new GitHub release, uploading `lambda.zip` as the built artifact to GitHub
+You'll need to [install the AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) as AWS SAM is used to build the ZIP and text the fixtures.
+
+```
+npm install
+npm run build // Builds the function for use in SAM
+npm run test // Invoke a function via SAM using a fixture from ./events/
+```
+
+

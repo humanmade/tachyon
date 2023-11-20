@@ -1,5 +1,7 @@
 node_modules/
 .idea
 lambda.zip
-config.json
-test-filesize/output
+.aws-sam/
+test-filesize
+.DS_Store
+dist/
