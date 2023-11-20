@@ -14,6 +14,7 @@ if ( args[0] && args[0].indexOf( '--' ) !== 0 ) {
 	images = images.filter( file => args[0] === file );
 }
 
+// Manually change to true when you are intentionally changing files.
 const saveFixtured = false;
 
 const table = new Table( {
@@ -89,7 +90,11 @@ test( 'Test file sizes', async () => {
 	console.log( table.toString() );
 
 	for ( const key in fixtures ) {
-		expect( fixtures[key] ).toBeLessThanOrEqual( oldFixtures[key] );
+		// Make sure the image size is within 1% of the old image size. This is because
+		// file resizing sizes etc across systems and architectures is not 100%
+		// deterministic.
+		let changedPercent = Math.abs( 100 - Math.round( fixtures[key] / oldFixtures[key] * 100 ) );
+		expect( changedPercent ).toBeLessThanOrEqual( 1 );
 
 		if ( fixtures[key] < oldFixtures[key] ) {
 			const diff = ( fixtures[key] / oldFixtures[key] ) * 100;
