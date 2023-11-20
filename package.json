@@ -29,7 +29,6 @@
 		"@aws-sdk/client-s3": "^3.378.0",
 		"eslint-config-react-app": "^7.0.1",
 		"sharp": "^0.32.4",
-		"imagemin-pngquant": "^8.0.0",
 		"smartcrop-sharp": "^2.0.6"
 	},
 	"devDependencies": {
