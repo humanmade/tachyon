@@ -6,7 +6,7 @@ import { filesize } from 'filesize';
 
 import { Args, resizeBuffer } from '../../src/lib';
 
-let images = fs.readdirSync( __dirname + '/images' );
+let images = fs.readdirSync( __dirname + '/../images' );
 
 const args = process.argv.slice( 2 );
 
@@ -33,7 +33,7 @@ const fixtures: { [key: string]: number } = {};
 test( 'Test file sizes', async () => {
 	await Promise.all(
 		images.map( async imageName => {
-			const image = `${__dirname}/images/${imageName}`;
+			const image = `${__dirname}/../images/${imageName}`;
 			const imageData = fs.readFileSync( image );
 			const sizes = {
 				original: {},
@@ -90,6 +90,9 @@ test( 'Test file sizes', async () => {
 	console.log( table.toString() );
 
 	for ( const key in fixtures ) {
+		if ( ! oldFixtures[key] ) {
+			continue;
+		}
 
 		// Make sure the image size is within 1% of the old image size. This is because
 		// file resizing sizes etc across systems and architectures is not 100%
@@ -110,6 +113,5 @@ test( 'Test file sizes', async () => {
 		if ( increasedSize > 1024 * 5 ) {
 			expect( increasedPercent ).toBeLessThanOrEqual( 3 );
 		}
-
 	}
 } );

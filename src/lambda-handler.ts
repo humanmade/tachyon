@@ -33,6 +33,7 @@ const streamify_handler: StreamifyHandler = async ( event, response ) => {
 	const key = decodeURIComponent( event.rawPath.substring( 1 ) ).replace( '/tachyon/', '/' );
 	const args = ( event.queryStringParameters || {} ) as unknown as Args & {
 		'X-Amz-Expires'?: string;
+		key: string;
 	};
 	args.key = key;
 	if ( typeof args.webp === 'undefined' ) {

@@ -4,7 +4,7 @@
 		"strict": true,
 		"preserveConstEnums": true,
 		"noEmit": false,
-		"sourceMap": false,
+		"sourceMap": true,
 		"module": "ES2022",
 		"moduleResolution": "node",
 		"esModuleInterop": true,
