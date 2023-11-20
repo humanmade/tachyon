@@ -4,9 +4,6 @@ import sharp from 'sharp';
 import smartcrop from 'smartcrop-sharp';
 
 export interface Args {
-	// Required args.
-	key: string;
-
 	// Optional args.
 	background?: string;
 	crop?: string | string[];
