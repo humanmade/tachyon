@@ -90,13 +90,18 @@ test( 'Test file sizes', async () => {
 	console.log( table.toString() );
 
 	for ( const key in fixtures ) {
+
+		console.log(
+			`${key} is different than image in fixtures by (${
+				filesize( oldFixtures[key] - fixtures[key] )
+			}, ${diff}%.). New ${ filesize( fixtures[key] ) }, old ${ filesize( oldFixtures[key] ) } }`
+		);
+
 		// Make sure the image size is within 1% of the old image size. This is because
 		// file resizing sizes etc across systems and architectures is not 100%
 		// deterministic.
 		let increasedPercent = 100 - Math.round( fixtures[key] / oldFixtures[key] * 100 );
-		expect( increasedPercent ).toBeLessThanOrEqual( 3 );
-
-		if ( fixtures[key] < oldFixtures[key] ) {
+		if ( fixtures[key] !== oldFixtures[key] ) {
 			const diff = ( fixtures[key] / oldFixtures[key] ) * 100;
 			console.log(
 				`${key} is smaller than image in fixtures by (${
@@ -104,5 +109,7 @@ test( 'Test file sizes', async () => {
 				}, ${diff}%.). New ${ filesize( fixtures[key] ) }, old ${ filesize( oldFixtures[key] ) } }`
 			);
 		}
+		expect( increasedPercent ).toBeLessThanOrEqual( 3 );
+
 	}
 } );
