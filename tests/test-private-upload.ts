@@ -52,16 +52,13 @@ async function getPresignedUrlParams( key: string ) : Promise<Args> {
 }
 
 test( 'Test get private upload', async () => {
-	process.env.S3_BUCKET = 'hmn-uploads';
-	process.env.S3_REGION = 'us-east-1';
-
 	const event = {
 		'version': '2.0',
 		'routeKey': '$default',
-		'rawPath': '/s3-uploads-unit-tests/private.png',
+		'rawPath': '/private.png',
 		'headers': {
 		},
-		queryStringParameters: await getPresignedUrlParams( 's3-uploads-unit-tests/private.png' ),
+		queryStringParameters: await getPresignedUrlParams( 'private.png' ),
 		'isBase64Encoded': false,
 	};
 
@@ -78,13 +75,11 @@ test( 'Test get private upload', async () => {
 		 * Write data to the response.
 		 */
 		write( stream: string | Buffer ): void {
-			console.log( stream );
 		},
 		/**
 		 * End the response.
 		 */
 		end(): void {
-			console.log( 'end' );
 		},
 	} );
 
@@ -92,11 +87,8 @@ test( 'Test get private upload', async () => {
 } );
 
 test( 'Test get private upload with presign params', async () => {
-	process.env.S3_BUCKET = 'hmn-uploads';
-	process.env.S3_REGION = 'us-east-1';
+	const presignParams = await getPresignedUrlParams( 'private.png' ) as Record<string, string>;
 
-	const presignParams = await getPresignedUrlParams( 's3-uploads-unit-tests/private.png' ) as Record<string, string>;
-	// console.log( presignParams );
 	// The below credentials are temporary and will need regenerating before the test is run.
 	// Run aws s3 presign --expires 3600 s3://hmn-uploads/s3-uploads-unit-tests/private.png
 	const event = {
