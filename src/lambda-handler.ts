@@ -1,14 +1,4 @@
-import { APIGatewayProxyEventV2 } from 'aws-lambda';
-
-import { Args, getS3File, resizeBuffer, Config } from './lib.js';
-
-type ResponseStream = {
-	setContentType( type: string ): void;
-	write( stream: string | Buffer ): void;
-	end(): void;
-};
-
-type StreamifyHandler = ( event: APIGatewayProxyEventV2, response: ResponseStream ) => Promise<any>;
+import { Args, getS3File, resizeBuffer, Config } from './lib';
 
 /**
  *
@@ -33,6 +23,7 @@ const streamify_handler: StreamifyHandler = async ( event, response ) => {
 	const key = decodeURIComponent( event.rawPath.substring( 1 ) ).replace( '/tachyon/', '/' );
 	const args = ( event.queryStringParameters || {} ) as unknown as Args & {
 		'X-Amz-Expires'?: string;
+		key: string;
 	};
 	args.key = key;
 	if ( typeof args.webp === 'undefined' ) {
@@ -47,8 +38,6 @@ const streamify_handler: StreamifyHandler = async ( event, response ) => {
 
 	let { info, data } = await resizeBuffer( buffer, args );
 	// If this is a signed URL, we need to calculate the max-age of the image.
-	// We don't currently have a way to actually set this header with response
-	// streaming. It doesn't appear streamifyResponse support sending headers.
 	let maxAge = 31536000;
 	if ( args['X-Amz-Expires'] ) {
 		// Date format of X-Amz-Date is YYYYMMDDTHHMMSSZ, which is not parsable by Date.
@@ -65,6 +54,7 @@ const streamify_handler: StreamifyHandler = async ( event, response ) => {
 		// Mage age is the date the URL expires minus the current time.
 		maxAge = Math.round( expires - new Date().getTime() / 1000 ); // eslint-disable-line no-unused-vars
 	}
+
 	response.setContentType( 'image/' + info.format );
 	response.write( data );
 	response.end();

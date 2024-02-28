@@ -1,12 +1,8 @@
 import { S3Client, S3ClientConfig, GetObjectCommand, GetObjectCommandOutput } from '@aws-sdk/client-s3';
-import imageminPngquant from 'imagemin-pngquant';
 import sharp from 'sharp';
 import smartcrop from 'smartcrop-sharp';
 
 export interface Args {
-	// Required args.
-	key: string;
-
 	// Optional args.
 	background?: string;
 	crop?: string | string[];
@@ -318,6 +314,11 @@ export async function resizeBuffer(
 		image.jpeg( {
 			quality: Math.round( clamp( args.quality, 0, 100 ) ),
 		} );
+	} else if ( metadata.format === 'png' ) {
+		// Compress the PNG.
+		image.png( {
+			palette: true,
+		} );
 	}
 
 	// send image
@@ -325,14 +326,6 @@ export async function resizeBuffer(
 		image.toBuffer( async ( err, data, info ) => {
 			if ( err ) {
 				reject( err );
-			}
-			// Pass PNG images through PNGQuant as Sharp is not good at compressing them.
-			// See https://github.com/lovell/sharp/issues/478
-			if ( info.format === 'png' && metadata.pages! > 1 ) {
-				data = await imageminPngquant()( data );
-				// Make sure we update the size in the info, to reflect the new
-				// size after lossless-compression.
-				info.size = data.length;
 			}
 
 			// add invalid args
