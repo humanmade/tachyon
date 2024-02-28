@@ -1,5 +1,4 @@
 import { Args, getS3File, resizeBuffer, Config } from './lib';
-
 /**
  *
  * @param event
