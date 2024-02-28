@@ -58,4 +58,13 @@ global.awslambda = {
 	streamifyResponse( handler: StreamifyHandler ): StreamifyHandler {
 		return handler;
 	},
+	HttpResponseStream: {
+		/**
+		 * @param stream
+		 * @param metadata
+		 */
+		from( stream: ResponseStream, metadata ) : ResponseStream {
+			return stream;
+		},
+	},
 };
