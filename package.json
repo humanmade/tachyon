@@ -17,7 +17,7 @@
 	"scripts": {
 		"build": "sam build -u",
 		"start": "tsc -w & nodemon --watch dist/lambda-handler.js --exec 'node dist/lambda-handler.js'",
-		"test": "jest",
+		"test": "AWS_PROFILE=hmn-test S3_BUCKET=testtachyonbucket S3_REGION=us-east-1 jest",
 		"build-zip": "rm lambda.zip ; cd .aws-sam/build/Tachyon && zip -r --exclude='node_modules/animated-gif-detector/test/*' ../../../lambda.zip ./node_modules/ package.json ./dist/",
 		"upload-zip": "aws s3 --region=$npm_config_region cp ./lambda.zip s3://$npm_config_bucket/$npm_config_path",
 		"update-function-code": "aws lambda update-function-code --region $npm_config_region --function-name $npm_config_function_name --zip-file fileb://`pwd`/lambda.zip",
