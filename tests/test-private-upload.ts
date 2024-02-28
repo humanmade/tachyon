@@ -90,11 +90,11 @@ test( 'Test get private upload with presign params', async () => {
 	const presignParams = await getPresignedUrlParams( 'private.png' ) as Record<string, string>;
 
 	// The below credentials are temporary and will need regenerating before the test is run.
-	// Run aws s3 presign --expires 3600 s3://hmn-uploads/s3-uploads-unit-tests/private.png
+	// Run aws s3 presign --expires 3600 s3://hmn-uploads/private.png
 	const event = {
 		'version': '2.0',
 		'routeKey': '$default',
-		'rawPath': '/s3-uploads-unit-tests/private.png',
+		'rawPath': '/private.png',
 		'headers': {
 		},
 		'queryStringParameters': {
