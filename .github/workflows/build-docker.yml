@@ -14,8 +14,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.x
+      - uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
       - run: npm install
-      - run: npx tsc
+      - run: npm run build
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v3
