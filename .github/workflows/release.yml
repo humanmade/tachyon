@@ -23,12 +23,12 @@ jobs:
       - run: npm run build
       - run: npm run build-zip
       - uses: softprops/action-gh-release@v1
-        if: github.event_name == 'pull_request'
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: lambda.zip
           name: lambda
       - uses: actions/upload-artifact@v3
-        if: startsWith(github.ref, 'refs/tags/')
+        if: github.event_name == 'pull_request'
         with:
           path: lambda.zip
           name: lambda
