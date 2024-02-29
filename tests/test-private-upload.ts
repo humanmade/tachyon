@@ -40,10 +40,7 @@ async function getPresignedUrlParams( key: string ) : Promise<Args> {
 		expiresIn: 60,
 	} ) );
 
-	let queryStringParameters: Args = {};
-	presignedUrl.searchParams.forEach( ( value, key ) => {
-		queryStringParameters[ key as keyof Args ] = value;
-	} );
+	const queryStringParameters: Args = Object.fromEntries( presignedUrl.searchParams.entries() );
 
 	return queryStringParameters;
 }
