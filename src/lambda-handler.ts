@@ -1,5 +1,4 @@
 import { Args, getS3File, resizeBuffer, Config } from './lib';
-
 /**
  *
  * @param event
@@ -23,11 +22,22 @@ const streamify_handler: StreamifyHandler = async ( event, response ) => {
 	const key = decodeURIComponent( event.rawPath.substring( 1 ) ).replace( '/tachyon/', '/' );
 	const args = ( event.queryStringParameters || {} ) as unknown as Args & {
 		'X-Amz-Expires'?: string;
+		'presign'?: string,
 		key: string;
 	};
 	args.key = key;
 	if ( typeof args.webp === 'undefined' ) {
 		args.webp = !! ( event.headers && Object.keys( event.headers ).find( key => key.toLowerCase() === 'x-webp' ) );
+	}
+
+	// If there is a presign param, we need to decode it and add it to the args. This is to provide a secondary way to pass pre-sign params,
+	// as using them in a Lambda function URL invocation will trigger a Lambda error.
+	if ( args.presign ) {
+		const presignArgs = new URLSearchParams( decodeURIComponent( args.presign ) );
+		for ( const [ key, value ] of presignArgs.entries() ) {
+			args[ key as keyof Args ] = value;
+		}
+		delete args.presign;
 	}
 
 	let s3_response = await getS3File( config, key, args );
@@ -55,6 +65,14 @@ const streamify_handler: StreamifyHandler = async ( event, response ) => {
 		maxAge = Math.round( expires - new Date().getTime() / 1000 ); // eslint-disable-line no-unused-vars
 	}
 
+	// Somewhat undocumented API on how to pass headers to a stream response.
+	response = awslambda.HttpResponseStream.from( response, {
+		headers: {
+			'Cache-Control': `max-age=${ maxAge }`,
+			'Last-Modified': ( new Date() ).toUTCString(),
+		},
+	} );
+
 	response.setContentType( 'image/' + info.format );
 	response.write( data );
 	response.end();
@@ -68,6 +86,18 @@ if ( typeof awslambda === 'undefined' ) {
 		 */
 		streamifyResponse( handler: StreamifyHandler ): StreamifyHandler {
 			return handler;
+		},
+		HttpResponseStream: {
+			/**
+			 * @param response The response stream object
+			 * @param metadata The metadata object
+			 * @param metadata.headers
+			 */
+			from( response: ResponseStream, metadata: {
+				headers?: Record<string, string>,
+			} ): ResponseStream {
+				return response;
+			},
 		},
 	};
 }
