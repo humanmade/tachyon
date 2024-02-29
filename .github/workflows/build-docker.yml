@@ -3,9 +3,9 @@ name: Docker Build
 on:
   push:
     branches:
-      - 'master'
+      - "**"
     tags:
-        - "*"
+      - "**"
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -14,11 +14,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.x
-      - uses: aws-actions/setup-sam@v2
-        with:
-          use-installer: true
       - run: npm install
-      - run: npm run build
+      - run: npx tsc
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v3
@@ -36,6 +33,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and push latest
+        if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')
         uses: docker/build-push-action@v2
         with:
           file: Dockerfile

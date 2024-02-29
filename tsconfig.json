@@ -3,7 +3,6 @@
 		"target": "es2020",
 		"strict": true,
 		"preserveConstEnums": true,
-		"noEmit": true,
 		"sourceMap": false,
 		"module": "ES2022",
 		"moduleResolution": "node",
@@ -13,6 +12,7 @@
 		"isolatedModules": true,
 		"types": ["node"],
 		"resolveJsonModule": true,
+		"outDir": "dist"
 	},
 	"exclude": ["node_modules"],
 	"include": ["./src/**/*.ts", "./*.d.ts", "./tests/**/*.ts"],

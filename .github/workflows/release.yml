@@ -3,7 +3,9 @@ name: Release
 on:
   push:
     tags:
-    - "*"
+    - "**"
+    branches:
+    - '**'
 
 jobs:
   build:
@@ -21,7 +23,12 @@ jobs:
       - run: npm run build
       - run: npm run build-zip
       - uses: softprops/action-gh-release@v1
+        if: github.event_name == 'pull_request'
         with:
           files: lambda.zip
           name: lambda
-
+      - uses: actions/upload-artifact@v3
+        if: github.event_name == 'push' && github.ref_type == 'tag'
+        with:
+          path: lambda.zip
+          name: lambda
