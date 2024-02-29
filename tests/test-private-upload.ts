@@ -1,4 +1,4 @@
-import { GetObjectCommand, S3Client, S3ClientConfig } from '@aws-sdk/client-s3';
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { test, expect } from '@jest/globals';
 import { MiddlewareType } from '@smithy/types';
@@ -9,15 +9,12 @@ import { Args } from '../src/lib';
 /**
  * Presign a URL for a given key.
  * @param key
- * @returns {Promise<string>}
+ * @returns {Promise<Args>} The presigned params
  */
 async function getPresignedUrlParams( key: string ) : Promise<Args> {
-	const client = new S3Client(
-		{
-			region: process.env.S3_REGION,
-			bucket: process.env.S3_BUCKET,
-		} as S3ClientConfig
-	);
+	const client = new S3Client( {
+		region: process.env.S3_REGION,
+	} );
 	const command = new GetObjectCommand( {
 		Bucket: process.env.S3_BUCKET,
 		Key: key,
@@ -42,7 +39,7 @@ async function getPresignedUrlParams( key: string ) : Promise<Args> {
 	const presignedUrl = new URL( await getSignedUrl( client, command, {
 		expiresIn: 60,
 	} ) );
-	// console.log( presignedUrl );
+
 	let queryStringParameters: Args = {};
 	presignedUrl.searchParams.forEach( ( value, key ) => {
 		queryStringParameters[ key as keyof Args ] = value;

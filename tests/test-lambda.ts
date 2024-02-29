@@ -60,8 +60,8 @@ global.awslambda = {
 	},
 	HttpResponseStream: {
 		/**
-		 * @param stream
-		 * @param metadata
+		 * @param stream The response stream.
+		 * @param metadata The metadata for the response.
 		 */
 		from( stream: ResponseStream, metadata ) : ResponseStream {
 			return stream;
