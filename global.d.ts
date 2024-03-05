@@ -2,6 +2,7 @@ declare type ResponseStream = {
 	setContentType( type: string ): void;
 	write( stream: string | Buffer ): void;
 	end(): void;
+	metadata?: any;
 };
 
 declare type StreamifyHandler = ( event: APIGatewayProxyEventV2, response: ResponseStream ) => Promise<any>;
@@ -13,7 +14,7 @@ declare var awslambda: {
 	HttpResponseStream: {
 		from( response: ResponseStream, metadata: {
 			headers?: Record<string, string>,
-			statusCode?: number,
+			statusCode: number,
 			cookies?: string[],
 		} ): ResponseStream
 	}
