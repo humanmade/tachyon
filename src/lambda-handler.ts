@@ -67,13 +67,14 @@ const streamify_handler: StreamifyHandler = async ( event, response ) => {
 
 	// Somewhat undocumented API on how to pass headers to a stream response.
 	response = awslambda.HttpResponseStream.from( response, {
+		statusCode: 200,
 		headers: {
 			'Cache-Control': `max-age=${ maxAge }`,
 			'Last-Modified': ( new Date() ).toUTCString(),
+			'Content-Type': 'image/' + info.format,
 		},
 	} );
 
-	response.setContentType( 'image/' + info.format );
 	response.write( data );
 	response.end();
 };

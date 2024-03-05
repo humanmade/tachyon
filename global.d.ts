@@ -13,7 +13,7 @@ declare var awslambda: {
 	HttpResponseStream: {
 		from( response: ResponseStream, metadata: {
 			headers?: Record<string, string>,
-			statusCode?: number,
+			statusCode: number,
 			cookies?: string[],
 		} ): ResponseStream
 	}
