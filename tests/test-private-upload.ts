@@ -74,6 +74,9 @@ test( 'Test get private upload', async () => {
 		 * End the response.
 		 */
 		end(): void {
+			if ( this.metadata.headers['Cache-Control'] ) {
+				contentType = this.metadata.headers['Content-Type'];
+			}
 		},
 	} );
 
@@ -115,6 +118,9 @@ test( 'Test get private upload with presign params', async () => {
 		 * End the response.
 		 */
 		end(): void {
+			if ( this.metadata.headers['Cache-Control'] ) {
+				contentType = this.metadata.headers['Content-Type'];
+			}
 		},
 	} );
 

@@ -97,6 +97,7 @@ if ( typeof awslambda === 'undefined' ) {
 			from( response: ResponseStream, metadata: {
 				headers?: Record<string, string>,
 			} ): ResponseStream {
+				response.metadata = metadata;
 				return response;
 			},
 		},
