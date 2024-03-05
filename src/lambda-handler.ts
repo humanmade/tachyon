@@ -1,4 +1,4 @@
-import { Args, getS3File, resizeBuffer, Config } from './lib';
+import { Args, getS3File, resizeBuffer, Config } from './lib.js';
 /**
  *
  * @param event
