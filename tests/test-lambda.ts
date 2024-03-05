@@ -32,6 +32,7 @@ class TestResponseStream {
 	contentType: string | undefined;
 	body: string | Buffer | undefined;
 	headers: { [key: string]: string } = {};
+	metadata: any;
 
 	setContentType( type: string ): void {
 		this.contentType = type;
@@ -46,7 +47,9 @@ class TestResponseStream {
 		}
 	}
 	end(): void {
-
+		if ( this.metadata.headers['Content-Type'] ) {
+			this.contentType = this.metadata.headers['Content-Type'];
+		}
 	}
 }
 
@@ -63,7 +66,8 @@ global.awslambda = {
 		 * @param stream The response stream.
 		 * @param metadata The metadata for the response.
 		 */
-		from( stream: ResponseStream, metadata ) : ResponseStream {
+		from( stream: TestResponseStream, metadata ) : TestResponseStream {
+			stream.metadata = metadata;
 			return stream;
 		},
 	},
