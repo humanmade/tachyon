@@ -40,43 +40,61 @@ const streamify_handler: StreamifyHandler = async ( event, response ) => {
 		delete args.presign;
 	}
 
-	let s3_response = await getS3File( config, key, args );
-	if ( ! s3_response.Body ) {
-		throw new Error( 'No body in file.' );
+	try {
+		let s3_response = await getS3File( config, key, args );
+		if ( ! s3_response.Body ) {
+			throw new Error( 'No body in file.' );
+		}
+		let buffer = Buffer.from( await s3_response.Body.transformToByteArray() );
+
+		let { info, data } = await resizeBuffer( buffer, args );
+		// If this is a signed URL, we need to calculate the max-age of the image.
+		let maxAge = 31536000;
+		if ( args['X-Amz-Expires'] ) {
+			// Date format of X-Amz-Date is YYYYMMDDTHHMMSSZ, which is not parsable by Date.
+			const dateString = args['X-Amz-Date']!.replace(
+				/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/,
+				'$1-$2-$3T$4:$5:$6Z'
+			);
+			const date = new Date( dateString );
+
+			// Calculate when the signed URL will expire, as we'll set the max-age
+			// cache control to this value.
+			const expires = date.getTime() / 1000 + Number( args['X-Amz-Expires'] );
+
+			// Mage age is the date the URL expires minus the current time.
+			maxAge = Math.round( expires - new Date().getTime() / 1000 ); // eslint-disable-line no-unused-vars
+		}
+
+		// Somewhat undocumented API on how to pass headers to a stream response.
+		response = awslambda.HttpResponseStream.from( response, {
+			statusCode: 200,
+			headers: {
+				'Cache-Control': `max-age=${ maxAge }`,
+				'Last-Modified': ( new Date() ).toUTCString(),
+				'Content-Type': 'image/' + info.format,
+			},
+		} );
+
+		response.write( data );
+		response.end();
+	} catch ( e: any ) {
+		// An AccessDenied error means the file is either protected, or doesn't exist.
+		if ( e.Code === 'AccessDenied' ) {
+			const metadata = {
+				statusCode: 404,
+				headers: {
+					'Content-Type': 'text/html',
+					'Cache-Control': 'no-cache',
+				},
+			};
+			response = awslambda.HttpResponseStream.from( response, metadata );
+			response.write( 'File not found.' );
+			response.end();
+		} else {
+			throw e;
+		}
 	}
-	let buffer = Buffer.from( await s3_response.Body.transformToByteArray() );
-
-	let { info, data } = await resizeBuffer( buffer, args );
-	// If this is a signed URL, we need to calculate the max-age of the image.
-	let maxAge = 31536000;
-	if ( args['X-Amz-Expires'] ) {
-		// Date format of X-Amz-Date is YYYYMMDDTHHMMSSZ, which is not parsable by Date.
-		const dateString = args['X-Amz-Date']!.replace(
-			/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z/,
-			'$1-$2-$3T$4:$5:$6Z'
-		);
-		const date = new Date( dateString );
-
-		// Calculate when the signed URL will expire, as we'll set the max-age
-		// cache control to this value.
-		const expires = date.getTime() / 1000 + Number( args['X-Amz-Expires'] );
-
-		// Mage age is the date the URL expires minus the current time.
-		maxAge = Math.round( expires - new Date().getTime() / 1000 ); // eslint-disable-line no-unused-vars
-	}
-
-	// Somewhat undocumented API on how to pass headers to a stream response.
-	response = awslambda.HttpResponseStream.from( response, {
-		statusCode: 200,
-		headers: {
-			'Cache-Control': `max-age=${ maxAge }`,
-			'Last-Modified': ( new Date() ).toUTCString(),
-			'Content-Type': 'image/' + info.format,
-		},
-	} );
-
-	response.write( data );
-	response.end();
 };
 
 if ( typeof awslambda === 'undefined' ) {

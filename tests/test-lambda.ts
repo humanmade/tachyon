@@ -14,15 +14,13 @@ test( 'Test content type headers', async () => {
 	expect( testResponseStream.contentType ).toBe( 'image/gif' );
 } );
 
-// Currently the handler will throw an error if the file is not found, rather than correctly
-// return a status code and message.
-test.failing( 'Test image not found', async () => {
+test( 'Test image not found', async () => {
 	const testResponseStream = new TestResponseStream();
 	animatedGifLambdaEvent.rawPath = '/tachyon/does-not-exist.gif';
 
 	await handler( animatedGifLambdaEvent, testResponseStream );
 
-	expect( testResponseStream.contentType ).toBe( 'image/gif' );
+	expect( testResponseStream.metadata.statusCode ).toBe( 404 );
 } );
 
 /**
