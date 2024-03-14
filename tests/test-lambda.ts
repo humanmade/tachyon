@@ -21,6 +21,7 @@ test( 'Test image not found', async () => {
 	await handler( animatedGifLambdaEvent, testResponseStream );
 
 	expect( testResponseStream.metadata.statusCode ).toBe( 404 );
+	expect( testResponseStream.contentType ).toBe( 'text/html' );
 } );
 
 /**
