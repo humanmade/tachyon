@@ -40,10 +40,31 @@ const streamify_handler: StreamifyHandler = async ( event, response ) => {
 		delete args.presign;
 	}
 
-	let s3_response = await getS3File( config, key, args );
+	let s3_response;
+
+	try {
+		s3_response = await getS3File( config, key, args );
+	} catch ( e: any ) {
+		// An AccessDenied error means the file is either protected, or doesn't exist.
+		if ( e.Code === 'AccessDenied' ) {
+			const metadata = {
+				statusCode: 404,
+				headers: {
+					'Content-Type': 'text/html',
+				},
+			};
+			response = awslambda.HttpResponseStream.from( response, metadata );
+			response.write( 'File not found.' );
+			response.end();
+			return;
+		}
+		throw e;
+	}
+
 	if ( ! s3_response.Body ) {
 		throw new Error( 'No body in file.' );
 	}
+
 	let buffer = Buffer.from( await s3_response.Body.transformToByteArray() );
 
 	let { info, data } = await resizeBuffer( buffer, args );
