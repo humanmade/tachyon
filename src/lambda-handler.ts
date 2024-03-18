@@ -50,14 +50,14 @@ const streamify_handler: StreamifyHandler = async ( event, response ) => {
 			const metadata = {
 				statusCode: 404,
 				headers: {
-					'Content-Type': 'text/html'
+					'Content-Type': 'text/html',
 				},
 			};
 			response = awslambda.HttpResponseStream.from( response, metadata );
 			response.write( 'File not found.' );
 			response.end();
 			return;
-		} 
+		}
 		throw e;
 	}
 
