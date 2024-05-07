@@ -33,7 +33,7 @@ const streamify_handler: StreamifyHandler = async ( event, response ) => {
 	// If there is a presign param, we need to decode it and add it to the args. This is to provide a secondary way to pass pre-sign params,
 	// as using them in a Lambda function URL invocation will trigger a Lambda error.
 	if ( args.presign ) {
-		const presignArgs = new URLSearchParams( decodeURIComponent( args.presign ) );
+		const presignArgs = new URLSearchParams( args.presign );
 		for ( const [ key, value ] of presignArgs.entries() ) {
 			args[ key as keyof Args ] = value;
 		}

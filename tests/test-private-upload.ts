@@ -95,7 +95,7 @@ test( 'Test get private upload with presign params', async () => {
 		'headers': {
 		},
 		'queryStringParameters': {
-			presign: encodeURIComponent( new URLSearchParams( presignParams ).toString() ),
+			presign: new URLSearchParams( presignParams ).toString(),
 		},
 		'isBase64Encoded': false,
 	};
