@@ -5,7 +5,7 @@
 		"preserveConstEnums": true,
 		"noEmit": false,
 		"sourceMap": true,
-		"module": "Node16",
+		"module": "commonjs",
 		"moduleResolution": "Node16",
 		"esModuleInterop": true,
 		"skipLibCheck": true,
