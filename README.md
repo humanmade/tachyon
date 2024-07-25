@@ -56,3 +56,14 @@ Tachyon is inspired by Photon by Automattic. As Tachyon is not an all-purpose im
 Tachyon uses the [Sharp](https://github.com/lovell/sharp) (Used under the license Apache License 2.0) Node.js library for the resizing operations, which in turn uses the great libvips library.
 
 Interested in joining in on the fun? [Join us, and become human!](https://hmn.md/is/hiring/)
+
+
+## Looking for a different Tachyon?
+
+Tachyon by Human Made provides image resizing services for the web, and is specifically designed for WordPress. "Tachyon" is named after the [hypothetical faster-than-light particle](https://en.wikipedia.org/wiki/Tachyon).
+
+Other software named Tachyon include:
+
+* [Tachyon by VYV](https://tachyon.video/) - Video playback and media server.
+* [Tachyon by Cinnafilm](https://cinnafilm.com/product/tachyon/) - Video processing for the cinema industry.
+* [TACHYONS](https://tachyons.io/) - CSS framework.
