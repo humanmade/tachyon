@@ -38,6 +38,15 @@ Tachyon requires the following Lambda Function spec:
 
 Take the `lambda.zip` from the latest release and upload it to your function.
 
+For routing web traffic to the Lambda function, we recommend using [Lambda Function URLs](https://docs.aws.amazon.com/lambda/latest/dg/urls-configuration.html). These should be configured as:
+
+- Auth type: None
+- Invoke mode: `RESPONSE_STREAM`
+
+Alternatively, you can use API Gateway; this should be set to route all GET requests (i.e. `/{proxy+}`) to invoke your Tachyon Lambda function.
+
+We also recommend running an aggressive caching proxy/CDN in front of Tachyon, such as CloudFront. (An expiration time of 1 year is typical for a production configuration.)
+
 ## Documentation
 
 * [Plugin Setup](./docs/plugin.md)
