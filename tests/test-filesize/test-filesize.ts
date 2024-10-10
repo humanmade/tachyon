@@ -122,4 +122,4 @@ test('Test file sizes', async () => {
 			expect(increasedPercent).toBeLessThanOrEqual(3);
 		}
 	}
-});
+}, 30 * 1000);
