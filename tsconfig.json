@@ -1,0 +1,19 @@
+{
+	"compilerOptions": {
+		"target": "es2020",
+		"strict": true,
+		"preserveConstEnums": true,
+		"sourceMap": false,
+		"module": "Node16",
+		"moduleResolution": "node16",
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"isolatedModules": true,
+		"types": ["node"],
+		"resolveJsonModule": true,
+		"outDir": "dist"
+	},
+	"exclude": ["node_modules"],
+	"include": ["./src/**/*.ts", "./*.d.ts"],
+}

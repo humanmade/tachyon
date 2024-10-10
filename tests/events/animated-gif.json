@@ -1,0 +1,43 @@
+{
+	"version": "2.0",
+	"routeKey": "$default",
+	"rawPath": "/s3-uploads-unit-tests/tachyon/pen.gif",
+	"rawQueryString": "",
+	"headers": {
+		"sec-fetch-mode": "navigate",
+		"x-amzn-tls-version": "TLSv1.2",
+		"sec-fetch-site": "none",
+		"accept-language": "en-US,en;q=0.5",
+		"x-forwarded-proto": "https",
+		"x-forwarded-port": "443",
+		"x-forwarded-for": "212.59.69.208",
+		"sec-fetch-user": "?1",
+		"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+		"x-amzn-tls-cipher-suite": "ECDHE-RSA-AES128-GCM-SHA256",
+		"x-amzn-trace-id": "Root=1-64c21fa5-2e18c6c333bff5bc70a1bd9d",
+		"host": "opphilvfiwbi2ouykkz57ccs6q0khsad.lambda-url.eu-central-1.on.aws",
+		"upgrade-insecure-requests": "1",
+		"accept-encoding": "gzip, deflate, br",
+		"sec-fetch-dest": "document",
+		"user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/115.0"
+	},
+	"requestContext": {
+		"accountId": "anonymous",
+		"apiId": "opphilvfiwbi2ouykkz57ccs6q0khsad",
+		"domainName": "opphilvfiwbi2ouykkz57ccs6q0khsad.lambda-url.eu-central-1.on.aws",
+		"domainPrefix": "opphilvfiwbi2ouykkz57ccs6q0khsad",
+		"http": {
+			"method": "GET",
+			"path": "/s3-uploads-unit-tests/tachyon/pen.gif",
+			"protocol": "HTTP/1.1",
+			"sourceIp": "212.59.69.208",
+			"userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/115.0"
+		},
+		"requestId": "c5c172a9-7a3c-4c6f-a66a-3422d9031e59",
+		"routeKey": "$default",
+		"stage": "$default",
+		"time": "27/Jul/2023:07:41:25 +0000",
+		"timeEpoch": 1690443685529
+	},
+	"isBase64Encoded": false
+}
