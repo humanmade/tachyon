@@ -15,6 +15,7 @@ export interface Args {
 	quality?: string | number;
 	w?: string;
 	webp?: string | boolean;
+	avif?: string | boolean;
 	zoom?: string;
 	'X-Amz-Algorithm'?: string;
 	'X-Amz-Content-Sha256'?: string;
@@ -110,6 +111,40 @@ function applyZoomCompression( defaultValue: number, zoom: number ): number {
 	const value = Math.round( defaultValue - ( Math.log( zoom ) / Math.log( defaultValue / zoom ) ) * ( defaultValue * zoom ) );
 	const min = Math.round( defaultValue / zoom );
 	return clamp( value, min, defaultValue );
+}
+
+function normalizeAVIFQuality(jpegQuality: number): number {
+	const qualityMap: { [key: number]: number } = {
+		0: 0,
+		50: 48,
+		60: 51,
+		70: 58,
+		80: 64,
+		82: 65,
+		100: 100
+	}
+
+	if (qualityMap[jpegQuality]) {
+		return qualityMap[jpegQuality];
+	}
+
+	// Interpolate between the ranges
+	let rangeJPEGStart = 0, rangeJPEGEnd = 0, rangeAVIFStart = 0, rangeAVIFEnd = 0;
+	for (const jpeg in qualityMap) {
+		rangeJPEGEnd = parseInt(jpeg);
+		rangeAVIFEnd = qualityMap[rangeJPEGEnd];
+		if (jpegQuality < rangeJPEGEnd) {
+			break;
+		}
+		rangeJPEGStart = rangeJPEGEnd;
+		rangeAVIFStart = rangeAVIFEnd;
+	}
+	const jpegRatio = rangeJPEGEnd - rangeJPEGStart;
+	const avifRatio = rangeAVIFEnd - rangeAVIFStart;
+	const ratio = avifRatio / jpegRatio;
+	const avifQualityInterpolation = (jpegQuality - rangeJPEGStart) * ratio;
+	const quality = rangeAVIFStart + avifQualityInterpolation;
+	return quality;
 }
 
 type ResizeBufferResult = {
@@ -306,7 +341,16 @@ export async function resizeBuffer(
 	}
 
 	// allow override of compression quality
-	if ( args.webp ) {
+	if (args.avif) {
+		// If we are using the default quality (82), then map it to an equivalent default
+		// for AVIF, as quality values between formats are not comparable. See
+		// https://www.industrialempathy.com/posts/avif-webp-quality-settings/ for
+		// a comparison of JPG, WebP and AVIF quality.
+		let quality = normalizeAVIFQuality( args.quality as number );
+		image.avif({
+			quality: Math.round( clamp( quality, 0, 100 ) ),
+		});
+	} else if (args.webp) {
 		image.webp( {
 			quality: Math.round( clamp( args.quality, 0, 100 ) ),
 		} );
