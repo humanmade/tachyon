@@ -48,7 +48,7 @@
 		"eslint-plugin-jsdoc": "^50.6.9",
 		"filesize": "^10.1.6",
 		"jest": "^29.7.0",
-		"lambda-stream": "^0.5.0",
+		"lambda-stream": "^0.6.0",
 		"nodemon": "^3.1.9",
 		"ts-jest": "^29.3.0",
 		"typescript": "^5.8.3"
