@@ -46,58 +46,75 @@ function clamp( val: number | string, min: number, max: number ): number {
 /**
  * Get a file from S3/
  */
-export async function getS3File( config: Config, key: string, args: Args ): Promise<GetObjectCommandOutput> {
-	const isPresigned = !!args['X-Amz-Algorithm'];
-	const unauthenticated = true;
-	
-	const s3 = new S3Client({
-		...config,
-		credentials: unauthenticated ? undefined : config.credentials, // <--- this allows unauthenticated mode
-		signer: isPresigned
-			? {
-					sign: async request => {
-						const presignedParamNames = [
-							'X-Amz-Algorithm',
-							'X-Amz-Content-Sha256',
-							'X-Amz-Credential',
-							'X-Amz-SignedHeaders',
-							'X-Amz-Expires',
-							'X-Amz-Signature',
-							'X-Amz-Date',
-							'X-Amz-Security-Token',
-						] as const;
+export async function getS3File(config: Config, key: string, args: Args): Promise<GetObjectCommandOutput> {
+    const isPresigned = !!args['X-Amz-Algorithm'];
+    const unauthenticated = process.env.AUTHENTICATED === 'false'; // Check if unauthenticated mode is enabled
 
-						const presignedParams: { [K in (typeof presignedParamNames)[number]]?: string } = {};
-						const signedHeaders = (args['X-Amz-SignedHeaders']?.split(';') || []).map(h => h.toLowerCase().trim());
+	// Create the S3 client configuration
+    const s3Config: S3ClientConfig = {
+        ...config,
+	 	forcePathStyle: true, // Required for MinIO
+	};
 
-						for (const paramName of presignedParamNames) {
-							if (args[paramName]) {
-								presignedParams[paramName] = args[paramName];
-							}
-						}
+    // Remove credentials for unauthenticated requests
+    if (unauthenticated) {
+        s3Config.credentials = {
+			accessKeyId: "",
+			secretAccessKey: "",
+		}
+    }
 
-						const headers: typeof request.headers = {};
-						for (const header in request.headers) {
-							if (signedHeaders.includes(header.toLowerCase())) {
-								headers[header] = request.headers[header];
-							}
-						}
+    // Add signer only for authenticated requests
+    s3Config.signer = isPresigned
+        ? { 
+            sign: async (request) => {
+                const presignedParamNames = [
+                    'X-Amz-Algorithm',
+                    'X-Amz-Content-Sha256',
+                    'X-Amz-Credential',
+                    'X-Amz-SignedHeaders',
+                    'X-Amz-Expires',
+                    'X-Amz-Signature',
+                    'X-Amz-Date',
+                    'X-Amz-Security-Token',
+                ] as const;
+        	        const presignedParams: { [K in (typeof presignedParamNames)[number]]?: string } = {};
+            	    const signedHeaders = (args['X-Amz-SignedHeaders']?.split(';') || []).map((h) =>
+                    h.toLowerCase().trim()
+                );
+                for (const paramName of presignedParamNames) {
+                    if (args[paramName]) {
+                        presignedParams[paramName] = args[paramName];
+                    }
+                }
+                const headers: typeof request.headers = {};
+                for (const header in request.headers) {
+                    if (signedHeaders.includes(header.toLowerCase())) {
+                        headers[header] = request.headers[header];
+                    }
+                }
+                request.query = presignedParams;
+                request.headers = headers;
+                return request;
+               },
+           }
+        : {
+            sign: async (request) => {
+                return request;
+            },
+        };
 
-						request.query = presignedParams;
-						request.headers = headers;
-						return request;
-					},
-			  }
-			: undefined,
-	});
-
-	const command = new GetObjectCommand({
-		Bucket: config.bucket,
-		Key: key,
-	});
+    // Create the S3 client
+	const s3 = new S3Client(s3Config);
+    
+    const command = new GetObjectCommand({
+        Bucket: config.bucket,
+        Key: key,
+    });
 
 	return s3.send(command);
 }
+
 /**
  * Apply a logarithmic compression to a value based on a zoom level.
  * return a default compression value based on a logarithmic scale
