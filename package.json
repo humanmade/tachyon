@@ -37,7 +37,7 @@
 		"@types/aws-lambda": "^8.10.150",
 		"@types/cli-table": "^0.3.4",
 		"@types/jest": "^29.5.14",
-		"@types/node": "^22.15.26",
+		"@types/node": "^22.16.3",
 		"@typescript-eslint/eslint-plugin": "^6.21.0",
 		"@typescript-eslint/parser": "^6.3.0",
 		"aws-lambda": "^1.0.7",
