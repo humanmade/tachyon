@@ -56,11 +56,12 @@ export async function getS3File( config: Config, key: string, args: Args ): Prom
 			 * @param request
 			 */
 			sign: async request => {
-				if (args.referer) {
-					request.headers = request.headers || {};
-					request.headers['referer'] = args.referer;
-				}
 				if ( ! args['X-Amz-Algorithm'] ) {
+					// Add referer to the request headers on non-signed requests
+					if (args.referer) {
+						request.headers = request.headers || {};
+						request.headers['referer'] = args.referer;
+					}
 					return request;
 				}
 				const presignedParamNames = [
