@@ -57,7 +57,8 @@ export async function getS3File( config: Config, key: string, args: Args ): Prom
 			 */
 			sign: async request => {
 				if ( ! args['X-Amz-Algorithm'] ) {
-					// Add referer to the request headers on non-signed requests
+					// Add referer to the request headers on non-presigned URLs
+					// Presigned URLs works without the referer header
 					if (args.referer) {
 						request.headers = request.headers || {};
 						request.headers['referer'] = args.referer;
