@@ -24,6 +24,7 @@ export interface Args {
 	'X-Amz-Signature'?: string;
 	'X-Amz-Date'?: string;
 	'X-Amz-Security-Token'?: string;
+	referer?: string;
 }
 
 export type Config = S3ClientConfig & { bucket: string };
@@ -56,6 +57,12 @@ export async function getS3File( config: Config, key: string, args: Args ): Prom
 			 */
 			sign: async request => {
 				if ( ! args['X-Amz-Algorithm'] ) {
+					// Add referer to the request headers on non-presigned URLs
+					// Presigned URLs works without the referer header
+					if (args.referer) {
+						request.headers = request.headers || {};
+						request.headers['referer'] = args.referer;
+					}
 					return request;
 				}
 				const presignedParamNames = [
