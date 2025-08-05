@@ -50,7 +50,7 @@
 		"jest": "^29.7.0",
 		"lambda-stream": "^0.6.0",
 		"nodemon": "^3.1.10",
-		"ts-jest": "^29.4.0",
+		"ts-jest": "^29.4.1",
 		"typescript": "^5.9.2"
 	},
 	"eslintConfig": {
