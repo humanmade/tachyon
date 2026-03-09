@@ -49,8 +49,10 @@ const streamify_handler: StreamifyHandler = async ( event, response ) => {
 	try {
 		s3_response = await getS3File( config, key, args );
 	} catch ( e: any ) {
+		const errorCode = e.Code || e.name || 'Unknown';
+
 		// An AccessDenied error means the file is either protected, or doesn't exist.
-		if ( e.Code === 'AccessDenied' ) {
+		if ( errorCode === 'AccessDenied' || errorCode === 'NoSuchKey' ) {
 			const metadata = {
 				statusCode: 404,
 				headers: {
@@ -62,6 +64,23 @@ const streamify_handler: StreamifyHandler = async ( event, response ) => {
 			response.end();
 			return;
 		}
+
+		// Log details for signature and auth errors to aid debugging.
+		console.error( `S3 error fetching key "${ key }": ${ errorCode }`, e.message || e );
+
+		if ( errorCode === 'SignatureDoesNotMatch' || errorCode === 'InvalidSignature' ) {
+			const metadata = {
+				statusCode: 403,
+				headers: {
+					'Content-Type': 'text/html',
+				},
+			};
+			response = awslambda.HttpResponseStream.from( response, metadata );
+			response.write( 'Signature error.' );
+			response.end();
+			return;
+		}
+
 		throw e;
 	}
 

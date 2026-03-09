@@ -24,6 +24,7 @@ export interface Args {
 	'X-Amz-Signature'?: string;
 	'X-Amz-Date'?: string;
 	'X-Amz-Security-Token'?: string;
+	'X-Amz-S3-Host'?: string;
 	referer?: string;
 }
 
@@ -90,6 +91,14 @@ export async function getS3File( config: Config, key: string, args: Args ): Prom
 						headers[header] = request.headers[header];
 					}
 				}
+
+				// Override the host header to match the original S3 signing host.
+				// The presigned URL was signed for a specific S3 endpoint host, and the
+				// request must use that same host for S3 to validate the signature.
+				if ( args['X-Amz-S3-Host'] && signedHeaders.includes( 'host' ) ) {
+					headers['host'] = args['X-Amz-S3-Host'];
+				}
+
 				request.query = presignedParams;
 
 				request.headers = headers;
