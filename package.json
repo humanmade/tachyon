@@ -46,7 +46,7 @@
 		"eslint-config": "^0.3.0",
 		"eslint-plugin-flowtype": "^8.0.3",
 		"eslint-plugin-jsdoc": "^54.5.0",
-		"filesize": "^11.0.13",
+		"filesize": "^11.0.15",
 		"jest": "^30.3.0",
 		"lambda-stream": "^0.6.0",
 		"nodemon": "^3.1.14",
