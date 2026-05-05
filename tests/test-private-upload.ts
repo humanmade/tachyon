@@ -14,6 +14,8 @@ import { Args } from '../src/lib';
 async function getPresignedUrlParams( key: string ) : Promise<Args> {
 	const client = new S3Client( {
 		region: process.env.S3_REGION,
+		requestChecksumCalculation: 'WHEN_REQUIRED',
+		responseChecksumValidation: 'WHEN_REQUIRED',
 	} );
 	const command = new GetObjectCommand( {
 		Bucket: process.env.S3_BUCKET,
