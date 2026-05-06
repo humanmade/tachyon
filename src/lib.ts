@@ -50,6 +50,11 @@ function clamp( val: number | string, min: number, max: number ): number {
 export async function getS3File( config: Config, key: string, args: Args ): Promise<GetObjectCommandOutput> {
 	const s3 = new S3Client( {
 		...config,
+		// Opt out of default integrity protection (WHEN_SUPPORTED, added in
+		// @aws-sdk/client-s3 ~3.730). The auto-added checksum headers/query
+		// params break our reuse of the caller's presigned signature below.
+		requestChecksumCalculation: 'WHEN_REQUIRED',
+		responseChecksumValidation: 'WHEN_REQUIRED',
 		signer: {
 			/**
 			 *
