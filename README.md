@@ -28,7 +28,7 @@ We require using Tachyon on [AWS Lambda](https://aws.amazon.com/lambda/details/)
 
 Tachyon requires the following Lambda Function spec:
 
-- Runtime: Node JS 18
+- Runtime: Node JS 24
 - Function URL activated
 - Env vars:
   - S3_BUCKET=my-bucket
