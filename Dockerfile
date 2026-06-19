@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/nodejs:18
+FROM public.ecr.aws/lambda/nodejs:24
 COPY package.json /var/task/
 COPY package-lock.json /var/task/
 RUN npm install --omit=dev
