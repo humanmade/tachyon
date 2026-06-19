@@ -10,7 +10,7 @@ Resources:
         Variables:
           S3_BUCKET: hmn-uploads
           S3_REGION: us-east-1
-      Runtime: nodejs18.x
+      Runtime: nodejs24.x
       Architectures:
       - x86_64
       Events:
