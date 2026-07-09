@@ -51,7 +51,7 @@
 		"lambda-stream": "^0.6.0",
 		"nodemon": "^3.1.14",
 		"ts-jest": "^29.4.11",
-		"typescript": "^6.0.3"
+		"typescript": "^7.0.2"
 	},
 	"eslintConfig": {
 		"extends": "@humanmade/eslint-config",
