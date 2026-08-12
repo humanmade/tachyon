@@ -1,5 +1,5 @@
 import { S3Client, S3ClientConfig, GetObjectCommand, GetObjectCommandOutput } from '@aws-sdk/client-s3';
-import sharp from 'sharp';
+import sharp, { OutputInfo } from 'sharp';
 import smartcrop from 'smartcrop-sharp';
 
 export interface Args {
@@ -126,7 +126,7 @@ function applyZoomCompression( defaultValue: number, zoom: number ): number {
 
 type ResizeBufferResult = {
 	data: Buffer;
-	info: sharp.OutputInfo & {
+	info: OutputInfo & {
 		errors: string;
 	}
 };
@@ -139,7 +139,7 @@ export async function resizeBuffer(
 	args: Args
 ): Promise<ResizeBufferResult> {
 	const image = sharp( buffer, {
-		failOnError: false,
+		failOn: 'none',
 		animated: true,
 	} ).withMetadata();
 
